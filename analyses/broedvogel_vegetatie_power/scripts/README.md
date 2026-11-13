@@ -32,10 +32,13 @@ analyses/broedvogel_vegetatie_power/scripts/run_lansu_modelinvoer_2020.sh \
   '/Volumes/T7 Data/Home_Ton/Proefomgevingen/lansu-modelinvoer-2020-2026-11-13'
 ```
 
-De runner leest originele RGB/CIR-GeoTIFFs uit de geregistreerde T7-map en
-hergebruikt de gecontroleerde AHN4-mozaieken. Hij schrijft een zevenbands
-GeoTIFF, manifest en controlerapport uitsluitend op T7. De vaste bandvolgorde,
-hoogteschaal, modeltegelgrootte en checkpointvorm worden getest met:
+De runner leest originele RGB/CIR-GeoTIFFs en LGN2020 uit de geregistreerde
+T7-map en hergebruikt de gecontroleerde AHN4-mozaieken. Hij schrijft een
+zevenbands GeoTIFF, het LGN-studiegebiedmasker, manifest en controlerapport
+uitsluitend op T7. `vergelijk_lgn_brt_modelinvoer.py` bewaart de vergelijking
+met de eerdere BRT-proef als afzonderlijk JSON-bewijs. De vaste bandvolgorde,
+hoogteschaal, modeltegelgrootte, LGN-klassekeuze en checkpointvorm worden
+getest met:
 
 ```bash
 /Users/ton/Documents/GitHub/Meijendel/.venv_ahn/bin/python \

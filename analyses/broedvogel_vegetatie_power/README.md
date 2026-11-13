@@ -57,9 +57,11 @@ vegetatiestructuurreeks uitgebreid.
 Voor de afzonderlijke Lansu-route is inmiddels een gecontroleerde
 2020-modelinvoer opgebouwd voor M13s, M13, M14, M15 en M16. Die omvat de zeven
 gepubliceerde banden in 25 volledige modeltegels. Dit is een technische
-voorbereiding, geen nieuwe classificatie-uitkomst. De gewichten zijn nog niet
-ontvangen en de LGN2020-afleiding van afstand en uitsluitingsmaskers moet nog
-tegen de nu gebruikte BRT-hoogwaterlijn worden gecontroleerd.
+voorbereiding, geen nieuwe classificatie-uitkomst. LGN2020 levert inmiddels
+de afstand tot zee en het uitsluitingsmasker volgens supplementaire tabel S3.
+De gewichten zijn nog niet ontvangen; dat is de resterende blokkade voor
+inferentie. Bij levering wordt tevens gecontroleerd of het model LGN2019 dan
+wel LGN2020 verwacht; de supplementaire bijlage noemt LGN19.
 
 Op 19 oktober 2026 zijn de oorspronkelijke geclassificeerde rasters voor 2001
 en 2022 ontvangen. Zij bevestigen de gepubliceerde oppervlaktes en voegen voor

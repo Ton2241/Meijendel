@@ -76,6 +76,35 @@ class LansuModelinvoerTest(unittest.TestCase):
 
         np.testing.assert_array_equal(nir, np.array([[101, 102]], dtype=np.uint8))
 
+    def test_lgn_class_contract_matches_supplement_table_s3(self):
+        module = load_module()
+
+        self.assertIn(11, module.LGN_INCLUDED_CLASSES)  # loofbos
+        self.assertIn(31, module.LGN_INCLUDED_CLASSES)  # open zand kustgebied
+        self.assertIn(333, module.LGN_INCLUDED_CLASSES)  # hoog struweel
+        self.assertNotIn(17, module.LGN_INCLUDED_CLASSES)  # zout water
+        self.assertNotIn(25, module.LGN_INCLUDED_CLASSES)  # wegen en spoorwegen
+
+    def test_lgn_distance_and_mask_are_derived_from_class_values(self):
+        module = load_module()
+        values = np.array(
+            [
+                [17, 17, 31, 31],
+                [17, 17, 32, 25],
+                [17, 17, 11, 18],
+            ],
+            dtype=np.uint16,
+        )
+
+        distance, included = module.lgn_distance_and_mask(values, pixel_size=5.0)
+
+        np.testing.assert_array_equal(distance[:, :2], 0.0)
+        self.assertEqual(distance[0, 2], 5.0)
+        self.assertTrue(included[0, 2])
+        self.assertTrue(included[2, 2])
+        self.assertFalse(included[1, 3])
+        self.assertFalse(included[2, 3])
+
     def test_checkpoint_contract_rejects_wrong_channel_or_class_count(self):
         module = load_module()
 

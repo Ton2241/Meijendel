@@ -705,15 +705,36 @@ numeriek gevuld. De oorspronkelijke AHN4-dekking bedraagt 93,4% voor DSM en
 zijn als nul gecodeerd omdat de gepubliceerde datalader geen nodatamasker
 toepast.
 
-LGN2020 is wel als open 5-meterbron geïdentificeerd, maar nog niet ontvangen:
-de downloadlink wordt door WUR pas na een formulier met naam en e-mailadres
-verstrekt. Lansu gebruikte LGN2020 voor afstand tot zee en uitsluiting van
-niet-duingebruik. Voor de lokale technische pilot is afstand tot zee voorlopig
-afgeleid van de officiële gemiddelde hoogwaterlijn uit de BRT-bronlaag. Deze
-vervanging wordt niet als gelijkwaardig verondersteld: na ontvangst van
-LGN2020 worden de afstandslaag en het uitsluitingsmasker gereconstrueerd en
-vergeleken. De voorbereide rasterstack is daarom kandidaat-modelinvoer, geen
-nieuwe ecologische meetbron en geen habitatclassificatie.
+LGN2020 is op 13 november 2026 rechtstreeks van het LGN-team ontvangen. Het
+ZIP-bestand is 480.235.670 bytes en heeft SHA256
+`b9f6b29d7aba54b1d4235dd4984f0475d39a21847cddfeabba32a23def5c3387`;
+de ZIP-integriteit is goed. Het uitgepakte GeoTIFF heeft één UInt16-band,
+56.000 bij 65.000 pixels van 5 meter, EPSG:28992 en nodata 0. Bronhouder is
+Wageningen Environmental Research; de licentie is CC BY 4.0 met de gevraagde
+vermelding `CC BY 4.0 Wageningen Environmental Research`. De bestanden en
+HTTP-headers staan met herkomstbewijs in de geregistreerde T7-werkmap en zijn
+niet in de levende database opgenomen.
+
+Ook de officiële supplementaire bijlage van Lansu et al. is ontvangen en
+technisch gecontroleerd; SHA256 is
+`5c73b49f7914efa9df14786dd8f70496d506f1c9182b173a14b7a46dd2c3227e`.
+Tabel S3 noemt 25 opgenomen LGN-klassen en sluit onder meer landbouw,
+bebouwing, wegen, zout water en kwelders uit. De lokale modelvoorbereiding
+leidt afstand tot zee af uit zout water, klasse 17, en bouwt het masker exact
+uit deze opgenomen klassen. Binnen M13s, M13, M14, M15 en M16 valt 98,0% van
+het oppervlak binnen het masker; de uitgesloten 2,0% bestaat vrijwel geheel
+uit wegen en spoorwegen. De LGN-afstand is gemiddeld 11,9 meter kleiner dan
+de voorlopige BRT-afstand. Het mediane absolute verschil is 13 meter, het 95e
+percentiel 56 meter en de correlatie 0,997. BRT blijft vergelijkingsbewijs,
+maar is niet langer de gekozen modelband.
+
+De supplementaire bron noemt `LGN19` met referentiejaar 2019, terwijl de op
+verzoek ontvangen levering LGN2020 betreft. Volgens de LGN-productbeschrijving
+actualiseert LGN2020 LGN2019, zonder nieuwe natuurclassificatie. Voor de
+Meijendel-pilot is LGN2020 daarom inhoudelijk passend; exacte reproductie van
+het trainingsmateriaal vraagt nog bevestiging van de modellevering of gebruik
+van LGN2019. De rasterstack blijft kandidaat-modelinvoer, geen nieuwe
+ecologische meetbron en geen habitatclassificatie.
 
 **Historische Dunea-reeks, bronbericht 26 oktober 2026.** Harrie Van der
 Hagen meldt dat Dunea gebiedsdekkende luchtfoto's van heel Meijendel beheert.

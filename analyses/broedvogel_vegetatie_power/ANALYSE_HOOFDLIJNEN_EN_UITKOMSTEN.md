@@ -83,10 +83,13 @@ M13s, M13, M14, M15 en M16 zijn de originele 25-centimeterbeelden van 2020
 gekoppeld aan AHN4. De zeven gepubliceerde modelbanden zijn vastgelegd in 25
 volledige U-net-tegels; binnen de plots zijn zij volledig numeriek gevuld. Het
 product is uitsluitend modelinvoer, nog geen habitatkaart. Afstand tot zee is
-voorlopig afgeleid van de officiële BRT-hoogwaterlijn. Lansu gebruikte
-LGN2020 voor deze afstand en voor uitsluitingsmaskers; na ontvangst van dat
-bestand wordt het verschil eerst gekwantificeerd. De gewichten blijven de
-enige blokkade voor inferentie. Een technische controle weigert ieder
+nu afgeleid uit LGN2020-klasse 17. Ook het uitsluitingsmasker volgt de
+landgebruiksklassen uit supplementaire tabel S3. Binnen de vijf plots valt
+98,0% binnen dat studiegebied. De voorlopige BRT-afstand correleerde 0,997
+met LGN, maar week mediaan 13 meter absoluut af en is daarom vervangen. De
+gewichten blijven de praktische blokkade voor inferentie. Bij levering wordt
+tevens vastgesteld of zij met LGN2019 of LGN2020 zijn getraind, omdat de
+supplementaire bijlage LGN19 noemt. Een technische controle weigert ieder
 checkpoint dat niet exact zeven invoerkanalen en zeven uitvoerklassen bevat.
 
 De aanvullende representativiteitsanalyse laat zien dat de

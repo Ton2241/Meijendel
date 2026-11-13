@@ -53,6 +53,13 @@ CLASS_ORDER = (
 )
 NORMALIZATION_MEAN = (68.8427, 68.4807, 61.6793, 90.5604, 480.2229, 65.1453, 660.0991)
 NORMALIZATION_STD = (67.6801, 65.3562, 59.7872, 78.8081, 659.9129, 213.4854, 924.3354)
+LGN_SEA_CLASS = 17
+LGN_INCLUDED_CLASSES = frozenset(
+    {
+        11, 12, 16, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43,
+        45, 46, 47, 321, 322, 323, 331, 332, 333,
+    }
+)
 
 
 class ModelGrid:
@@ -196,6 +203,81 @@ def _distance_to_coast(coast_path: Path, coast_layer: str, grid: ModelGrid) -> n
     return destination
 
 
+def lgn_distance_and_mask(
+    values: np.ndarray, pixel_size: float
+) -> tuple[np.ndarray, np.ndarray]:
+    """Leid afstand tot zout water en het Table-S3-studiegebied af uit LGN."""
+    sea = values == LGN_SEA_CLASS
+    if not sea.any():
+        raise ValueError("Het LGN-venster bevat geen zout water (klasse 17).")
+    distance = distance_transform_edt(~sea) * pixel_size
+    included = np.isin(values, tuple(LGN_INCLUDED_CLASSES))
+    return distance.astype(np.float32), included
+
+
+def _lgn_context(
+    lgn_path: Path, grid: ModelGrid, buffer_m: float = 10_000.0
+) -> tuple[np.ndarray, np.ndarray, dict]:
+    """Lees een begrensd LGN-venster en projecteer afstand en masker op het modelrooster."""
+    with rasterio.open(lgn_path) as source:
+        if source.crs != rasterio.crs.CRS.from_string(grid.crs):
+            raise ValueError(f"LGN heeft onverwacht CRS: {source.crs}.")
+        pixel_size = abs(float(source.transform.a))
+        if not math.isclose(pixel_size, abs(float(source.transform.e))):
+            raise ValueError("LGN heeft geen vierkante pixels.")
+        requested = (
+            grid.bounds[0] - buffer_m,
+            grid.bounds[1] - buffer_m,
+            grid.bounds[2] + buffer_m,
+            grid.bounds[3] + buffer_m,
+        )
+        left = max(requested[0], source.bounds.left)
+        bottom = max(requested[1], source.bounds.bottom)
+        right = min(requested[2], source.bounds.right)
+        top = min(requested[3], source.bounds.top)
+        raw_window = rasterio.windows.from_bounds(left, bottom, right, top, source.transform)
+        window = raw_window.round_offsets().round_lengths()
+        values = source.read(1, window=window)
+        transform = source.window_transform(window)
+
+    coarse_distance, coarse_mask = lgn_distance_and_mask(values, pixel_size)
+    target_distance = np.empty((grid.height, grid.width), dtype=np.float32)
+    target_mask = np.zeros((grid.height, grid.width), dtype=np.uint8)
+    for source_values, destination, resampling in (
+        (coarse_distance, target_distance, Resampling.nearest),
+        (coarse_mask.astype(np.uint8), target_mask, Resampling.nearest),
+    ):
+        reproject(
+            source_values,
+            destination,
+            src_transform=transform,
+            src_crs=grid.crs,
+            dst_transform=grid.transform,
+            dst_crs=grid.crs,
+            resampling=resampling,
+        )
+    edge_clearance = min(
+        grid.bounds[0] - left,
+        grid.bounds[1] - bottom,
+        right - grid.bounds[2],
+        top - grid.bounds[3],
+    )
+    maximum_distance = float(np.nanmax(target_distance))
+    if maximum_distance >= edge_clearance:
+        raise ValueError(
+            "LGN-buffer is te klein om de dichtstbijzijnde zee eenduidig te bepalen: "
+            f"maximum {maximum_distance:.1f} m, randruimte {edge_clearance:.1f} m."
+        )
+    metadata = {
+        "bron": "LGN2020 klasse 17 (zout water)",
+        "bronresolutie_m": pixel_size,
+        "buffer_m": buffer_m,
+        "maximale_afstand_in_modelgrid_m": maximum_distance,
+        "opgenomen_klassen_table_s3": sorted(LGN_INCLUDED_CLASSES),
+    }
+    return target_distance, target_mask.astype(bool), metadata
+
+
 def _profile(grid: ModelGrid) -> dict:
     return {
         "driver": "GTiff",
@@ -221,14 +303,14 @@ def build_stack(
     cir_paths: list[Path],
     dsm_path: Path,
     dtm_path: Path,
-    coast_path: Path,
-    coast_layer: str,
+    lgn_path: Path,
     output_path: Path,
+    mask_output_path: Path,
 ) -> dict:
     plots = gpd.read_file(plots_path).to_crs("EPSG:28992")
     grid = model_grid(tuple(float(value) for value in plots.total_bounds))
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    distance = _distance_to_coast(coast_path, coast_layer, grid)
+    distance, lgn_mask, lgn_metadata = _lgn_context(lgn_path, grid)
     pilot_mask = rasterize(
         [(plots.geometry.union_all(), 1)],
         out_shape=(grid.height, grid.width),
@@ -290,6 +372,11 @@ def build_stack(
     finally:
         for source in rgb_sources + cir_sources:
             source.close()
+    mask_profile = _profile(grid)
+    mask_profile.update(count=1, dtype="uint8", nodata=0, predictor=1, bigtiff="IF_SAFER")
+    with rasterio.open(mask_output_path, "w", **mask_profile) as mask_target:
+        mask_target.set_band_description(1, "lgn_table_s3_study_area")
+        mask_target.write(lgn_mask.astype(np.uint8), 1)
     return {
         "bandvolgorde": list(CHANNELS),
         "klassevolgorde": list(CLASS_ORDER),
@@ -303,7 +390,12 @@ def build_stack(
         "hoogte_pixels": grid.height,
         "plot_ids": sorted(int(value) for value in plots["plotid"]),
         "plot_namen": sorted(str(value) for value in plots["naam"]),
-        "afstand_tot_zee": "BRT gemiddelde hoogwaterlijn, 5 m bronrooster, nearest-neighbour naar 25 cm",
+        "afstand_tot_zee": lgn_metadata,
+        "lgn_studiegebied": {
+            "opgenomen_aandeel_modelgrid": float(lgn_mask.mean()),
+            "opgenomen_aandeel_pilotplots": float(lgn_mask[pilot_mask].mean()),
+            "maskerpad": str(mask_output_path),
+        },
         "hoogteschaal": "AHN4 DSM en DSM-DTM in meters, afgerond naar centimeters",
         "ahn4_brondekking_binnen_pilotplots": {
             "dsm": dsm_valid_pilot / pilot_pixels,
@@ -320,9 +412,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--cir", type=Path, action="append", required=True)
     parser.add_argument("--dsm", type=Path, required=True)
     parser.add_argument("--dtm", type=Path, required=True)
-    parser.add_argument("--coast", type=Path, required=True)
-    parser.add_argument("--coast-layer", default="meijendel_grenssegmenten")
+    parser.add_argument("--lgn", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--mask-output", type=Path, required=True)
     parser.add_argument("--manifest", type=Path, required=True)
     return parser.parse_args()
 
@@ -335,15 +427,19 @@ def main() -> None:
         args.cir,
         args.dsm,
         args.dtm,
-        args.coast,
-        args.coast_layer,
+        args.lgn,
         args.output,
+        args.mask_output,
     )
-    sources = [args.plots, *args.rgb, *args.cir, args.dsm, args.dtm, args.coast]
+    sources = [args.plots, *args.rgb, *args.cir, args.dsm, args.dtm, args.lgn]
     manifest["bronnen"] = [
         {"pad": str(path), "sha256": sha256(path)} for path in sources if path.is_file()
     ]
     manifest["uitvoer"] = {"pad": str(args.output), "sha256": sha256(args.output)}
+    manifest["maskeruitvoer"] = {
+        "pad": str(args.mask_output),
+        "sha256": sha256(args.mask_output),
+    }
     args.manifest.parent.mkdir(parents=True, exist_ok=True)
     args.manifest.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n")
 

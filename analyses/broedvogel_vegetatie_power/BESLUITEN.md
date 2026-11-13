@@ -20,10 +20,17 @@ stilzwijgend herschreven.
   AHN4-dekking blijft apart zichtbaar: 93,4% voor DSM en 91,9% voor de
   combinatie DSM-DTM. Ontbrekende hoogtewaarden, vooral water, worden nul
   omdat de gepubliceerde datalader geen nodatamasker toepast.
-- LGN2020 is nog niet ontvangen. Tot die bron beschikbaar is, komt afstand tot
-  zee uit de officiële BRT-hoogwaterlijn. Voor inferentie wordt eerst het
-  verschil met de LGN2020-afleiding gecontroleerd; het landelijke
-  uitsluitingsmasker wordt niet stilzwijgend vervangen.
+- LGN2020 is op 13 november ontvangen en technisch gevalideerd. Afstand tot
+  zee wordt voortaan afgeleid van LGN-klasse 17. Het uitsluitingsmasker volgt
+  exact de 25 opgenomen klassen uit supplementaire tabel S3. Binnen de vijf
+  pilotplots valt 98,0% binnen dit studiegebied. De LGN-afstand is gemiddeld
+  11,9 meter kleiner dan de voorlopige BRT-afstand; het mediane absolute
+  verschil is 13 meter en de correlatie 0,997. Voor inferentie vervangt LGN de
+  BRT-afleiding.
+- De supplementaire bijlage noemt LGN19; ontvangen is LGN2020. Omdat LGN2020
+  volgens de productbeschrijving de natuurclassificatie van LGN2019 behoudt,
+  is deze bron passend voor de pilot. Bij ontvangst van het checkpoint wordt
+  de exact gebruikte versie nog aan de modeldocumentatie getoetst.
 - Er wordt pas geclassificeerd nadat de ontvangen gewichten aantoonbaar zeven
   invoerkanalen en zeven uitvoerklassen bevatten. De uitkomst wordt eerst
   lokaal gevalideerd. Geen raster gaat nu naar de levende database, Shiny of

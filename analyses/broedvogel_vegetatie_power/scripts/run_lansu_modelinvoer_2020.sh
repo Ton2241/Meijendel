@@ -24,12 +24,13 @@ TMPDIR="$WORK_ROOT/tmp" "$PYTHON" \
   --cir "$WORK_ROOT/downloads/CIR_30GN1_2020.tiff" \
   --dsm "$AHN_ROOT/AHN4_KM_DSM05_tiles/mosaic.vrt" \
   --dtm "$AHN_ROOT/AHN4_KM_DTM05_tiles/mosaic.vrt" \
-  --coast "$REPO_DIR/gis/vectors/meijendel_bereik/meijendel_ruimtelijke_lagen.gpkg" \
-  --output "$WORK_ROOT/outputs/lansu_modelinvoer_2020_m13s_m16.tif" \
-  --manifest "$WORK_ROOT/outputs/lansu_modelinvoer_2020_m13s_m16_manifest.json"
+  --lgn "$WORK_ROOT/outputs/LGN2020/LGN2020.tif" \
+  --output "$WORK_ROOT/outputs/lansu_modelinvoer_2020_m13s_m16_lgn.tif" \
+  --mask-output "$WORK_ROOT/outputs/lansu_modelinvoer_2020_m13s_m16_lgn_mask.tif" \
+  --manifest "$WORK_ROOT/outputs/lansu_modelinvoer_2020_m13s_m16_lgn_manifest.json"
 
 "$PYTHON" \
   "$REPO_DIR/analyses/broedvogel_vegetatie_power/scripts/controleer_lansu_modelinvoer.py" \
-  --stack "$WORK_ROOT/outputs/lansu_modelinvoer_2020_m13s_m16.tif" \
+  --stack "$WORK_ROOT/outputs/lansu_modelinvoer_2020_m13s_m16_lgn.tif" \
   --plots "$PLOTS" \
-  --output "$WORK_ROOT/outputs/lansu_modelinvoer_2020_m13s_m16_controle.json"
+  --output "$WORK_ROOT/outputs/lansu_modelinvoer_2020_m13s_m16_lgn_controle.json"

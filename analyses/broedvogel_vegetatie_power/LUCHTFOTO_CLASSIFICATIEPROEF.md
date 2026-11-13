@@ -168,14 +168,16 @@ gebruikt voor concrete ontbrekende jaren na de Dunea-inventaris.
 
 Voor M13s, M13, M14, M15 en M16 is een afzonderlijke modelinvoer uit 2020
 opgebouwd. De originele RGB- en CIR-orthofoto's op 25 centimeter, AHN4 DSM en
-DTM op 50 centimeter en de officiële BRT-hoogwaterlijn zijn op hetzelfde
+DTM op 50 centimeter en LGN2020 op 5 meter zijn op hetzelfde
 rooster samengebracht. De vaste zeven bandvolgorde en normalisatiewaarden uit
 de gepubliceerde configuratie zijn technisch vastgelegd. De invoer doorstaat
 de rastercontrole; zij bevat nog geen voorspellingen.
 
-Lansu gebruikte LGN2020 om de zee en het landelijke studiegebied te
-begrenzen. Die bron is nog niet ontvangen. De BRT-afleiding maakt de lokale
-invoer uitvoerbaar, maar wordt vóór inferentie tegen LGN2020 vergeleken. Ook
-na ontvangst van de gewichten blijft lokale validatie vereist. De voorbereiding
+De afstand tot zee is afgeleid van LGN-klasse 17; het studiegebiedmasker volgt
+de opgenomen landgebruiksklassen uit supplementaire tabel S3. Het voorlopige
+BRT-product week binnen de pilotplots mediaan 13 meter absoluut af en
+correleerde 0,997 met LGN. Daarmee was BRT bruikbaar als technische
+voorbereiding, maar LGN is nu de invoer voor inferentie. Ook na ontvangst van
+de gewichten blijft lokale validatie vereist. De voorbereiding
 verandert daarom noch de negatieve overdrachtstoets van de eigen classifier,
 noch het besluit om daaruit geen jaarlijkse vegetatiereeks af te leiden.

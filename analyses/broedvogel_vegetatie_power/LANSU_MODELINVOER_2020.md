@@ -49,23 +49,35 @@ gepubliceerde datalader iedere pixel normaliseert en geen afzonderlijk
 nodatamasker toepast. De oorspronkelijke dekkingsfracties blijven in het
 manifest staan.
 
-Lansu et al. leidden afstand tot zee en de landelijke uitsluitingsmaskers af
-uit LGN2020. LGN2020 is nog niet ontvangen: de open download wordt pas na een
-formulier met naam en e-mailadres verstrekt. Voor de gereedstaande
-Meijendel-pilot is afstand tot zee daarom reproduceerbaar afgeleid van de
-officiële gemiddelde hoogwaterlijn uit de BRT-bronlaag op een rooster van
-5 meter en vervolgens nearest-neighbour naar 25 centimeter gebracht. Dit
-levert een volledige technische modelband, maar is nog geen bewijs dat de
-pixelwaarden exact gelijk zijn aan die van Lansu. Na ontvangst van LGN2020
-wordt het verschil gekwantificeerd en wordt ook het uitsluitingsmasker
-gereconstrueerd.
+LGN2020 is op 13 november 2026 van het LGN-team ontvangen. Het landelijke
+GeoTIFF heeft 5-meterpixels, EPSG:28992 en een CC BY 4.0-licentie. De
+supplementaire tabel S3 van Lansu et al. is eveneens vastgelegd. Daaruit zijn
+zonder interpretatieve tussenstap de 25 opgenomen landgebruiksklassen en het
+uitsluitingsmasker gereconstrueerd; zout water is klasse 17. De modelband
+afstand tot zee is nu rechtstreeks uit deze zoutwaterpixels afgeleid en met
+nearest-neighbour naar 25 centimeter gebracht.
+
+Binnen de vijf pilotplots is 98,0% van het oppervlak volgens tabel S3
+onderdeel van het studiegebied. De resterende 2,0% bestaat vrijwel geheel uit
+wegen en spoorwegen. Vergeleken met de voorlopige BRT-hoogwaterlijn is de
+LGN-afstand gemiddeld 11,9 meter kleiner. Het mediane absolute verschil is
+13 meter, het 95e percentiel 56 meter en de correlatie 0,997. De BRT-laag was
+dus een goede technische benadering, maar wordt voor modelinferentie niet
+meer gebruikt.
+
+De supplementaire bijlage noemt `LGN19` met referentiejaar 2019; ontvangen is
+LGN2020. De officiële productbeschrijving vermeldt dat LGN2020 LGN2019
+actualiseert zonder de natuurclassificatie opnieuw uit te voeren. Voor deze
+pilot is LGN2020 daarom passend. Voor exacte reproductie wordt bij ontvangst
+van het checkpoint nog gecontroleerd welke LGN-versie bij de gewichten hoort.
 
 ## Rastercontract en controle
 
-Het raster `lansu_modelinvoer_2020_m13s_m16.tif` heeft EPSG:28992, een
+Het definitieve voorbereidingsraster
+`lansu_modelinvoer_2020_m13s_m16_lgn.tif` heeft EPSG:28992, een
 resolutie van 25 centimeter en 10.240 bij 10.240 pixels. De begrenzing is
 uitgelijnd op 25 modeltegels van 2.048 bij 2.048 pixels. Het GeoTIFF is
-307 MB en gebruikt de vaste bandvolgorde uit de configuratie. Alle zeven
+305 MB en gebruikt de vaste bandvolgorde uit de configuratie. Alle zeven
 banden zijn binnen de vijf pilotplots volledig numeriek gevuld. Het manifest
 en het afzonderlijke controlerapport bevatten bronpaden, SHA256-hashes,
 bandvolgorde, normalisatiewaarden, klassevolgorde en dekking.
@@ -84,7 +96,8 @@ kanalen bevat. Daarna worden ook de modelvariant en sleutelnamen, de vaste
 band- en klassevolgorde, de normalisatiewaarden en de verwachte uitvoervorm
 van 1.860 bij 1.860 pixels per invoertegel van 2.048 bij 2.048 pixels vergeleken
 met de ontvangen modeldocumentatie. Als Eva Lansu een referentievoorspelling of
-controlesom meelevert, moet onze lokale uitvoer daarmee overeenkomen. Pas
+controlesom meelevert, moet onze lokale uitvoer daarmee overeenkomen. Ook
+wordt vastgesteld of de gewichten met LGN2019 of LGN2020 zijn gebruikt. Pas
 daarna volgt inferentie op exact deze 25 tegels. De voorspelling wordt
 alleen binnen de vijf pilotplots beoordeeld en vergeleken met de kaart van
 2022 en de AHN4-hoogteklassen. Omdat 2022 niet onafhankelijk is van het
