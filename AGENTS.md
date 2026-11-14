@@ -160,6 +160,25 @@ Bronregister:
 - een taak die de stand van een gegevensbron verandert is niet afgerond zolang
   beide registerversies niet inhoudelijk gelijk en actueel zijn
 
+Vegetatiegeschiedenis:
+- Actualiseer [de interactieve samenvatting](docs/Vegetatiegeschiedenis-Meijendel.html)
+  in dezelfde taak zodra broninformatie waarop zij steunt wijzigt. Dit
+  geldt ook voor correcties in de LVD- of PQ-selectie, overlap, datering,
+  vegetatielabels, ruimtelijke toewijzing, deelgebiedsgrenzen en conclusies
+  uit historische kaarten of publicaties.
+- Vergelijk de gewijzigde bron met de versie waarop het overzicht berust.
+  Herbereken de geraakte deelgebieds- en periodetellingen, werk de bijbehorende
+  kaart, tijdlijnen, conclusies en bronstand bij en verifieer dat kaartfilters
+  en tabellen dezelfde aantallen tonen. Leg de bronversies en controle vast.
+- De versie op GitHub bevat uitsluitend samenvattingen op deelgebiedsniveau.
+  Controleer vóór commit en push ook de ingebedde kaartgegevens op exacte
+  meetpunten en individuele opnameregels. Deel kaartscans via de bronlink.
+  De detailkaart met exacte meetpunten blijft op Tons thuisnetwerk.
+- Een bronwijziging die het overzicht raakt is pas afgerond nadat de
+  gecontroleerde samenvatting in dezelfde taak is bijgewerkt en via Git
+  is gesynchroniseerd. Leg een concrete blokkade vast met de geraakte
+  bron, periode en openstaande update.
+
 MySQL:
 - Gebruik voor iedere plotgebonden berekening uit `Meijendel` standaard
   `plot_analyse_scope` met `scope_code = meijendel_natura2000` of de view

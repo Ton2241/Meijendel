@@ -165,6 +165,11 @@ Projectdocumentatie staat vooral in `MDs/`, met scriptspecifieke documentatie in
 
 Belangrijke bestanden zijn:
 
+- [Vegetatiegeschiedenis van Meijendel](docs/Vegetatiegeschiedenis-Meijendel.html)
+  Interactieve kaart en tijdlijnen per deelgebied. Open het HTML-bestand lokaal
+  in een browser. Bij gewijzigde broninformatie geldt de bijwerkafspraak in
+  [AGENTS.md](AGENTS.md).
+
 - [`MDs/handboek.md`][9]
   Doorlopend handboek voor gebruik van de database.
 - [`shiny_meijendel/EINDHANDLEIDING_html_en_shiny.md`][10]
