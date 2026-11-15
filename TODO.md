@@ -962,6 +962,12 @@ drempelvarianten en leave-one-species-out-minimumstatus zijn vastgelegd.
 
 ## Externe ecologiebronnen na fase 1 en 2
 
+- [ ] **DOTKA-luchtfotomozaïeken.** Wacht op antwoord op Tons e-mail van
+  15 november 2026 over volledige dekking van Meijendel, met name in 1966
+  en 1983, en beschikbaarstelling om niet voor de jubileumpublicatie van 2028.
+  Controleer op 30 november 2026 de correspondentie en eventuele levering.
+  Zet bij uitblijven van een reactie een rappel klaar voor Ton. De verzonden
+  tekst staat lokaal in `~/.local/share/meijendel/correspondentie/2026-11-15-DOTKA-verzonden.txt`.
 - Wacht de door Provincie Zuid-Holland en CBS gecontroleerde versie van het
   vegetatiemeetnet af. Ingrid de Vries verwachtte de nieuwe levering met
   niet meer actieve PQ's rond eind 2026; dit is geen bevestigde leverdatum.
