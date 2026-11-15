@@ -962,6 +962,13 @@ drempelvarianten en leave-one-species-out-minimumstatus zijn vastgelegd.
 
 ## Externe ecologiebronnen na fase 1 en 2
 
+- [ ] **Lansu model 1 — bladrijke luchtfoto’s 2026.** Controleer bij PDOK
+  en Beeldmateriaal Nederland of de definitieve zomerproducten op 25 cm
+  voor zowel RGB als CIR over alle 55 Meijendel-kavels zijn gepubliceerd.
+  Stand 15 november 2026: PDOK vermeldt voor de zomer alleen Quick Ortho
+  RGB, zonder definitieve 25 cm RGB- of CIR-laag. Op T7 staan twee
+  bladloze 2026-uitsneden. Bewaar bij beschikbaarheid de twee
+  definitieve beeldproducten per opnamejaar met opnamedata, bron en SHA-256.
 - Wacht de door Provincie Zuid-Holland en CBS gecontroleerde versie van het
   vegetatiemeetnet af. Ingrid de Vries verwachtte de nieuwe levering met
   niet meer actieve PQ's rond eind 2026; dit is geen bevestigde leverdatum.
