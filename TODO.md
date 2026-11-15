@@ -770,19 +770,10 @@ De lokale technische vervolgcontrole is afgerond. Websitekoppelingen zijn in een
      niet-vogelwaarnemingen uit 1950-2025 kan worden geleverd.
   Vraag niet opnieuw naar informatie die al in het openbare NDFF-woordenboek
   of de ontvangen bestanden staat.
-- Historische status: Ton Lansink heeft op 13 september 2026 zeven
-  bronorganisaties aangeschreven en deze verzoeken op 14 september 2026 weer
-  ingetrokken. De Vlinderstichting, Zoogdiervereniging, RAVON, FLORON, BLWG,
-  Stichting ANEMOON en Staatsbosbeheer hebben daarom geen openstaand verzoek
-  meer van dit project. Stuur geen herinnering of vervolgbericht. De eerder
-  geplande controle op 24 september 2026 is vervallen.
-- Actuele status op 25 september 2026: alle bronorganisaties waarvoor na de
-  verdere analyse nog een gerichte aanvullende gegevensvraag resteerde, zijn
-  opnieuw aangeschreven. De Vlinderstichting verwacht de gevraagde gegevens
-  in de loop van de week van 28 september 2026 te kunnen leveren. De overige
-  organisaties hebben nog niet inhoudelijk gereageerd. Behandel alle verzoeken
-  als verzonden en wacht op antwoord; controleer vóór iedere herinnering of
-  vervolgvraag eerst de actuele correspondentie en reeds ontvangen bestanden.
+- Volg de opnieuw verzonden verzoeken per ontvanger onder
+  [Open informatieverzoeken](#open-informatieverzoeken). De ingetrokken
+  verzoeken van 13 september 2026 zijn afgesloten.
+
 - Als na het NDFF-antwoord toch broninformatie nodig blijft, bepaal dan per
   protocol de kleinst noodzakelijke opvraag. Vraag alleen om de concrete
   sleutels of velden die niet uit de database, de NDFF-leveringen of officiële
@@ -959,6 +950,33 @@ drempelvarianten en leave-one-species-out-minimumstatus zijn vastgelegd.
 - Smoke-tests blijven uitbreiden voor ledenroutes, archief, CMS, dashboard, SQL, Shiny en host-aliases.
 - Voorkom dat dashboard, Shiny of grafiekoutputs divergeren van dezelfde dashboardbron.
 - Rond wijzigingen af met relevante verificatie en commit ze daarna standaard in Git.
+
+## Open informatieverzoeken
+
+Registreer bij verzending elk uitgaand Meijendel-informatieverzoek per persoon
+of organisatie, met onderwerp, datum en open actie. Zet een persoonlijke
+herinnering na 28 dagen in de oranje Thunderbird-agenda **Calendar**, of op de
+met Ton afgesproken datum. Controleer op die datum de verzonden mail, reacties
+en leveringen. Werk bij een vervolgbericht de bestaande taak en herinnering
+bij. Verwijder afgeronde opvolging uit deze lijst. Ton beslist over verzending
+van rappels.
+
+Stand 15 november 2026. Alle data hieronder vallen in 2026. De opvolging staat
+in Thunderbird **Calendar**.
+
+| Persoon of organisatie | Laatste uitgaande mail | Open opvolging |
+| --- | --- | --- |
+| Zoogdiervereniging / Petra Verburg | 2 oktober | **16 november.** Controleer of na de toegezonden gebiedsgrens en voorwaarden meetgegevens over zoogdieren en vleermuizen zijn ontvangen. Beoordeel het rappel. |
+| Stichting ANEMOON | 21 oktober | **18 november.** Controleer antwoord of levering over de meetgegevens van weekdieren. |
+| De Vlinderstichting / Gerdien Bos | 28 oktober | **25 november.** Controleer antwoord over de bronstructuur van het verspreidingsonderzoek naar libellen. |
+| NDFF / Marie Bekker | 6 november | **4 december.** Controleer ticket 59072 op antwoord op de aanvullende gegevensvraag. |
+| RAVON / Rolf van Leeningen | 7 oktober | **7 december.** Rolf zoekt uit welke meetgegevens beschikbaar zijn. Controleer de stand en beoordeel het rappel. |
+| De Vlinderstichting / Tove van der Weerd | 12 november | **10 december.** Tove heeft het meetnetverzoek weer opgepakt. Controleer wat er voor vlinders en libellen beschikbaar is gekomen. |
+| Staatsbosbeheer / Alex Zuijdervliet | 12 november | **10 december.** Controleer of de collega die in december naar de oorspronkelijke florakartering uit 2002–2008 kijkt, al heeft gereageerd. |
+| NIOZ / Eva Lansu | 13 november | **11 december.** Controleer de reactie over het getrainde classificatiemodel uit *Squeezed Sands*. |
+| Haags Gemeentearchief / Michael Mellema | 13 november | **11 december.** Controleer of de stukken uit collectie 0395-01 beschikbaar zijn. Op het rappel over de aanvraag van 13 oktober kwam een automatische ontvangstbevestiging. |
+| Sovon / Lara Marx | 14 november | **12 december.** Lara reageerde 13 november met een kaart en vragen. Controleer of de op 14 november bevestigde keuze voor kavels 71 en 72 is verwerkt. |
+| DOTKA | 15 november | **30 november** (bestaande afspraak) en **13 december** (vier weken). Controleer antwoord over dekking in 1966 en 1983 en beschikbaarstelling voor 2028. |
 
 ## Externe ecologiebronnen na fase 1 en 2
 
