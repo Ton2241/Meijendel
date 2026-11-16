@@ -59,6 +59,26 @@ class IntegralReleaseTests(unittest.TestCase):
   with tempfile.TemporaryDirectory() as d:
    p=self.candidate(Path(d),'A');v=json.loads((p/'release.json').read_text());v.update(mode='production',official_data_validated=True,components=['website','dashboard','shiny','mysql','cms'],historical_cache_rehearsal=True);(p/'release.json').write_text(json.dumps(v))
    with self.assertRaisesRegex(ValueError,'Proefonderdeel'):m.verify(p)
+ def test_production_rejects_2025_even_if_marked_validated(self):
+  with tempfile.TemporaryDirectory() as directory:
+   package = self.candidate(Path(directory), 'historical')
+   self.assertEqual(m.verify(package)['year_to'], 2025)
+   manifest_path = package / 'release.json'
+   manifest = json.loads(manifest_path.read_text())
+   manifest.update(mode='production', official_data_validated=True,
+                   components=['website', 'dashboard', 'shiny', 'mysql', 'cms'])
+   manifest_path.write_text(json.dumps(manifest))
+   with self.assertRaisesRegex(ValueError, 'gegevens tot minstens 2026'):
+    m.verify(package)
+   target = Path(directory) / 'blocked'
+   with self.assertRaisesRegex(ValueError, 'gegevens tot minstens 2026'):
+    m.build_package(manifest, target)
+   self.assertFalse(target.exists())
+   manifest.update(year_to=2026, official_data_validated=False)
+   manifest_path.write_text(json.dumps(manifest))
+   with self.assertRaisesRegex(ValueError, 'mist validatie'):
+    m.verify(package)
+
  def test_first_failed_activation_removes_current(self):
   with tempfile.TemporaryDirectory() as d:
    root=Path(d);a=self.candidate(root,'A');calls=[]

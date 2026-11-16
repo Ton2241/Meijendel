@@ -35,12 +35,19 @@ def safe_path(root,relative):
 def atomic_json(path,value):
     path=Path(path);tmp=path.with_name(path.name+'.next');tmp.write_text(json.dumps(value,indent=2)+'\n');tmp.replace(path)
 
+def require_production_data_year(manifest):
+    year = manifest.get('year_to')
+    if type(year) is not int or year < 2026:
+        raise ValueError('Integrale productieactualisering vereist gevalideerde gegevens tot minstens 2026')
+
+
 def verify(package):
     package=Path(package).resolve();m=json.loads((package/'release.json').read_text())
     if m.get('schema')!='meijendel-integral-release-v1' or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]{0,99}',m.get('release_id','')):raise ValueError('Ongeldig releasecontract')
     if not m.get('files') or m.get('year_to',0)<m.get('year_from',9999):raise ValueError('Onvolledig releasecontract')
     if m.get('mode')=='production':
         if m.get('historical_cache_rehearsal') or any('999_local_' in x for x in m.get('cms',{}).get('migrations',[])):raise ValueError('Proefonderdeel in productierelease')
+        require_production_data_year(m)
         if m.get('official_data_validated') is not True or set(m.get('components',[]))!={'website','dashboard','shiny','mysql','cms'}:raise ValueError('Productierelease mist validatie of component')
     elif m.get('mode')!='local_rehearsal':raise ValueError('Onbekende releasemodus')
     for relative,expected in m['files'].items():
@@ -159,6 +166,8 @@ def build_package(recipe,target):
     """Assemble existing validated products, never recalculate or relabel data."""
     import shutil
     target=Path(target)
+    if recipe['mode'] == 'production':
+        require_production_data_year(recipe)
     if recipe['mode']=='local_rehearsal':
         # Imported lazily: the shared coordinator also runs on the production VPS.
         import sys

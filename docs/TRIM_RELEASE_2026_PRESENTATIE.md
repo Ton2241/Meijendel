@@ -56,6 +56,40 @@ De routes hieronder verwijzen naar `website/vwg-m-linux-app/app/main.py`. Contro
 | Shiny TRIM → Rode/Oranje Lijst en Habitatgroep | Ververs MSI, trendtabellen, soortenlijsten en downloads. | Toon de eigen status van de groep. |
 | Shiny LAMBDA, NMDS, GEE en GLMM | Controleer jaarbereik en herbereken de onderdelen die de broedvogelbron of standaardselectie gebruiken. | Toon onzekerheid volgens de eigen methode en selectie van ieder model. |
 
+## Beoordeling per schatter voor B05
+
+Leg in het bronmanifest de ontvangen versie en SHA-256, het importbewijs,
+de jaren, soort- en kavel-ID’s en de aantallen geteld, nul, ontbrekend en
+afgekeurd vast. Koppel iedere beslissing aan die bron en het run-ID.
+Gebruik per resultaat een sleutel met soort of groep, variant, selectie,
+periode of jaar, maat en eenheid. Behoud ook rijen zonder schatting of band.
+
+| Schatter | Vast te leggen beoordeling |
+|---|---|
+| Eigen periodetrend | Modeljaren, getelde en aangevulde jaren, nuljaartotalen, kavelsteun en verandering bij weglaten van een dominante kavel. |
+| Lange begin/eindmaat | Begin-, eind- en brugvensters, overlappende kavels, gevoeligheid voor vensters, nulbeleid en dominante kavels. |
+| Puntgewijze jaarindex | Jaarstatus, referentiejaar, waarnemingssteun en uitval per jaar. Laat gaten open en vermeld het puntgewijze karakter van de band. |
+| Groepsmaat | Soorten, gewichten en variant, eigen groepsberekening, invloed van dominante soorten en kavels en uitval per periode. |
+
+Registreer per interval ook de geplande en geldige trekkingen, uitvalreden,
+methode, grenzen, gevoeligheidsuitkomsten en de interpretatie die de
+beoordelaar vrijgeeft. Laat de formele grenzen leeg zolang een besluit
+ontbreekt. Leg bij een ruimtelijke steekproef de selectie en bronversie,
+kavel-ID, CRS, geometrievaliditeit en de behandeling vast van punten op de
+grens en kavels die de selectiegrens kruisen.
+
+De pakketbouwer en pakketverificatie blokkeren een integrale
+productieactualisering met gegevens die vóór 2026 eindigen. De
+historische kandidaat kan als lokale proef worden opgebouwd. De
+jaargrenscontrole vervangt de officiële bronvalidatie en de beoordeling
+van afzonderlijke intervallen niet.
+
+Op 16 november 2026 eindigden de lokale tabellen `territoria` en
+`dagbezoeken_bmp` beide in 2025. Beide bevatten nul regels uit 2026.
+De proefkandidaat uit de bewaarde bron 1958–2025 behoudt alle 156
+soorten, 312 perioden en 10.608 jaarposities. De banden in deze
+kandidaat houden hun diagnostische status.
+
 ## Lokale vrijgaveproef
 
 1. Valideer de officiële levering en leg herkomst, import, dekking en aantallen vast volgens het draaiboek. Maak daarna de overeengekomen verse dump en cache.
