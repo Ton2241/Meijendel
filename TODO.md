@@ -986,13 +986,25 @@ in iCloud **Agenda**.
 
 ## Externe ecologiebronnen na fase 1 en 2
 
-- [ ] **De Vlinderstichting — meetnetlevering toetsen.** Vergelijk de 8.714
-  dagvlinderjaarcijfers (17 telobjecten, 57 soortcodes, 1990–2026) en de twee
-  routejaaroverzichten met de gebiedsgrens en bestaande NDFF-reconstructie.
-  Beoordeel nulwaarden, telinspanning, soortcodes, overlap en gebruiksrechten.
-  Tove van der Weerd komt in de week van 16 november terug op de
-  soortspecifieke nachtvlinder- en libellengegevens. Zie het
+- [x] **De Vlinderstichting — ruimtelijke en eerste trendtoets, 16 november
+  2026.** De routekaart en 8.714 dagvlinderjaarcijfers zijn vergeleken met de
+  actuele Meijendel-grens en de elf NDFF-routefamilies. Elf van de zeventien
+  telobjecten liggen binnen het basisgebied; negen zijn kandidaten voor
+  routegebonden trends tot en met 2025. Er is niets geïmporteerd. Zie het
   [bronregister](docs/MEIJENDEL_BRONREGISTER.md).
+- [ ] **De Vlinderstichting — resterende toetsen vóór soorttrends of import.**
+  Bevestig voor Vallei Meijendel en Bierlap dat de slechts als punten getoonde
+  telobjecten daadwerkelijk geheel binnen het basisgebied zijn gevolgd.
+  Bepaal met de al ontvangen documentatie of aanvullende bronuitleg de
+  betekenis van de 57 soortcodes voor 36 Nederlandse soortnamen; voorkom
+  optelling van parallelle codes (2.745 telobject-jaar-naamcombinaties).
+  Beoordeel de 426 jaarcijferregels met één of twee relevante tellingen op
+  de negen Meijendel-trendkandidaten, bevestig de routemapping met NDFF
+  voor de aannemelijke gevallen en leg het voorkomen van dubbeltelling vast.
+  Controleer gebruiksrechten vóór extern gebruik. Lege combinaties zijn
+  onbekend; neem 2026 pas op na bevestiging dat dit teljaar definitief is.
+  Tove komt in de week van 16 november terug op soortspecifieke nachtvlinder-
+  en libellengegevens.
 
 - [ ] **Dunea — historische luchtfoto’s en vegetatiekaarten.** Wacht op
   antwoord van Maarten Werink op Tons mail van 26 oktober 2026. Harrie van
