@@ -88,7 +88,9 @@ Op 16 november 2026 eindigden de lokale tabellen `territoria` en
 `dagbezoeken_bmp` beide in 2025. Beide bevatten nul regels uit 2026.
 De proefkandidaat uit de bewaarde bron 1958–2025 behoudt alle 156
 soorten, 312 perioden en 10.608 jaarposities. De banden in deze
-kandidaat houden hun diagnostische status.
+kandidaat houden hun diagnostische status. Ton heeft bevestigd dat de
+definitieve SOVON-BMP-levering voor 2026 nog niet beschikbaar is. Het
+huidige bestand is een werkversie en blijft buiten de levende database.
 
 ## Lokale vrijgaveproef
 

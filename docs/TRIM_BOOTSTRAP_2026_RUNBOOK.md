@@ -31,9 +31,13 @@ De [aansluitnotitie](TRIM_RELEASE_2026_AANSLUITING.md) beschrijft de uitgevoerde
 
 ## Harde volgorde
 
-1. Importeer en valideer eerst alle cijfers over broedseizoen 2026 in de
-   levende lokale MySQL-database. Controleer bronstatus, echte nullen, lege
-   cellen, formele afkeuringen, plotdekking en soortidentiteit.
+1. Gebruik uitsluitend de definitieve SOVON-BMP-levering voor broedseizoen
+   2026 voor deze stap. Volgens Ton is die op 16 november 2026 nog niet
+   beschikbaar. Het huidige bestand is een werkversie en blijft buiten de
+   levende MySQL-database. Controleer bij de definitieve levering herkomst,
+   bronstatus, echte nullen, lege cellen, formele afkeuringen, plotdekking en
+   soortidentiteit. Leg de aanvaarding vast vóór import en controleer de
+   geïmporteerde aantallen tegen het bronmanifest.
 2. Vraag afzonderlijk akkoord voor een verse dump en cache uit die levende
    database. Gebruik geen bestaande dump of productieback-up als bron.
 3. Draai bron-/uitvoercontract, clusterlineage en brugvensteraudit opnieuw.
