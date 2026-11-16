@@ -974,7 +974,7 @@ in iCloud **Agenda**.
 
 | Persoon of organisatie | Laatste uitgaande mail | Open opvolging |
 | --- | --- | --- |
-| Zodion / Petra Verburg | 16 november | **14 december om 09.00 uur.** Controleer of Petra heeft gereageerd op het rappel over de meetgegevens van zoogdieren en vleermuizen. Het rappel is verzonden op 16 november. |
+| Zodion / Petra Verburg | 16 november | Het rappel over de meetgegevens van zoogdieren en vleermuizen is op 16 november verstuurd. Petra stuurde diezelfde dag een automatisch afwezigheidsbericht. **14 december om 09.00 uur.** Ton controleert eerst of Petra inmiddels inhoudelijk heeft gereageerd. |
 | Stichting ANEMOON | 21 oktober | **18 november.** Controleer antwoord of levering over de meetgegevens van weekdieren. |
 | De Vlinderstichting / Gerdien Bos | 28 oktober | **25 november.** Controleer antwoord over de bronstructuur van het verspreidingsonderzoek naar libellen. |
 | NDFF / Marie Bekker | 6 november | **4 december.** Controleer ticket 59072 op antwoord op de aanvullende gegevensvraag. |
