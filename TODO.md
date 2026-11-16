@@ -995,9 +995,13 @@ in iCloud **Agenda**.
 - [ ] **De Vlinderstichting — resterende toetsen vóór soorttrends of import.**
   Bevestig voor Vallei Meijendel en Bierlap dat de slechts als punten getoonde
   telobjecten daadwerkelijk geheel binnen het basisgebied zijn gevolgd.
-  Bepaal met de al ontvangen documentatie of aanvullende bronuitleg de
-  betekenis van de 57 soortcodes voor 36 Nederlandse soortnamen; voorkom
-  optelling van parallelle codes (2.745 telobject-jaar-naamcombinaties).
+  De soortidentiteit van alle 57 codes is eenduidig vastgesteld via 36
+  basiscodes en 36 Nederlandse namen; de koppeltabel staat op T7. Voor de
+  17 soorten met meerdere codes blijft de precieze betekenis van iedere
+  codevariant open. Analyseer voorlopig per broncode en tel de 2.745
+  telobject-jaar-soortcombinaties met parallelle codes niet automatisch op.
+  Zoek pas bij een analyse die één soortjaarcijfer vereist naar een
+  aantoonbare codebetekenis; leg dan de kleinste resterende vraag voor.
   Beoordeel de 426 jaarcijferregels met één of twee relevante tellingen op
   de negen Meijendel-trendkandidaten, bevestig de routemapping met NDFF
   voor de aannemelijke gevallen en leg het voorkomen van dubbeltelling vast.
