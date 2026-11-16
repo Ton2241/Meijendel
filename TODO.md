@@ -979,14 +979,20 @@ in iCloud **Agenda**.
 | De Vlinderstichting / Gerdien Bos | 28 oktober | **25 november.** Controleer antwoord over de bronstructuur van het verspreidingsonderzoek naar libellen. |
 | NDFF / Marie Bekker | 6 november | **4 december.** Controleer ticket 59072 op antwoord op de aanvullende gegevensvraag. |
 | RAVON / Rolf van Leeningen | 7 oktober | **7 december.** Rolf zoekt uit welke meetgegevens beschikbaar zijn. Controleer de stand en beoordeel het rappel. |
-| De Vlinderstichting / Tove van der Weerd | 12 november | **10 december.** Tove heeft het meetnetverzoek weer opgepakt. Controleer wat er voor vlinders en libellen beschikbaar is gekomen. |
 | Staatsbosbeheer / Alex Zuijdervliet | 12 november | **10 december.** Controleer of de collega die in december naar de oorspronkelijke florakartering uit 2002–2008 kijkt, al heeft gereageerd. |
 | NIOZ / Eva Lansu | 13 november | **11 december.** Controleer de reactie over het getrainde classificatiemodel uit *Squeezed Sands*. |
 | Haags Gemeentearchief / Michael Mellema | 13 november | **11 december.** Controleer of de stukken uit collectie 0395-01 beschikbaar zijn. Op het rappel over de aanvraag van 13 oktober kwam een automatische ontvangstbevestiging. |
 | Sovon / Lara Marx | 14 november | **12 december.** Lara reageerde 13 november met een kaart en vragen. Controleer of de op 14 november bevestigde keuze voor kavels 71 en 72 is verwerkt. |
-| DOTKA | 15 november | **30 november** (bestaande afspraak) en **13 december** (vier weken). Controleer antwoord over dekking in 1966 en 1983 en beschikbaarstelling voor 2028. |
 
 ## Externe ecologiebronnen na fase 1 en 2
+
+- [ ] **De Vlinderstichting — meetnetlevering toetsen.** Vergelijk de 8.714
+  dagvlinderjaarcijfers (17 telobjecten, 57 soortcodes, 1990–2026) en de twee
+  routejaaroverzichten met de gebiedsgrens en bestaande NDFF-reconstructie.
+  Beoordeel nulwaarden, telinspanning, soortcodes, overlap en gebruiksrechten.
+  Tove van der Weerd komt in de week van 16 november terug op de
+  soortspecifieke nachtvlinder- en libellengegevens. Zie het
+  [bronregister](docs/MEIJENDEL_BRONREGISTER.md).
 
 - [ ] **Dunea — historische luchtfoto’s en vegetatiekaarten.** Wacht op
   antwoord van Maarten Werink op Tons mail van 26 oktober 2026. Harrie van
