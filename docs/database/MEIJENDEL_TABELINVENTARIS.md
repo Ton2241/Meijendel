@@ -1,6 +1,6 @@
 # Meijendel ingedeeld naar soortgroepen
 
-Tabelinventaris en voorstel voor herinrichting. Stand van de controles: 16 oktober 2026. De aantallen volgen de levende lokale database. Voor HNS zijn v1 en v2 beide opgenomen: v2 is actueel; v1 blijft als auditspoor bewaard.
+Tabelinventaris en voorstel voor herinrichting. Nulmeting: 26 september 2026. Voorstel en controles: 16 oktober 2026. Latere aanvullingen hebben een eigen controledatum. Voor HNS is v2 de gebruikte versie en blijft v1 als auditspoor bewaard.
 
 **Historische inventaris.** De tabellen en aantallen hieronder beschrijven de
 nulmeting van 26 september 2026 en het voorstel dat op 16 oktober is

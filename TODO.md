@@ -170,6 +170,14 @@ De lokale technische vervolgcontrole is afgerond. Websitekoppelingen zijn in een
   PQ; twee nabijheidsgevallen vragen afzonderlijk bronbewijs.
   De fysieke verplaatsing, aangepaste import-/leesroutes en
   herstelproef zijn nog niet uitgevoerd.
+- Toets bij het PQ-migratiebesluit de uitkomst van de alleen-lezen controle
+  van 8 november in werkboom `pq-restmigratie-20261108`, commit `61a0e968`.
+  Voor de 90.992 openbare NDFF-IDs uit 1981–2025 verwezen 27 overige
+  foreign-keykolommen niet naar deze selectie. Algemene protocol-, ruimte-
+  en soortgroepkoppelingen verwezen er wel naar. Behoud daarom register-ID
+  en bestaande bronrelaties. Controleer de afhankelijkheden opnieuw voor
+  uitvoering. Het besluit van 8 november laat de volledige bronregels op
+  hun bronplek en verplaatst de PQ-beoordeling naar `pq_*`.
 - Soortgroeptabellen: sinds het aangescherpte besluit van 8 november komen
   alleen gegevens uit bruikbare herhaalde meetreeksen in aanmerking. Gebruik
   eerst een bestaande passende soortgroeptabel; de hoofdnaam is de

@@ -209,7 +209,7 @@ Gereed:
 
 - Gegenereerde R- en Sass-bestanden onder `app_cache/` worden niet meer door Git gevolgd en zijn projectbreed genegeerd.
 - De Meijendel-deploypreflight controleert na de lokale Shiny/dashboard-pariteitscontrole opnieuw dat de werkboom schoon is.
-- Generatie, archivering en deploy controleren fail-fast dat de lokale MySQL-server, `mysql` en `mysqldump` exact 9.7.1 zijn; de deploypreflight vereist daarnaast exact 9.7.1 op de VPS.
+- Generatie, archivering en deploy vereisen voor de lokale MySQL-server, `mysql` en `mysqldump` exact de versie uit [de versieguard](scripts/check_mysql_version.sh). De deploypreflight controleert ook de VPS-runtime.
 - Projectbrede begin- en eindcontrole vereist schone werkbomen, actuele upstreams en opruiming van aantoonbaar verouderde worktreeverwijzingen in alle drie repositories.
 - De actuele VPS-inrichting en versies zijn vastgelegd in
   `docs/vps_productie.md`. De gestopte MySQL-9.7.1-proefcontainer, tijdelijke

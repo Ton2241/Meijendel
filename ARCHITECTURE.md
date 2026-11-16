@@ -28,7 +28,7 @@ Dit project bestaat uit twee nauw gekoppelde repositories en een VPS-productieom
 
 ## Databases
 
-- Lokale live Meijendel-database op iMac: MySQL 9.7.1. De MySQL-container op de VPS draait eveneens exact 9.7.1.
+- De vereiste lokale MySQL-versie staat in [de versieguard](scripts/check_mysql_version.sh). De actieve VPS-versie staat in de centrale [VPS-productiestatus](../VWG_Project/VPS_PRODUCTIESTATUS.md).
 - De lokale server is de schrijfbron. De VPS wordt uitsluitend via de gecontroleerde dump/import-deploy bijgewerkt; er is geen tweerichtingsreplicatie.
 - Lokale MySQL is bron voor historische/controlerende gegevens zoals `tellers`, `plots` en `plot_jaar_teller`. `tellers` bevat uitsluitend de pseudonieme technische sleutel `id` en de unieke `tellercode`; persoonsgegevens en weergavenamen komen alleen uit de afgeschermde PostgreSQL-ledenadministratie.
 - VPS PostgreSQL is operationele bron voor ledenadministratie, CMS, nieuws, archief, kavelbeheer, auditlogging en back-upmetadata.

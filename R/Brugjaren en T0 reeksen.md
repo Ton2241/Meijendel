@@ -475,10 +475,10 @@ Op basis van de huidige repo-inhoud is een eerste selectie doorgerekend voor all
 
 Gebruikte bronbestanden:
 
-- [meijendel.sql](/Users/ton/Documents/GitHub/Meijendel/meijendel.sql)
-- [analysebasis_plot_jaar.csv](/Users/ton/Documents/GitHub/Meijendel/trim/soorten/analysebasis_plot_jaar.csv)
-- [groepssamenstelling_100tal.csv](/Users/ton/Documents/GitHub/Meijendel/trim_msi_evg/groepssamenstelling_100tal.csv)
-- [evg_selctie_T0soort_T0msi.csv](/Users/ton/Documents/GitHub/Meijendel/R/evg_selctie_T0soort_T0msi.csv)
+- [meijendel.sql](../meijendel.sql)
+- [analysebasis_plot_jaar.csv](../trim/soorten/analysebasis_plot_jaar.csv)
+- [groepssamenstelling_100tal.csv](../trim_msi_evg/groepssamenstelling_100tal.csv)
+- [evg_selctie_T0soort_T0msi.csv](evg_selctie_T0soort_T0msi.csv)
 
 ### Inleidende aannames bij deze doorrekening
 
@@ -570,7 +570,7 @@ Dat ondersteunt de beslislijn uit dit document:
 
 Het volledige overzicht per soort en per ecologische groep staat in:
 
-- [evg_selctie_T0soort_T0msi.csv](/Users/ton/Documents/GitHub/Meijendel/R/evg_selctie_T0soort_T0msi.csv)
+- [evg_selctie_T0soort_T0msi.csv](evg_selctie_T0soort_T0msi.csv)
 
 Dat bestand bevat per soort onder meer:
 
@@ -683,7 +683,7 @@ Alle aantallen hieronder gaan alleen over soorten die technisch al `t0_msi = TRU
 
 ### Hoe dit in het CSV-bestand is verwerkt
 
-In [evg_selctie_T0soort_T0msi.csv](/Users/ton/Documents/GitHub/Meijendel/R/evg_selctie_T0soort_T0msi.csv) zijn drie extra kolommen toegevoegd:
+In [evg_selctie_T0soort_T0msi.csv](evg_selctie_T0soort_T0msi.csv) zijn drie extra kolommen toegevoegd:
 
 - `ecologische_beoordeling_t0_msi`
 - `ecologische_toelichting_t0_msi`
@@ -705,11 +705,11 @@ De praktische beslislijn wordt daarmee:
 2. ecologische review per soort binnen de EVG-groep
 3. pas daarna opname in de voorlopige `T0-MSI`-eindselectie
 
-[1]:	/Users/ton/Documents/GitHub/Meijendel/R/trim_soorten_en_msi_evg.R:480
-[2]:	/Users/ton/Documents/GitHub/Meijendel/R/trim_soorten_en_msi_evg.R:502
-[3]:	/Users/ton/Documents/GitHub/Meijendel/R/analyse_ecologische_groepen.R:310
-[4]:	/Users/ton/Documents/GitHub/Meijendel/R/trim_soorten_en_msi_evg.R:849
-[5]:	/Users/ton/Documents/GitHub/Meijendel/R/trim_soorten_en_msi_evg.R:667
-[6]:	/Users/ton/Documents/GitHub/Meijendel/R/analyse_ecologische_groepen.R:646
-[7]:	/Users/ton/Documents/GitHub/Meijendel/bmp_meijendel_index.html:672
-[8]:	/Users/ton/Documents/GitHub/Meijendel/bmp_meijendel_index.html:890
+[1]:	trim_soorten_en_msi_evg.R#L480
+[2]:	trim_soorten_en_msi_evg.R#L502
+[3]:	analyse_ecologische_groepen.R#L310
+[4]:	trim_soorten_en_msi_evg.R#L849
+[5]:	trim_soorten_en_msi_evg.R#L667
+[6]:	analyse_ecologische_groepen.R#L646
+[7]:	../bmp_meijendel_index.html#L672
+[8]:	../bmp_meijendel_index.html#L890
