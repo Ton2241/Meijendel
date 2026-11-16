@@ -988,6 +988,13 @@ in iCloud **Agenda**.
 
 ## Externe ecologiebronnen na fase 1 en 2
 
+- [ ] **Dunea — historische luchtfoto’s en vegetatiekaarten.** Wacht op
+  antwoord van Maarten Werink op Tons mail van 26 oktober 2026. Harrie van
+  der Hagen verwees het besluit over verstrekking naar Maarten. De
+  Thunderbird-controle op 16 november vond geen antwoord van Maarten op de
+  aanvraag en geen levering. Controleer op maandag 23 november om 09.00 uur
+  opnieuw de correspondentie en eventuele levering (Thunderbird, Calendar).
+  Bepaal bij uitblijven van een reactie met Ton of een rappel passend is.
 - [ ] **Provincie Zuid-Holland — originele luchtfoto’s van Meijendel.** Wacht
   op antwoord op Tons e-mail aan Team Geo-informatie van 15 november 2026
   over de oorspronkelijke opnamen van heel Meijendel uit 2003 en eventuele
