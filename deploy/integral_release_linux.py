@@ -425,7 +425,7 @@ class LinuxHooks:
   unit=Path('/etc/systemd/system')/(self.s['units']['dashboard']+'.service')
   unit.write_text('[Unit]\nDescription=Meijendel integral dashboard\nAfter=network.target\n[Service]\nUser=www-data\nGroup=www-data\nExecStart=/usr/bin/python3 '+str(Path(__file__).resolve())+' _dashboard '+str(self.root)+' 18196\nRestart=always\n[Install]\nWantedBy=multi-user.target\n');os.chmod(unit,0o644)
   backup=Path('/etc/systemd/system/vwg-m-baremetal-backup.service.d/50-integral.conf');backup.parent.mkdir(parents=True,exist_ok=True)
-  backup.write_text('[Service]\nExecStart=\nExecStart=/usr/bin/python3 '+str(INSTALL/'integral_backup.py')+'\n');os.chmod(backup,0o644)
+  backup.write_text('[Service]\nExecStart=\nExecStart=/usr/bin/python3 '+str(INSTALL/'integral_backup.py')+' --wait-for-deploy-lock\n');os.chmod(backup,0o644)
   self.logged(['systemctl','daemon-reload']);self.logged(['systemctl','enable',self.s['units']['dashboard']])
   env=self.private/'website.env';drop=Path('/etc/systemd/system/vwg-m-linux-app.service.d/50-integral.conf');drop.parent.mkdir(parents=True,exist_ok=True)
   text='[Service]\nWorkingDirectory='+str(package/'website')+'\nEnvironmentFile='+str(env)+'\nExecStart=\nExecStart=/srv/vwgm/vwg-m-linux-app/.venv/bin/python '+str(Path(__file__).resolve())+' _website '+str(package)+'\n'
