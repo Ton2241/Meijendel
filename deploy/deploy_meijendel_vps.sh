@@ -49,6 +49,7 @@ DEPLOYED_COMMIT=""
 SYNC_MODE="dry"
 DELETE_COUNT=0
 CANDIDATE_STAGED=0
+GATEWAY_APPLY_PENDING=0
 
 usage() {
   cat <<'USAGE'
@@ -93,13 +94,21 @@ release_lock() {
   fi
 }
 cleanup() {
+  trap '' INT TERM HUP
   rm -f "$SQL_DEPLOY" "$DASHBOARD_DATA_LOCAL" "$DASHBOARD_MANIFEST_LOCAL"
+  if [[ "$GATEWAY_APPLY_PENDING" -eq 1 ]]; then
+    printf 'BLOKKADE: uitrol niet volledig bevestigd. Controleer de gatewayjob en productiestand. Kandidaat en deploylock blijven staan: %s\n' "$GLOBAL_LOCK" >&2
+    return
+  fi
   if [[ "$CANDIDATE_STAGED" -eq 1 ]]; then
     remote "rm -f '$CANDIDATE_FILE'" || true
   fi
   release_lock
 }
-trap cleanup EXIT INT TERM
+trap cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
+trap 'exit 129' HUP
 
 while (($#)); do
   case "$1" in
@@ -472,6 +481,8 @@ CANDIDATE_STAGED=1
 
 log "Maak back-up, importeer MySQL, herstart Shiny en controleer de release via de gesloten gateway"
 set +e
+# A disconnected client does not stop the detached gateway job.
+GATEWAY_APPLY_PENDING=1
 gateway_apply="$("$GATEWAY_RUNNER" apply "$LOCAL_COMMIT")"
 gateway_apply_rc=$?
 set -e
@@ -490,5 +501,6 @@ canonical_data_smoke
 log "Volledige productiecontrole na deploy"
 production_smoke
 write_state "$LOCAL_COMMIT"
+GATEWAY_APPLY_PENDING=0
 log "Productiecommit geregistreerd: $LOCAL_COMMIT"
 log "Deploy afgerond"

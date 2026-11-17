@@ -140,10 +140,14 @@ onder `/srv/vwgm/deploy-state/gateway-jobs/<operation-id>` en haalt log en
 exitstatus pas na voltooiing apart op. `preflight` is standaard begrensd
 op 300 seconden (toegestaan 60–900), `apply` op 10.800 seconden
 (1.800–14.400) en de TERM→KILL-nalooptijd op 3.600 seconden (600–7.200).
-Bij een verbroken verbinding blijft de 32-teken-operatie-id staan; hervat exact
-die job met `GATEWAY_OPERATION_ID=<id>`. Start nooit op goed geluk een
-tweede import. Timeout na begonnen import is alleen hersteld als de log zowel
-`ROLLBACK|` als `ROLLBACK_STATUS=ready` bevat.
+Bij een verbroken verbinding blijven kandidaat en `production.lock` staan.
+Haal voor de gemelde 32-teken-operatie-id de uitkomst van dezelfde gatewayjob
+op met `GATEWAY_OPERATION_ID=<id>` via `run_gateway_job_vps.sh`; de runner
+vraagt dan uitsluitend de bestaande job op. Controleer haar eindstatus en
+de productiestand voordat de beheerder de lock en kandidaat vrijgeeft. Timeout na begonnen
+import is alleen hersteld als de log zowel `ROLLBACK|` als
+`ROLLBACK_STATUS=ready` bevat. Normaal geeft het deployscript de lock pas
+vrij na de volledige nacontrole en de registratie van de productiecommit.
 
 De generatie- en archiveringsscripts maken daarnaast een afzonderlijke dump
 `meijendel_bronnen.sql`. Die bevat niet-geolokaliseerbare contextdatasets en de
@@ -796,3 +800,30 @@ Test met bestaande fixtures en hoofdlettergevoelige tijdelijke opslag. Maak geen
 nieuwe database-export of cache om alleen de bestandsnaam aan te passen. Bouw een
 nieuwe Linux-proefbundel op T7 na de definitieve broncommits; wijzig geen eerder
 vastgelegd pakket of receipt. Nieuwe proeven blijven afzonderlijk goedkeuringsplichtig.
+
+### Meijendel via de gedeelde VPS-wachtrij
+
+Bij actief beleid voert de afgeschermde ingang `meijendel-apply` uitsluitend
+een vooraf gecontroleerd en verzegeld pakket uit. Bereid dat pakket met
+`deploy/integral_gateway_client.py` en de bestaande integrale preflight
+voor. De bevoegde beheerroute plaatst het pakket vooraf in
+`/srv/vwgm/deploy-state/integral-inbox`. De roothelper verzegelt het onder
+`/var/lib/vwgm-integral/packages/<pakket-sha256>`. Deze stagingstap
+gebruikt dezelfde lock en verandert geen actieve release. Controleer vóór
+autorisatie dat beide door de preflight gemelde productiecommits voorouders
+zijn van de overeenkomstige kandidaatcommits.
+
+De aanroep `deploy/integral_gateway_client.py --prepared BESTAND --stage apply
+--yes` gebruikt `VWG_MANAGED_DEPLOY_TARGET` en `VWG_MANAGED_DEPLOY_SSH_KEY`
+samen. Via dat account wordt alleen de aanvraag met de exacte broncommit en
+pakket-SHA-256 verstuurd. Onder `production.lock` controleert de host het
+getekende akkoord voor operatie `meijendel-deploy` en die pakket-SHA-256.
+Daarna controleert hij opnieuw het ontvangstbewijs, de gekoppelde
+preflight, beide geregistreerde commits en de hashes van de releasebestanden,
+waaronder SQL, cache en dashboarduitvoer.
+
+Bij een onbevestigde fout nadat de wijzigende fase is gestart, houdt de host
+de lock vast. Beoordeel dan het integrale journaal, de actieve release en beide
+statusbestanden via de afzonderlijke noodtoegang. Een afgebroken SSH-sessie
+geeft geen toestemming om opnieuw toe te passen. Bij actief beleid stopt
+de klassieke schrijfroute en vraagt afzonderlijk herstel om de beheerroute.

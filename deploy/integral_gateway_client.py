@@ -47,6 +47,17 @@ def execute(prepared_file,stage,install=False,yes=False):
   if check_checkout(path)!=p['commits'][name]:raise ValueError('Broncommit veranderd sinds pakketbouw: '+name)
  if core.sha(p['archive'])!=p['sha256']:raise ValueError('Lokaal pakket gewijzigd')
  if stage in ('apply','rollback') and (p['intent']!='production' or not yes):raise ValueError('Productieactie vraagt een productiepak en --yes')
+ managed_target=os.getenv('VWG_MANAGED_DEPLOY_TARGET','')
+ managed_key=os.getenv('VWG_MANAGED_DEPLOY_SSH_KEY','')
+ if managed_target or managed_key:
+  if not managed_target or not managed_key or not Path(managed_key).is_file():
+   raise ValueError('Gebruik tegelijk de afgeschermde doelhost en deploysleutel')
+  if stage!='apply' or install:
+   raise ValueError('De afgeschermde aanvraag ondersteunt apply van een vooraf verzegeld pakket')
+  commit=p['commits']['Meijendel'];digest=p['sha256']
+  run(['/usr/bin/ssh','-T','-o','BatchMode=yes','-o','IdentitiesOnly=yes',
+       '-o','StrictHostKeyChecking=yes','-i',managed_key,'--',managed_target,f'meijendel-apply {commit} {digest}'])
+  return
  if install:
   if not os.isatty(0) or os.getenv('TERM_PROGRAM')!='Apple_Terminal':raise ValueError('Start installatie zelf in het standaard macOS Terminal-venster')
   env=os.environ|dict(VWG_M_DIR=str(website),MEIJENDEL_DIR=str(analysis))

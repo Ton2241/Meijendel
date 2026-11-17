@@ -5,6 +5,8 @@ import argparse,contextlib,hashlib,ipaddress,socket,http.server,importlib.util,j
 from pathlib import Path
 BASE=Path('/srv/vwgm');STATE=BASE/'deploy-state';CONTROL=Path('/var/lib/vwgm-integral');INSTALL=Path(__file__).resolve().parent
 spec=importlib.util.spec_from_file_location('integral_release',INSTALL/'integral_release.py');core=importlib.util.module_from_spec(spec);spec.loader.exec_module(core)
+QUEUE_POLICY=Path('/etc/vwgm/vps-queue-required')
+QUEUE_HELPER=Path('/usr/local/libexec/vwgm-admin/vps-queue.py')
 OBJECTS=('vogelstand_1924','website_species_mapping','website_plot_mapping','website_species_mapping_public','website_plot_mapping_public','website_species_territoria','website_species_trends','website_plot_year_totals','website_plot_species_totals')
 
 def root_directory(path,mode=0o751):
@@ -24,7 +26,8 @@ def guard_payload(m):
  if m.get('mysql')!={'source':source,'website_objects':'data/website_objects.sql','database':'Meijendel'}:raise ValueError('Onbekende SQL-binding')
  if not re.fullmatch(r'data/cache/[A-Za-z0-9_.-]+\.rds',m.get('cache',{}).get('root','')):raise ValueError('Onbekende cachebinding')
  if m.get('bootstrap',{}).get('root')!='www/outputs/bootstrap-presentatie-2026':raise ValueError('Onbekende bootstrapbinding')
- required=[source,source+'.manifest',m['cache']['root'],str(Path(m['cache']['root']).with_suffix('.manifest')),'website/app/main.py','shiny/shiny_meijendel/app.R','www/bmp_meijendel_index.html']
+ required=[source,source+'.manifest',m['cache']['root'],str(Path(m['cache']['root']).with_suffix('.manifest')),'website/app/main.py','shiny/shiny_meijendel/app.R','www/bmp_meijendel_index.html',
+           'www/bmp_meijendel_data.json','www/bmp_meijendel_data.json.manifest']
  if any(p not in m['files'] for p in required):raise ValueError('Niet gecontroleerde component')
  for relative in m.get('cms',{}).get('migrations',[]):
   if not re.fullmatch(r'sql/[0-9]{3}_[a-z0-9_]+\.sql',relative) or 'website/'+relative not in m['files']:raise ValueError('Niet gecontroleerde migratie')
@@ -496,8 +499,35 @@ def freeze(commit,digest):
 def global_lock():
  path=STATE/'production.lock'
  path.mkdir(mode=0o700)
- try:yield
- finally:path.rmdir()
+ mutation_started=False
+ def start_mutation():
+  nonlocal mutation_started
+  mutation_started=True
+ try:
+  yield start_mutation
+ except BaseException:
+  if mutation_started:
+   print('BLOKKADE: uitkomst Meijendel niet bevestigd; de productielock blijft staan.',file=sys.stderr)
+  else:
+   path.rmdir()
+  raise
+ else:
+  path.rmdir()
+
+
+def queue_stage(stage):
+ required=QUEUE_POLICY.exists() or QUEUE_POLICY.is_symlink()
+ if stage=='apply-queued':
+  secure_file(QUEUE_POLICY)
+  return 'apply',True
+ if required and stage!='preflight':
+  raise ValueError('Actief VPS-wachtrijbeleid vereist de begrensde Meijendel-ingang')
+ return stage,False
+
+
+def queue_check(mode,digest):
+ secure_file(QUEUE_HELPER)
+ run(['/usr/bin/python3','-I',QUEUE_HELPER,mode,'meijendel-deploy',digest])
 
 def make_readable(package):
  # This payload has ecological source/code only; private CMS/env/backups live elsewhere.
@@ -655,13 +685,17 @@ def phase_commits(stage,marker,receipt):
  return marker['production_commits'] if stage=='apply' else {n:receipt['commits'][n] for n in ('Meijendel','VWG_M')}
 
 
-def production_action(stage,commit,base,receipt,m):
+def check_production_release(stage,base,receipt,m):
  if receipt.get('intent')!='production' or receipt.get('canonical_export_validated') is not True or m['mode']!='production' or not m['official_data_validated']:raise ValueError('Geen expliciete gevalideerde productierelease')
+ secure_file(base/'preflight.json')
  marker=jsonfile(base/'preflight.json')
  if marker.get('commits')!=receipt['commits']:raise ValueError('Geen passende gecontroleerde preflight')
  expected_commits=phase_commits(stage,marker,receipt)
  for name,expected in expected_commits.items():
   if (STATE/(name+'.commit')).read_text().strip()!=expected:raise ValueError('Productiecommit past niet bij deze fase')
+
+def production_action(stage,commit,base,receipt,m):
+ check_production_release(stage,base,receipt,m)
  root=CONTROL/'production';config=root/'private/settings.json'
  s=jsonfile(config) if config.exists() else initialize_settings(commit,False);h=LinuxHooks(s)
  legacy_baseline(h)
@@ -670,8 +704,14 @@ def production_action(stage,commit,base,receipt,m):
   unknown=live-sql_objects(base/'payload'/core.sql_source(m))-set(OBJECTS)
   if unknown:raise ValueError('Niet-gedekte productieobjecten: '+','.join(sorted(unknown)))
   package=root/'releases'/m['release_id']
-  if not package.exists():
-   copy_payload(base/'payload',package);meta=jsonfile(package/'release.json');meta['source_commits']=receipt['commits'];meta['gateway_package_sha256']=jsonfile(base/'sealed.json')['sha256'];core.atomic_json(package/'release.json',meta);make_readable(package)
+  digest=jsonfile(base/'sealed.json')['sha256']
+  if package.is_symlink():raise ValueError('Release-ID is een symbolische koppeling')
+  if package.exists():
+   stored=core.verify(package)
+   if stored.get('source_commits')!=receipt['commits'] or stored.get('gateway_package_sha256')!=digest:
+    raise ValueError('Release-ID hoort bij een ander verzegeld pakket')
+  else:
+   copy_payload(base/'payload',package);meta=jsonfile(package/'release.json');meta['source_commits']=receipt['commits'];meta['gateway_package_sha256']=digest;core.atomic_json(package/'release.json',meta);make_readable(package)
   try:core.activate(root,package,h)
   finally:
    if (root/'journal.json').exists() and jsonfile(root/'journal.json').get('phase') in ('active','restored','rolled_back') and getattr(h,'timers',[]):h.logged(['systemctl','start',*h.timers])
@@ -721,11 +761,23 @@ def main():
  import signal
  def interrupted(signum,frame):raise RuntimeError('Onderbroken Linux-release: '+str(signum))
  signal.signal(signal.SIGTERM,interrupted);signal.signal(signal.SIGINT,interrupted)
- parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('stage',choices=['preflight','rehearse','apply','rollback','cleanup','recover']);parser.add_argument('commit');parser.add_argument('sha256');a=parser.parse_args()
+ parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('stage',choices=['preflight','rehearse','apply','apply-queued','rollback','cleanup','recover']);parser.add_argument('commit');parser.add_argument('sha256');a=parser.parse_args()
  layout(a.commit,True)
  if os.geteuid()!=0:raise SystemExit('Alleen via de gesloten root-gateway')
  secure_file(Path(__file__));secure_file(INSTALL/'integral_release.py')
- with global_lock():
+ if not re.fullmatch('[0-9a-f]{64}',a.sha256):raise ValueError('Exacte pakkethash vereist')
+ a.stage,queued=queue_stage(a.stage)
+ with global_lock() as start_mutation:
+  # Recheck after taking the lock to close the activation race.
+  if queue_stage('apply-queued' if queued else a.stage)!=(a.stage,queued):
+   raise ValueError('Wachtrijbeleid is gewijzigd; begin opnieuw')
+  if queued:
+   sealed=CONTROL/'packages'/a.sha256
+   secure_file(sealed/'sealed.json');secure_file(sealed/'preflight.json')
+   root_directory(sealed,0o700)
+   if jsonfile(sealed/'sealed.json')!={'commit':a.commit,'sha256':a.sha256}:
+    raise ValueError('Verzegelde pakketidentiteit wijkt af')
+   queue_check('authorize',a.sha256)
   if a.stage=='recover':
    root=CONTROL/'production';package=core.current(root);m=core.verify(package)
    if m.get('legacy') or m.get('source_commits',{}).get('Meijendel')!=a.commit or m.get('gateway_package_sha256')!=a.sha256:raise ValueError('Herstel past niet bij de opgeslagen actieve release')
@@ -759,5 +811,9 @@ def main():
    print('INTEGRAL_TRIAL_CLEANUP_OK');return
   pending=CONTROL/'production/journal.json'
   if pending.exists() and jsonfile(pending).get('phase')=='recovery_failed':raise ValueError('Eerst het vastgelegde herstelincident oplossen')
+  if queued:
+   check_production_release(a.stage,base,receipt,m)
+   queue_check('require-active',a.sha256)
+   start_mutation()
   production_action(a.stage,a.commit,base,receipt,m);print('INTEGRAL_'+a.stage.upper()+'_OK')
 if __name__=='__main__':main()

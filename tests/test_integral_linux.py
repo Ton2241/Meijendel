@@ -12,7 +12,7 @@ class LinuxContract(unittest.TestCase):
   for value in ['../etc','a'*39,'main','a'*40+';id']:
    with self.assertRaises(ValueError):linux.layout(value,trial=True)
  def test_caddy_binding_preserves_auth_and_replaces_only_asset_roots(self):
-  source=(Path('/Users/ton/Documents/GitHub/_worktrees/VWG_M/bootstrap-presentatie-2026')/'website/vwg-m-linux-app/deploy/caddy/Caddyfile.production').read_text()
+  source=(ROOT.parent/'VWG_M/website/vwg-m-linux-app/deploy/caddy/Caddyfile.production').read_text()
   config=linux.caddy_config(source,trial=True)
   self.assertIn('forward_auth 127.0.0.1:18197',config)
   self.assertIn('/auth/analysis-dashboard',config)
@@ -142,4 +142,47 @@ class InitialTrialResumeGuard(unittest.TestCase):
    with patch.object(linux.core,'current',return_value=a),patch.object(linux.core,'verify',side_effect=lambda path:m|{'release_id':path.name,'mode':'local_rehearsal'}):
     with self.assertRaisesRegex(ValueError,'beginversie A'):linux.check_initial_baseline(h,a,b,m)
    h.import_mysql.assert_not_called()
+
+
+class QueueLockContract(unittest.TestCase):
+ def test_unconfirmed_mutation_retains_shared_host_lock(self):
+  from unittest.mock import patch
+  with tempfile.TemporaryDirectory() as d:
+   state=Path(d);lock=state/'production.lock'
+   with patch.object(linux,'STATE',state):
+    with self.assertRaises(RuntimeError):
+     with linux.global_lock() as start_mutation:
+      start_mutation()
+      raise RuntimeError('onbevestigde activering')
+    self.assertTrue(lock.is_dir())
+    with self.assertRaises(FileExistsError):
+     with linux.global_lock():
+      self.fail('Een tweede eigenaar kreeg de lock')
+
+ def test_lock_releases_after_preflight_rejection_or_green_mutation(self):
+  from unittest.mock import patch
+  with tempfile.TemporaryDirectory() as d:
+   state=Path(d);lock=state/'production.lock'
+   with patch.object(linux,'STATE',state):
+    with self.assertRaises(ValueError):
+     with linux.global_lock():
+      raise ValueError('kandidaat geweigerd vóór mutatie')
+    self.assertFalse(lock.exists())
+    with linux.global_lock() as start_mutation:
+     start_mutation()
+     self.assertTrue(lock.is_dir())
+    self.assertFalse(lock.exists())
+
+ def test_queued_operation_never_falls_back_to_legacy(self):
+  from unittest.mock import patch
+  with tempfile.TemporaryDirectory() as d:
+   marker=Path(d)/'vps-queue-required'
+   with patch.object(linux,'QUEUE_POLICY',marker), patch.object(linux,'secure_file') as secure:
+    self.assertEqual(linux.queue_stage('apply'),('apply',False))
+    marker.touch()
+    with self.assertRaisesRegex(ValueError,'begrensde'):
+     linux.queue_stage('apply')
+    self.assertEqual(linux.queue_stage('apply-queued'),('apply',True))
+    secure.assert_called_once_with(marker)
+
 if __name__=='__main__':unittest.main()
