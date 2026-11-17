@@ -3,6 +3,10 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 spec=importlib.util.spec_from_file_location('linux',ROOT/'deploy/integral_release_linux.py');linux=importlib.util.module_from_spec(spec);spec.loader.exec_module(linux)
 class LinuxContract(unittest.TestCase):
+ def test_queued_apply_checks_preflight_before_claiming_approval(self):
+  launcher=(ROOT/'deploy/integral_release_linux.py').read_text()
+  self.assertLess(launcher.index("base,receipt,m=freeze(a.commit"),launcher.index("queue_check('authorize',a.sha256)"))
+  self.assertLess(launcher.index("check_production_release(a.stage,base,receipt,m)"),launcher.index("queue_check('authorize',a.sha256)"))
  def test_trial_layout_has_only_private_names_and_loopback_ports(self):
   layout=linux.layout('a'*40,trial=True)
   self.assertTrue(layout['database'].startswith('vwg_integral_'))

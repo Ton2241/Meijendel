@@ -875,7 +875,6 @@ def main():
    root_directory(sealed,0o700)
    if jsonfile(sealed/'sealed.json')!={'commit':a.commit,'sha256':a.sha256}:
     raise ValueError('Verzegelde pakketidentiteit wijkt af')
-   queue_check('authorize',a.sha256)
   if a.stage=='recover':
    root=CONTROL/'production';package=core.current(root);m=core.verify(package)
    if m.get('legacy') or m.get('source_commits',{}).get('Meijendel')!=a.commit or m.get('gateway_package_sha256')!=a.sha256:raise ValueError('Herstel past niet bij de opgeslagen actieve release')
@@ -916,6 +915,7 @@ def main():
   if pending.exists() and jsonfile(pending).get('phase')=='recovery_failed':raise ValueError('Eerst het vastgelegde herstelincident oplossen')
   if queued:
    check_production_release(a.stage,base,receipt,m)
+   queue_check('authorize',a.sha256)
    queue_check('require-active',a.sha256)
    start_mutation()
   production_action(a.stage,a.commit,base,receipt,m);print('INTEGRAL_'+a.stage.upper()+'_OK')
