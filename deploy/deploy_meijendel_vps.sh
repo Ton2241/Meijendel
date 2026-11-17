@@ -210,6 +210,12 @@ acquire_lock() {
     die "een andere productie-deploy houdt de globale VPS-lock vast: $GLOBAL_LOCK"
   fi
   LOCK_HELD=1
+  if [[ -n "$INITIALIZE_STATE" ]]; then
+    local policy
+    policy="$(remote 'if test -e /etc/vwgm/vps-queue-required || test -L /etc/vwgm/vps-queue-required; then echo required; else echo legacy; fi')" ||
+      die "VPS-wachtrijbeleid kon niet worden vastgesteld."
+    [[ "$policy" == legacy ]] || die "State-initialisatie is nog niet op de VPS-wachtrij aangesloten."
+  fi
 }
 
 write_state() {
@@ -425,6 +431,13 @@ fi
 [[ "$YES" -eq 1 ]] || die "een productiedeploy vereist --apply --yes."
 
 acquire_lock
+queue_policy="$(remote 'if test -e /etc/vwgm/vps-queue-required || test -L /etc/vwgm/vps-queue-required; then echo required; else echo legacy; fi')" ||
+  die "VPS-wachtrijbeleid kon niet worden vastgesteld."
+if [[ "$queue_policy" == required ]]; then
+  die "VPS-wachtrij blokkeert Meijendel-publicatie: akkoord moet ook de hashes van SQL, cache en dashboard vastleggen."
+elif [[ "$queue_policy" != legacy ]]; then
+  die "Onbekend VPS-wachtrijbeleid."
+fi
 locked_state="$(remote "cat '$STATE_FILE' 2>/dev/null || true")"
 [[ "$locked_state" == "$DEPLOYED_COMMIT" ]] || die "productiestatus veranderde tijdens preflight; begin opnieuw."
 
