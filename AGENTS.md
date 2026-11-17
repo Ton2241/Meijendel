@@ -84,6 +84,21 @@ Bij codewerk:
 - voer een uitdrukkelijk opgedragen of goedgekeurde VPS-publicatie volledig
   uit binnen de toegestane reikwijdte, inclusief passende verificatie na deploy
 
+### VPS-wachtrij en onderhoudslock
+
+Raakt een opdracht productie op de VWG-VPS, volg dan de procedure
+**VPS-wachtrij en onderhoudslock** in [VWG_Project/workflow.md](../VWG_Project/workflow.md)
+zodra die is vastgesteld. Registreer dan nieuw werk en controleresultaten
+in het bijbehorende GitHub-issue. Voer wijzigende stappen uitsluitend uit
+via de beheerde ingang. Die weigert uitvoering bij ontbrekend bewijs,
+ontbrekend akkoord of een bezette lock. Bij een mislukte stap blijft de
+volgende stap geblokkeerd.
+
+Tot de wachtrij en de beheerde ingang zijn ingericht en beproefd, gelden
+de bestaande beheer- en akkoordprocedures. Werk wijzigende VPS-stappen in
+één regiechat na elkaar af en wacht op de gecontroleerde uitkomst van de
+vorige stap. Een GitHub-issue, commit of merge is geen productietoestemming.
+
 Bij iedere nieuwe opdrachtdraad en productiedeploy:
 - controleer aan het begin én einde `VWG_Project`, `VWG_M` en `Meijendel`: haal remote refs op, meld de actieve branch en eis dat iedere lokale branch gelijkloopt met haar upstream; buiten een expliciet actieve taak hoort iedere werkboom schoon te zijn
 - behandel een vooraf aangetroffen vuile werkboom niet als een normale toestand: stel eerst eigenaar en oorzaak vast; rond de wijziging veilig af en commit/push haar, of vraag de gebruiker als de bedoeling niet betrouwbaar is vast te stellen
