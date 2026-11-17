@@ -44,6 +44,8 @@ def main() -> int:
         "duinvallei-vegetatie-context",
         "jachtspinnen-1969-1970",
         "vogelstand-meijendel-1924",
+        "vlinderstichting-dagvlinders-routejaar",
+        "vlinderstichting-libellen-bezoeken",
     }
     assert required <= set(by_key), required - set(by_key)
 
@@ -65,6 +67,21 @@ def main() -> int:
         source = by_key[decision["datareeks_sleutel"]]
         if source["bronstatus"] == "contextbron":
             assert decision["eindbesluit"] in {"alleen_context", "niet_toegelaten"}
+
+    dag = by_key["vlinderstichting-dagvlinders-routejaar"]
+    libel = by_key["vlinderstichting-libellen-bezoeken"]
+    assert (dag["bronstatus"], dag["bron_object"], dag["recordaantal_bij_beoordeling"]) == (
+        "primaire_bron", "vlinders_dag_routejaar_soortcode", "7409")
+    assert (libel["bronstatus"], libel["bron_object"], libel["recordaantal_bij_beoordeling"]) == (
+        "primaire_bron", "libellen_routejaar", "69")
+    dag_besluiten = {row["analyse_type_code"]: row for row in decisions
+                    if row["datareeks_sleutel"] == dag["datareeks_sleutel"]}
+    libel_besluiten = [row for row in decisions
+                      if row["datareeks_sleutel"] == libel["datareeks_sleutel"]]
+    assert dag_besluiten["TA"]["eindbesluit"] == "voorlopig_toegelaten"
+    assert dag_besluiten["I"]["eindbesluit"] == "niet_toegelaten"
+    assert "2026" in dag["kwaliteitsmelding"]
+    assert all(row["eindbesluit"] == "niet_toegelaten" for row in libel_besluiten)
 
     print(
         "OK: analysegeschiktheid-seed "

@@ -390,7 +390,9 @@ CREATE TEMPORARY TABLE tmp_meijendel_plotmatch (
         ("ndff_open_waarneming", "bronpolygoon", (
             "SELECT CAST(waarneming_id AS CHAR),openbare_geometrie FROM ndff_open_waarneming "
             "UNION ALL SELECT CAST(waarneming_id AS CHAR),openbare_geometrie FROM mossen_waarneming "
-            "UNION ALL SELECT CAST(waarneming_id AS CHAR),openbare_geometrie FROM korstmossen_waarneming"
+            "UNION ALL SELECT CAST(waarneming_id AS CHAR),openbare_geometrie FROM korstmossen_waarneming "
+            "UNION ALL SELECT CAST(waarneming_id AS CHAR),openbare_geometrie FROM vlinders_waarneming "
+            "UNION ALL SELECT CAST(waarneming_id AS CHAR),openbare_geometrie FROM libellen_waarneming"
         ), True),
         ("dagwaarnemingen_bmp", "exact_punt", "SELECT CAST(id AS CHAR),ST_SRID(geom,28992) FROM dagwaarnemingen_bmp", False),
         ("dagwaarnemingen_wv", "exact_punt", "SELECT CAST(id AS CHAR),geom FROM dagwaarnemingen_wv", False),

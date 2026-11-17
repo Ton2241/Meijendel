@@ -149,6 +149,10 @@ def main() -> int:
     assert "cast(b.raw_payload->>'$.aantal_min' as char)" in enrichment
     assert "cast(b.raw_payload->>'$.aantal_max' as char)" in enrichment
     assert "json_type(json_extract(b.raw_payload,'$.aantal_max'))='null'" in enrichment.replace(" ", "")
+    for table in ("ndff_open_waarneming", "mossen_waarneming",
+                  "korstmossen_waarneming", "vlinders_waarneming",
+                  "libellen_waarneming"):
+        assert f"meijendel.{table}" in enrichment
     insert_columns = enrichment.split("select", 1)[0]
     for forbidden in (
         "exacte_geometrie",

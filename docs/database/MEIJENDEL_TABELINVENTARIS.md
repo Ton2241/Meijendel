@@ -13,6 +13,74 @@ in de bijlage blijven voor de audit behouden. Voor de actuele opslag gelden
 het [bronregister](../MEIJENDEL_BRONREGISTER.md) en de
 [migratiedocumentatie](NDFF_MOSSEN_KORSTMOSSEN_MIGRATIE.md).
 
+**Actuele openbare NDFF-opslag, 17 november 2026.** Na de afzonderlijk
+opgedragen verhuizing van alle dag-, nacht- en microvlinderwaarnemingen
+(225.065) en libellenwaarnemingen (32.325) bevat `ndff_open_waarneming`
+492.444 bronregels. De andere volledige bronregels staan in
+`vlinders_waarneming` (225.065), `libellen_waarneming` (32.325),
+`mossen_waarneming` (32.353) en `korstmossen_waarneming` (28.643). Samen zijn
+dit 810.830 unieke openbare waarnemingen, elk onder dezelfde
+`waarneming_id` als voorheen. Het smalle `ndff_open_waarneming_register`
+bewaart de fysieke opslagplaats; het bevat geen tweede waarneming. De
+vroegere vier enkelkoloms-groepsindexen voor vlinders en libellen zijn na
+controle verwijderd. De 61 beveiligde vlindertegenhangers blijven uitsluitend
+in `Meijendel_ndff_secure`. Deze verhuizing schept geen nieuwe waarnemingen
+of analysetoelating. De 2.219 bronregels in NDFF-routefamilie 7 zijn
+aannemelijk verbonden met de historische Voorlinden-route 1764; Toves
+levering heeft voor deze route geen telobject of jaarcijfers. De historische
+groepsrijtellingen verderop beschrijven de nulmeting van 26 september en
+zijn geen opgave van nog bestaande ID-indexen.
+
+**Actuele aanvulling, 17 november 2026.** De geselecteerde primaire kaartlocaties
+van De Vlinderstichting staan in vier nieuwe, uitsluitend ruimtelijke tabellen:
+`vlinders_dag_telobject` (11), `vlinders_dag_geometrie` (194),
+`libellen_telobject` (11) en `libellen_geometrie` (24). De 194
+dagvlindercomponenten bestaan uit 173 lijnen en 21 punten; alle geometrie is
+opgeslagen als EPSG:28992. `bron_code` is bij dagvlinders het oorspronkelijke
+`countobject_id`; het `telobject_id` bij libellen is alleen een lokale sleutel,
+omdat de levering geen broncode bevat. Bij de kaartimport bevatten deze
+tabellen geen soortenregels, bezoeken of jaarcijfers en vervingen zij geen
+NDFF-reconstructietabel. Het hieronder
+staande voorstel om bestaande `ndff_vlinder_*`-tabellen later naar
+`dagvlinders_*` te migreren blijft een afzonderlijk, nog niet uitgevoerd
+voorstel; Tons keuze `vlinders_*` geldt voor deze nieuwe primaire kaartlaag.
+Voor dagvlindercode 638 blijft `bronnaam` letterlijk ‘Hertenkamp (Meijendel)’
+zoals geleverd, terwijl de weergavenaam ‘Bierlap – dagvlinderroute 638’ is.
+Alle 19 lijnstukken liggen in Kijfhoek en Bierlap, niet in Hertenkamp M105.
+Gebruik de weergavenaam voor kaarten en de onveranderde `bron_code` als sleutel;
+code 4439 is de afzonderlijke soortgerichte Bierlap-telling.
+De live controle van 17 november 2026 vond precies één naamoverride op route
+638, elf dagvlindertelobjecten en 194 geometriecomponenten. De checksums van
+de bron- en geometrievelden waren vóór en na de wijziging identiek. De
+herstelkopieën staan onder `/Volumes/T7 Data/Home_Ton/Meijendel data/Backups-archief/Meijendel/`:
+`vlinderroute638-naamcorrectie-20261117.sql` (SHA-256
+`21bc4ab6216ae01a0fb72756ba3ea87649ba198d7a395a6e77f452570adb82c2`)
+en `ndff-vlinderroute-identificatie-20261117.sql` (SHA-256
+`1c4391ccb874e16103f675d3afd79f86288965d74e8db81e86372575d9da2ec6`).
+De centrale routepoort controleerde 133 routes zonder fout; de v2-vlinderaudit
+was groen. Jaarcijfers, bezoeken en NDFF-records zijn hierdoor niet gewijzigd.
+
+**Primaire jaargegevens van De Vlinderstichting, 17 november 2026.**
+`vlinderstichting_levering` bewaart de herkomst van de vier oorspronkelijke
+bestanden. `vlinders_dag_routejaar` koppelt 195 routejaren met 3.020 bezoeken
+en hun ruwe jaartotalen aan de elf bestaande `vlinders_dag_telobject`-codes.
+`vlinders_dag_routejaar_soortcode` bevat 7.409 jaarcijfers op de sleutel
+routecode–jaar–oorspronkelijke soortcode; `ntell` blijft per soortcodejaar
+behouden. De 56 broncodes zijn via `taxa_bronkoppeling` met 35 centrale taxa
+verbonden. Van deze 7.409 jaarcijfers zijn er 2.710 expliciet nul. Dit zijn
+jaarlijkse bronwaarden, geen nullen voor afzonderlijke bezoeken; lege
+combinaties zijn onbekend. `libellen_routejaar` koppelt 69 locatiejaren met
+628 bezoeken aan de elf bestaande `libellen_telobject`-rijen. Voor libellen
+zijn uit deze levering geen soortuitkomsten of nulwaarnemingen ingevoerd. De
+148 dagvlinder-soortcodejaren uit 2026 hebben `jaarstatus=voorlopig` op hun
+routejaar; 2026 wordt niet met de afgesloten meetjaren samengevoegd. Alle
+overige 23 bronobjecten zijn uitgesloten. De ingevoerde rijen zijn regel voor
+regel vergeleken met de oorspronkelijke geselecteerde CSV-rijen. De
+NDFF-protocolreconstructie is niet fysiek vervangen. De latere, afzonderlijke
+verhuizing van volledige NDFF-bronregels en hun aannemelijke routejaarkoppeling
+staat in de actuele opslagnotitie hierboven; een bronrecord is daardoor geen
+extra Tove-jaarcijfer of bewezen identiek bezoek.
+
 ## Hoofdkeuze
 
 De hoofdindeling wordt de soortgroep. Libelleninformatie hoort herkenbaar onder `libellen_*`, keverinformatie onder `kevers_*`, enzovoort. De organisatie die gegevens levert en het moment waarop bestanden gezamenlijk zijn geïmporteerd, bepalen niet langer de indeling. Rechtstreekse leveringen moeten dezelfde tabelfamilies kunnen aanvullen als de informatie die via NDFF is ontvangen.

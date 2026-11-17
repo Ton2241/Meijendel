@@ -188,8 +188,11 @@ De lokale technische vervolgcontrole is afgerond. Websitekoppelingen zijn in een
   blijft auditinformatie, geen migratieselectie. Het script
   `gis/scripts/migrate_ndff_soortgroepen.py` bevat nu uitsluitend een
   lezende bron- en reeksinventarisatie; de generator voor 24 volledige
-  soortgroeptabellen is verwijderd. De huidige NDFF-reeksbesluiten leveren
-  geen kandidaat voor fysieke verplaatsing op. Bepaal per bestaande herhaalde
+  soortgroeptabellen is verwijderd. Op 8 november leverden de toenmalige
+  reeksbesluiten geen kandidaat voor fysieke verplaatsing op. De later
+  uitdrukkelijk opgedragen verhuizing van vlinders en libellen staat hieronder
+  bij De Vlinderstichting en heropent geen algemene verplaatsing. Bepaal per
+  bestaande herhaalde
   meetreeks afzonderlijk of zij bruikbaar is en nog buiten een passende
   soortgroeptabel staat; behoud bronwaarden, meetstructuur en taxonroute.
   De eerste concrete verplaatsing is op 8 november lokaal uitgevoerd:
@@ -990,9 +993,62 @@ in iCloud **Agenda**.
   2026.** De routekaart en 8.714 dagvlinderjaarcijfers zijn vergeleken met de
   actuele Meijendel-grens en de elf NDFF-routefamilies. Elf van de zeventien
   telobjecten liggen binnen het basisgebied; negen zijn kandidaten voor
-  routegebonden trends tot en met 2025. Er is niets geïmporteerd. Zie het
+  routegebonden trends tot en met 2025. Zie het
   [bronregister](docs/MEIJENDEL_BRONREGISTER.md).
-- [ ] **De Vlinderstichting — resterende toetsen vóór soorttrends of import.**
+- [x] **De Vlinderstichting — geselecteerde kaartlocaties, 17 november 2026.**
+  De 11 door Ton gekozen dagvlinderlocaties en 11 libellenlocaties staan nu
+  met 218 primaire RD-kaartcomponenten in `Meijendel.vlinders_dag_*` en
+  `libellen_*`. Pan van Persijn (230) en alle andere niet-geselecteerde
+  locaties zijn uitgesloten. De vier oorspronkelijke bestanden zijn ongewijzigd
+  op T7 bewaard. De locatie-import telt niet als extra waarneming; afzonderlijke
+  NDFF-regels zijn nog niet aan de primaire telobjecten gekoppeld.
+- [x] **De Vlinderstichting — jaargegevens voor de 22 geolokaliseerde objecten,
+  17 november 2026.** In de levende database staan voor elf dagvlinderobjecten
+  195 routejaren met 3.020 bezoeken en 7.409 oorspronkelijke
+  soortcodejaarcijfers (waaronder 2.710 expliciete jaarlijkse nullen). `ntell`
+  staat per soortcodejaar; 2026 is voorlopig. Voor elf libellenobjecten staan
+  69 locatiejaren met 628 bezoeken, zonder soortresultaten of nullen. De andere
+  CSV toont bij die libellenjaren een vlindertotaal van nul, ook wanneer er
+  bezoeken waren. Alle andere 23 objecten zijn buiten de levende database
+  gebleven. De geïmporteerde rijen zijn regel voor regel met de selectie uit
+  Toves CSV's vergeleken. Op dat importmoment waren afzonderlijke
+  NDFF-waarnemingen nog niet aan deze primaire jaarcijfers gekoppeld.
+- [x] **Openbare NDFF-vlinders en -libellen fysiek onder de soortgroep,
+  17 november 2026.** De 225.065 dag-, nacht- en microvlinderrecords zijn
+  naar `vlinders_waarneming` verhuisd en de 32.325 libellenrecords naar
+  `libellen_waarneming`, zonder tweede biologische kopie. De stabiele
+  NDFF-identiteit, bestaande beoordelingen en afscherming van 61 beveiligde
+  vlindertegenhangers zijn behouden. Koppelingen met primaire routejaren
+  hebben een afzonderlijke bewijsstatus; Voorlinden-familie 7 (2.219 records)
+  is aannemelijk gekoppeld aan de historische route 1764, maar heeft geen
+  Tove-routejaar. De overige 492.444 NDFF-records blijven in
+  `ndff_open_waarneming`; samen zijn 810.830 openbare records bereikbaar.
+  De oude ID-indexen zijn pas na pariteits- en afnemercontrole verwijderd.
+  Een zware SQL-export, cachebouw en VPS-publicatie vallen buiten deze taak.
+- [ ] **Primaire taxongroep voor 28 reeds aanwezige NDFF-regels beoordelen.**
+  Het gaat om acht korstmos/schimmelnamen met dubbel bronlabel; zij zijn via
+  het centrale taxonregister bereikbaar, maar hebben nog geen gekozen
+  `taxon_groepen`-indeling. De groepsinventarisatie toont ze afzonderlijk,
+  zodat zij in de tussentijd niet uit aantallen verdwijnen. De migratie van
+  vlinders en libellen heeft deze situatie niet veroorzaakt.
+- [x] **De Vlinderstichting — weergavenaam van route 638, 17 november 2026.**
+  De 19 lijnstukken liggen in Kijfhoek en Bierlap, niet in Hertenkamp M105.
+  Gebruik op kaarten en bij ruimtelijke analyses ‘Bierlap – dagvlinderroute
+  638’; behoud ‘Hertenkamp (Meijendel)’ uitsluitend als oorspronkelijke
+  bronnaam. Code 4439 blijft de afzonderlijke telling van Groot dikkopje.
+  Vermeld de naamcorrectie bij het eerstvolgende passende contact met Tove;
+  stuur hiervoor nu geen afzonderlijke e-mail.
+- [ ] **De Vlinderstichting — gerichte vraag in de dankmail over route 4439.**
+  Vraag Tove of het jaarcijfer nul voor Groot dikkopje op de soortgerichte
+  Bierlap-route in 2025 voortkomt uit slechts één bezoek, terwijl daarbij
+  33 exemplaren zijn geteld en voor een betrouwbaar jaarcijfer ten minste
+  drie bezoeken in de vliegtijd nodig zijn. In de voorlopige 2026-gegevens
+  staat opnieuw één bezoek met een positieve ruwe telling en jaarcijfer nul.
+  Vraag welke betekenis deze nul in haar export heeft; stuur hierover nu
+  geen afzonderlijke e-mail. Neem ook de al vastgelegde naamcorrectie van
+  route 638 mee in de dankmail.
+- [ ] **De Vlinderstichting — resterende toetsen vóór formele soorttrends en
+  NDFF-recordkoppeling.**
   Bevestig voor Vallei Meijendel en Bierlap dat de slechts als punten getoonde
   telobjecten daadwerkelijk geheel binnen het basisgebied zijn gevolgd.
   De soortidentiteit van alle 57 codes is eenduidig vastgesteld via 36

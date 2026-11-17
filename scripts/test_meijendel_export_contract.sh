@@ -28,6 +28,10 @@ CREATE TABLE `ndff_open_waarneming` (`id` bigint NOT NULL) ENGINE=InnoDB;
 CREATE TABLE `ndff_open_waarneming_register` (`waarneming_id` bigint NOT NULL) ENGINE=InnoDB;
 CREATE TABLE `mossen_waarneming` (`waarneming_id` bigint NOT NULL) ENGINE=InnoDB;
 CREATE TABLE `korstmossen_waarneming` (`waarneming_id` bigint NOT NULL) ENGINE=InnoDB;
+CREATE TABLE `vlinders_waarneming` (`waarneming_id` bigint NOT NULL) ENGINE=InnoDB;
+CREATE TABLE `libellen_waarneming` (`waarneming_id` bigint NOT NULL) ENGINE=InnoDB;
+CREATE TABLE `vlinders_waarneming_routekoppeling` (`waarneming_id` bigint NOT NULL) ENGINE=InnoDB;
+CREATE TABLE `libellen_waarneming_routekoppeling` (`waarneming_id` bigint NOT NULL) ENGINE=InnoDB;
 -- Dump completed on 2026-09-20 22:42:46
 SQL
 }
@@ -40,6 +44,10 @@ CREATE TABLE `ndff_open_waarneming` (`id` bigint NOT NULL) ENGINE=InnoDB;
 CREATE TABLE `ndff_open_waarneming_register` (`waarneming_id` bigint NOT NULL) ENGINE=InnoDB;
 CREATE TABLE `mossen_waarneming` (`waarneming_id` bigint NOT NULL) ENGINE=InnoDB;
 CREATE TABLE `korstmossen_waarneming` (`waarneming_id` bigint NOT NULL) ENGINE=InnoDB;
+CREATE TABLE `vlinders_waarneming` (`waarneming_id` bigint NOT NULL) ENGINE=InnoDB;
+CREATE TABLE `libellen_waarneming` (`waarneming_id` bigint NOT NULL) ENGINE=InnoDB;
+CREATE TABLE `vlinders_waarneming_routekoppeling` (`waarneming_id` bigint NOT NULL) ENGINE=InnoDB;
+CREATE TABLE `libellen_waarneming_routekoppeling` (`waarneming_id` bigint NOT NULL) ENGINE=InnoDB;
 CREATE TABLE `plot_analyse_scope` (`scope_code` varchar(64) NOT NULL, `plot_id` int NOT NULL, `in_scope` tinyint(1) NOT NULL, `reden` varchar(255) NOT NULL, PRIMARY KEY (`scope_code`,`plot_id`)) ENGINE=InnoDB;
 INSERT INTO `plot_analyse_scope` VALUES ('meijendel_natura2000',3503,0,'Geen onderdeel van Natura 2000-analysegebied.'),('meijendel_natura2000',3514,0,'Geen onderdeel van Natura 2000-analysegebied.');
 CREATE VIEW `v_meijendel_analyseplot_actueel` AS SELECT `plot_id` FROM `plot_analyse_scope` WHERE `scope_code`='meijendel_natura2000' AND `in_scope`=1;
@@ -78,6 +86,17 @@ write_dump
 write_manifest
 "$VALIDATOR" --artifact-only "$dump" "$manifest" >/dev/null
 
+write_dump
+printf 'CREATE TABLE `ndff_dagvlinders` (`waarneming_id` bigint NOT NULL);\n' >> "$dump"
+write_manifest
+if output=$("$VALIDATOR" --artifact-only "$dump" "$manifest" 2>&1); then
+  fail "een verwijderde NDFF-dagvlinderindex werd geaccepteerd."
+fi
+[[ "$output" == *"verwijderde NDFF-soortgroepindex"* ]] ||
+  fail "gerichte fout over verwijderde NDFF-soortgroepindex ontbreekt."
+
+write_dump
+write_manifest
 grep -v '^table_checksums_sha256=' "$manifest" > "$manifest.zonder-checksums"
 if output=$("$VALIDATOR" --artifact-only "$dump" "$manifest.zonder-checksums" 2>&1); then
   fail "manifest zonder inhoudschecksums werd geaccepteerd."

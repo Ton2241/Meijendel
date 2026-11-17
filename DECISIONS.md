@@ -1,5 +1,21 @@
 # Besluiten
 
+- Op 17 november 2026 heeft Ton de volledige openbare NDFF-bronregels voor
+  dagvlinders, nachtvlinders en microvlinders gericht laten verhuizen naar
+  `vlinders_waarneming` (225.065 regels) en die voor libellen naar
+  `libellen_waarneming` (32.325 regels). De waarneming blijft met dezelfde
+  `waarneming_id`, oorspronkelijke bronvelden en bestaande protocol-, taxon-,
+  ruimte- en PQ-beoordelingen bereikbaar; het smalle NDFF-register wijst naar
+  precies één fysieke brontabel. Deze uitdrukkelijke opdracht is een gerichte
+  uitzondering op het hieronder vastgelegde besluit van 8 november; zij
+  heropent geen algemene migratie van andere NDFF-soortgroepen. De 61
+  beveiligde tegenhangers van vlinderrecords blijven uitsluitend in
+  `Meijendel_ndff_secure`. De 2.219 dagvlinderregels van NDFF-routefamilie 7
+  blijven aannemelijk gekoppeld aan de historische route Voorlinden 1764.
+  Toves levering bevat voor Voorlinden geen telobject of jaarcijfers; deze
+  regels krijgen daarom geen koppeling aan een Tove-routejaar. Dit verandert
+  de eerder vastgelegde ruimtelijke en statistische toelating niet.
+
 - Op 8 november 2026 heeft Ton de opslagregel voor soortgroeptabellen
   aangescherpt. Alleen gegevens uit bruikbare herhaalde meetreeksen komen
   daarvoor in aanmerking. De hoofdnaam is de soortgroep, bijvoorbeeld
@@ -848,6 +864,14 @@
   dezelfde familie, omdat beide componenten op 76 tijdstippen binnen hetzelfde
   geregistreerde bezoek voorkomen. Lentevreugd is conform besluit niet
   opgenomen.
+- Vanaf 17 november 2026 behandelt Ton de nulwaarden in Toves primaire
+  dagvlinderjaarcijfers voorlopig als echte nullen van de berekende jaar-score:
+  er is gezocht, maar geen score boven nul geregistreerd. Zij zijn geen bewijs
+  dat bij ieder afzonderlijk bezoek geen dier is waargenomen. Zo zijn op de
+  soortgerichte Bierlap-route 4439 in 2025 bij één bezoek 33 Groot dikkopjes
+  geteld, terwijl het jaarcijfer nul is. Bewaar beide bronwaarden; gebruik de
+  jaar-score niet als bezoeknul. De vraag of die nul samenhangt met minder dan
+  drie bezoeken in de vliegtijd staat voor de dankmail aan Tove in `TODO.md`.
 - De 1.535 vliesvleugelrecords onder `03.201` vormen vanaf 11 september 2026
   een eigen NEM-deelreeks `ndff-vliesvleugelroute-v1`, niet een bijvangstreeks.
   Zij omvat 217 bevestigde bezoeken en zes gevolgde taxa. De matrix bevat

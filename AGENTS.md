@@ -220,6 +220,12 @@ MySQL:
   een soortgroep- of protocolcode. De algemene verplaatsing van de 749.834
   openbare NDFF-bronregels uit 1700–2025 is vervallen. Zie de actuele regel
   in `../VWG_Project/workflow.md`.
+  Gerichte uitzondering op Tons uitdrukkelijke opdracht van 17 november 2026:
+  alle openbare NDFF-dag-, nacht- en microvlinderbronregels staan fysiek in
+  `vlinders_waarneming` en alle openbare NDFF-libellenbronregels in
+  `libellen_waarneming`. Protocolgeschiktheid en analysetoelating blijven per
+  record afzonderlijk gelden; deze opslagkeuze maakt losse waarnemingen niet
+  tot een meetreeks. Andere NDFF-groepen vallen niet onder deze uitzondering.
 - pas voor iedere PQ-import, correctie of migratie de bindende afspraak
   `../VWG_Project/workflow.md`, sectie `Alle PQ-gegevens uitsluitend in pq_*`,
   toe: alle PQ-inhoud onder `pq_*`, centrale taxonkoppeling, geen losse

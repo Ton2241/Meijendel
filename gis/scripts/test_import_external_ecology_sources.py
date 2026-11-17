@@ -961,6 +961,30 @@ def check_central_query_routes():
     assert module.source_usage_projection({'name':'A','register_broncontext':{'extra':1}})['name'] == 'A'
     assert 'register_broncontext' not in module.source_usage_projection({'register_broncontext':{}})
     actual={k:set(v) for k,v in module.CENTRAL_QUERY_SCHEMA.items()}
+    locatie_tabellen = {
+        'vlinders_dag_telobject', 'vlinders_dag_geometrie',
+        'libellen_telobject', 'libellen_geometrie',
+    }
+    assert locatie_tabellen <= set(actual), 'Primaire Tove-locatietabellen ontbreken in het schemacontract'
+    assert 'weergavenaam_override' in actual['vlinders_dag_telobject']
+    assert not locatie_tabellen & set(module.central_query_routes(actual)), \
+        'Taxonvrije kaartlocaties mogen geen biologische waarnemingsroute worden'
+    tove_tabellen = {
+        'vlinderstichting_levering', 'vlinders_dag_routejaar',
+        'vlinders_dag_routejaar_soortcode', 'libellen_routejaar',
+    }
+    assert tove_tabellen <= set(actual), 'Primaire Tove-jaarresultaten ontbreken in het schemacontract'
+    routes = module.central_query_routes(actual)
+    assert routes['vlinders_dag_routejaar_soortcode']['kind'] == 'direct'
+    assert not (tove_tabellen - {'vlinders_dag_routejaar_soortcode'}) & set(routes), \
+        'Levering en routejaarinspanning zijn geen losse soortwaarnemingen'
+    tove_condition = module.central_source_condition(
+        'vlinders_dag_routejaar_soortcode', routes['vlinders_dag_routejaar_soortcode'])
+    assert "De Vlinderstichting" in tove_condition
+    assert "Meetnet Vlinders - Meijendel en Berkheide" in tove_condition
+    assert "2026-11-16" in tove_condition
+    assert "04d9ea76b546c3d7a7b4136f500a159d45cc296a26c1721d6aa94ed85cb5beb2" in tove_condition
+    assert 'soortcode' in tove_condition
     assert len([table for table in actual if table.startswith('sovon_bmp_')]) == 5
     module.central_query_schema_contract(actual)
     split_schema = {**actual,
@@ -971,6 +995,36 @@ def check_central_query_routes():
     split_schema.pop('ndff_mossen')
     split_schema.pop('ndff_korstmossen')
     module.central_query_schema_contract(split_schema)
+    migrated_schema = {**split_schema,
+        'vlinders_waarneming': actual['ndff_open_waarneming'].copy(),
+        'libellen_waarneming': actual['ndff_open_waarneming'].copy(),
+        **{table:set(columns) for table,columns in module.NDFF_ROUTE_LINK_SCHEMA.items()},
+    }
+    for obsolete in ('ndff_dagvlinders', 'ndff_nachtvlinders',
+                     'ndff_microvlinders', 'ndff_libellen'):
+        migrated_schema.pop(obsolete)
+    module.central_query_schema_contract(migrated_schema)
+    migrated_routes = module.central_query_routes(migrated_schema)
+    assert migrated_routes['vlinders_waarneming']['catalogue'] == 'ndff_soorten'
+    assert migrated_routes['libellen_waarneming']['catalogue'] == 'ndff_soorten'
+    migrated_query = module.central_taxon_query(
+        'ndff_open_waarneming_protocol',
+        migrated_routes['ndff_open_waarneming_protocol'], 7,
+    )
+    assert 'vlinders_waarneming' in migrated_query
+    assert 'libellen_waarneming' in migrated_query
+    migrated_guards = module.central_query_triggers_sql({'routes': migrated_routes})
+    for table in ('vlinders_waarneming', 'libellen_waarneming'):
+        assert f"opslag_tabel='{table}'" in migrated_guards
+        assert f'JOIN {table} g' in migrated_guards
+        assert f'CREATE TRIGGER cq_ndff_{table.removesuffix("_waarneming")}_bd' in migrated_guards
+    try:
+        module.central_query_schema_contract({**migrated_schema,
+            'ndff_dagvlinders': actual['ndff_dagvlinders']})
+    except ValueError:
+        pass
+    else:
+        raise AssertionError('Verouderde dagvlinderindex naast bronregels geaccepteerd')
     for changed in ({**actual,'nieuwe_metingen':{'soortnr','aantal','jaar'}},
                     {**actual,'nieuwe_metingen':{'euring_code','aantal','jaar'}},
                     {**actual,'territoria':actual['territoria']|{'ongecontroleerd_taxon'}}):

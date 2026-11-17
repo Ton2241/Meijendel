@@ -550,17 +550,23 @@ NDFF-identiteit niet eenduidig aan één bronformulier te koppelen. De twintig
 vervaagde *Usnea articulata*-regels blijven afgeschermd. Gebruik de twee grove
 NDFF-bedekkingsklassen slechts ordinaal en controleer met `--audit-korstmossen`.
 
-Sinds 23 oktober 2026 staan de volledige openbare NDFF-bronregels voor
-mossen en korstmossen in respectievelijk `mossen_waarneming` (32.353 regels)
-en `korstmossen_waarneming` (28.643 regels). Zij omvatten meerdere bronhouders
-en protocollen en zijn afzonderlijk van de BLWG-meetstructuur en de
-protocolreconstructies hierboven. De overige 749.834 openbare bronregels staan
-in `ndff_open_waarneming`. Het gedeelde `ndff_open_waarneming_register`
-bewaart de 810.830 unieke openbare identificaties en hun `opslag_tabel`, zonder
-een tweede volledige waarneming te bewaren. De voormalige ID-only-indexen
-`ndff_mossen` en `ndff_korstmossen` zijn na de nacontrole verwijderd. Zie
+De volledige openbare NDFF-bronregels voor mossen en korstmossen staan sinds
+23 oktober 2026 in respectievelijk `mossen_waarneming` (32.353 regels) en
+`korstmossen_waarneming` (28.643 regels). Sinds 17 november 2026 staan ook
+225.065 dag-, nacht- en microvlinderregels in `vlinders_waarneming` en 32.325
+libellenregels in `libellen_waarneming`. De resterende 492.444 openbare
+bronregels staan in `ndff_open_waarneming`. Het gedeelde
+`ndff_open_waarneming_register` bewaart de 810.830 unieke openbare
+identificaties en hun `opslag_tabel`, zonder een tweede volledige waarneming.
+De bronregels blijven gescheiden van BLWG-formulieren, de primaire jaarcijfers
+van De Vlinderstichting en de NDFF-protocolreconstructies. De vroegere
+ID-only-indexen voor mossen, korstmossen, vlinders en libellen zijn na
+pariteitscontrole verwijderd. De 61 beveiligde vlindertegenhangers blijven
+uitsluitend in het afgeschermde schema. Zie
 [de migratiedocumentatie](docs/database/NDFF_MOSSEN_KORSTMOSSEN_MIGRATIE.md)
-voor de historische nulmeting en de afgeronde uitvoering.
+voor de historische mosnulmeting en de afgeronde uitvoering daarvan, en
+[de vlinder- en libellenmigratie](docs/database/NDFF_VLINDERS_LIBELLEN_MIGRATIE.md)
+voor de huidige opslagverdeling en routekoppelingen.
 
 Mossenprotocol `02.204` staat onder `ndff-mos-v2` in vijf openbare
 `Meijendel.mossen_*`-tabellen. De 376 onvervaagde bronregels zijn geclusterd

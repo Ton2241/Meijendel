@@ -1282,7 +1282,7 @@ moet als bronbesluit worden uitgezocht, niet stilzwijgend weggewerkt.
 De reproduceerbare actuele selectie voor openbare NDFF-records is
 `ndff_open_pq_koppeling.regelversie='ndff-open-pq-poort-v2'` én
 `classificatie='niet_beoordeelbaar'`. De koppeling met
-`ndff_open_waarneming_register` bepaalt welke van de drie fysieke
+`ndff_open_waarneming_register` bepaalt welke van de vijf fysieke
 brontabellen de bronrij bevat. De twee regelversies omvatten samen
 1.621.660 beoordelingsrijen voor 810.830 openbare NDFF-records; ook
 historische besluiten en `niet_van_toepassing` zijn PQ-specifieke
@@ -1294,7 +1294,7 @@ tegenstrijdige geval 13265; slechts de 162 `exact` en 163
 `niet_beoordeelbaar` zijn in deze stand bronwaarnemingen voor de
 afgeschermde PQ-route. Een bronwaarde uit de categorie
 `niet_van_toepassing` wordt daarmee niet als PQ-opname gekopieerd.
-De oude `pq_status`-kolommen op de drie openbare NDFF-brontabellen
+De oude `pq_status`-kolommen op de vijf openbare NDFF-brontabellen
 zijn eveneens PQ-specifieke nevenadministratie en verdwijnen pas na
 bewezen volledige vervanging van alle lees- en importroutes.
 
