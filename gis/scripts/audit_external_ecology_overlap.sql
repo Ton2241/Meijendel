@@ -94,6 +94,26 @@ WHERE n.analyse_status <> 'uitgesloten';
 
 INSERT IGNORE INTO tmp_external_ndff_match (resultaat_id,waarneming_id)
 SELECT x.resultaat_id,n.waarneming_id FROM tmp_external_ndff x
+JOIN vlinders_waarneming n FORCE INDEX (ix_ndff_open_soort_datum)
+  ON n.soort_key=x.soort_key
+ AND n.periode_start >= x.datum_van
+ AND n.periode_start < DATE_ADD(x.datum_tot,INTERVAL 1 DAY)
+ AND MBRIntersects(n.openbare_geometrie,x.punt_rd)
+ AND ST_Intersects(n.openbare_geometrie,x.punt_rd)
+WHERE n.analyse_status <> 'uitgesloten';
+
+INSERT IGNORE INTO tmp_external_ndff_match (resultaat_id,waarneming_id)
+SELECT x.resultaat_id,n.waarneming_id FROM tmp_external_ndff x
+JOIN libellen_waarneming n FORCE INDEX (ix_ndff_open_soort_datum)
+  ON n.soort_key=x.soort_key
+ AND n.periode_start >= x.datum_van
+ AND n.periode_start < DATE_ADD(x.datum_tot,INTERVAL 1 DAY)
+ AND MBRIntersects(n.openbare_geometrie,x.punt_rd)
+ AND ST_Intersects(n.openbare_geometrie,x.punt_rd)
+WHERE n.analyse_status <> 'uitgesloten';
+
+INSERT IGNORE INTO tmp_external_ndff_match (resultaat_id,waarneming_id)
+SELECT x.resultaat_id,n.waarneming_id FROM tmp_external_ndff x
 JOIN mossen_waarneming n FORCE INDEX (ix_ndff_open_soort_datum)
   ON n.soort_key=x.soort_key
  AND n.periode_start >= x.datum_van

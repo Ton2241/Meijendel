@@ -42,6 +42,18 @@ SOURCE_TAXON_FIELDS = (
 SOURCE_USAGE_FIELDS = (*SOURCE_TAXON_FIELDS, 'dataset', 'name', 'raw_name', 'nl', 'rank')
 STAGING_TABLES = {'import_dagwaarnemingen_raw', 'import_resultaten_raw',
                   'import_waarnemingen_breed', 'import_waarnemingen_lang'}
+NDFF_STORAGE_ALIASES = (
+    ('ndff_open_waarneming', 'o'),
+    ('mossen_waarneming', 'm'),
+    ('korstmossen_waarneming', 'k'),
+    ('vlinders_waarneming', 'v'),
+    ('libellen_waarneming', 'l'),
+)
+NDFF_NEW_STORAGE = {'vlinders_waarneming', 'libellen_waarneming'}
+NDFF_RETIRED_INDEXES = {
+    'ndff_dagvlinders', 'ndff_nachtvlinders',
+    'ndff_microvlinders', 'ndff_libellen',
+}
 SOURCE_FAMILIES = {
     'endure-helmduinfauna-meijendel-2018': 'endure',
     'stowa-limnodata-meijendel': 'stowa_limnodata',
@@ -75,6 +87,24 @@ def derived_source_key(route: dict, row: dict) -> str:
                       ensure_ascii=False, separators=(',', ':'))
 
 
+def ndff_storage_parts(names) -> tuple[tuple[str, str], ...]:
+    """Only physical NDFF observation tables present in this schema/route set."""
+    return tuple((table, alias) for table, alias in NDFF_STORAGE_ALIASES
+                 if table in names)
+
+
+def ndff_storage_joins(parts: tuple[tuple[str, str], ...]) -> str:
+    return ''.join(
+        f"LEFT JOIN {table} {alias} ON {alias}.waarneming_id=r.waarneming_id "
+        f"AND r.opslag_tabel='{table}' "
+        for table, alias in parts
+    )
+
+
+def ndff_storage_coalesce(parts: tuple[tuple[str, str], ...], column: str) -> str:
+    return 'COALESCE(' + ','.join(f'{alias}.{column}' for _, alias in parts) + ')'
+
+
 def central_query_routes(schema: dict[str, set[str]]) -> dict[str, dict]:
     """Discover every taxon-bearing layer; unknown semantics fail closed.
 
@@ -101,7 +131,7 @@ def central_query_routes(schema: dict[str, set[str]]) -> dict[str, dict]:
             routes[table] = {'kind': 'staging'}
         elif table in catalogues:
             routes[table] = {'kind': 'catalogue', **catalogues[table]}
-        elif table in {'ndff_open_waarneming', 'mossen_waarneming', 'korstmossen_waarneming'}:
+        elif table in {name for name, _ in NDFF_STORAGE_ALIASES}:
             routes[table] = {'kind': 'catalogue_child', 'catalogue': 'ndff_soorten',
                              'join': 'w.soort_key=c.soort_key', 'role': 'bronwaarneming'}
         elif table == 'sovon_avimap_waarneming':
@@ -124,7 +154,8 @@ def central_query_routes(schema: dict[str, set[str]]) -> dict[str, dict]:
             field = 'waarneming_id' if 'waarneming_id' in columns else 'ndff_waarneming_id'
             routes[table] = {'kind': 'ndff_child', 'join': f'w.{field}=o.waarneming_id',
                              'role': 'bronverwijzing',
-                             'partitioned': 'ndff_open_waarneming_register' in schema}
+                             'partitioned': 'ndff_open_waarneming_register' in schema,
+                             'storage_tables': ndff_storage_parts(schema)}
         elif table.startswith(('ndff_', 'sovon_avimap_', 'daz_bmp_', 'hns_', 'florbase_', 'lmfa_')) and columns & {'wetenschappelijke_naam', 'doelsoort'}:
             name = 'wetenschappelijke_naam' if 'wetenschappelijke_naam' in columns else 'doelsoort'
             version = 'reconstructieversie' if 'reconstructieversie' in columns else 'regelversie'
@@ -170,17 +201,13 @@ def central_taxon_query(table: str, route: dict, taxon_id: int | None = None) ->
                      "JOIN ndff_open_waarneming o ON o.soort_key=c.soort_key\n"
                      f"JOIN `{table}` w ON {route['join']}")
         else:
+            parts = route['storage_tables']
             joins = (f"JOIN `{table}` w\n"
                  "JOIN ndff_open_waarneming_register r ON "
                  +route['join'].replace('o.waarneming_id','r.waarneming_id')+"\n"
-                 "LEFT JOIN ndff_open_waarneming o ON o.waarneming_id=r.waarneming_id "
-                 "AND r.opslag_tabel='ndff_open_waarneming'\n"
-                 "LEFT JOIN mossen_waarneming m ON m.waarneming_id=r.waarneming_id "
-                 "AND r.opslag_tabel='mossen_waarneming'\n"
-                 "LEFT JOIN korstmossen_waarneming k ON k.waarneming_id=r.waarneming_id "
-                 "AND r.opslag_tabel='korstmossen_waarneming'\n"
+                 +ndff_storage_joins(parts)+"\n"
                  "JOIN ndff_soorten c ON c.taxon_bronkoppeling_id=b.koppeling_id "
-                 "AND c.soort_key=COALESCE(o.soort_key,m.soort_key,k.soort_key)")
+                 "AND c.soort_key="+ndff_storage_coalesce(parts, 'soort_key'))
     else:
         joins = f'JOIN `{table}` w ON w.taxon_bronkoppeling_id=b.koppeling_id'
     return ("SELECT t.taxon_id,t.weergavenaam,g.groep_id,g.groep_code,g.groep_naam,"
@@ -637,6 +664,11 @@ CENTRAL_QUERY_SCHEMA.update({
     'libellen_routejaar': frozenset('telobject_id jaar bezoekaantal jaarstatus levering_id'.split()),
 })
 
+NDFF_ROUTE_LINK_SCHEMA = {
+    'vlinders_waarneming_routekoppeling': frozenset('waarneming_id reconstructieversie bezoek_sleutel bron_code jaar koppelstatus geometriebewijs'.split()),
+    'libellen_waarneming_routekoppeling': frozenset('waarneming_id reconstructieversie bezoek_sleutel telobject_id jaar koppelstatus geometriebewijs'.split()),
+}
+
 def central_query_schema_contract(schema: dict[str, set[str]]) -> None:
     expected = dict(CENTRAL_QUERY_SCHEMA)
     existing_bmp_groups = set(schema) & set(BMP_NONBIRD_GROUP_TABLES)
@@ -652,6 +684,14 @@ def central_query_schema_contract(schema: dict[str, set[str]]) -> None:
             'waarneming_id', 'opslag_tabel', 'identiteit_sha256'})
         expected.pop('ndff_mossen')
         expected.pop('ndff_korstmossen')
+        if NDFF_NEW_STORAGE & set(schema):
+            if not NDFF_NEW_STORAGE <= set(schema):
+                raise ValueError('Vlinder- en libellenbronopslag zijn slechts gedeeltelijk aanwezig')
+            for table in NDFF_NEW_STORAGE:
+                expected[table] = expected['ndff_open_waarneming']
+            expected.update(NDFF_ROUTE_LINK_SCHEMA)
+            for table in NDFF_RETIRED_INDEXES:
+                expected.pop(table)
     registraties = {'maatregel_plot_jaar_registratie','maatregel_registratie_herkomst'}
     legacy = {'plot_jaar_maatregel','plot_jaar_toegankelijkheid','plot_jaar_toegankelijkheid_deel'}
     for table in registraties - set(schema):
@@ -715,20 +755,16 @@ def central_query_audit(db: CentralQueryDatabase, *, require_guards=True) -> dic
     result = {'rule':QUERY_RULE, 'database':db.database, 'tables':len(schema), 'routes':{}, 'errors':[]}
     errors = result['errors']
     if partitioned_routes(routes):
+        parts = ndff_storage_parts(schema)
+        storage_joins = ndff_storage_joins(parts)
         missing_storage = db.sql(
             "SELECT COUNT(*) FROM ndff_open_waarneming_register r "
-            "LEFT JOIN ndff_open_waarneming o ON o.waarneming_id=r.waarneming_id "
-            "AND r.opslag_tabel='ndff_open_waarneming' "
-            "LEFT JOIN mossen_waarneming m ON m.waarneming_id=r.waarneming_id "
-            "AND r.opslag_tabel='mossen_waarneming' "
-            "LEFT JOIN korstmossen_waarneming k ON k.waarneming_id=r.waarneming_id "
-            "AND r.opslag_tabel='korstmossen_waarneming' "
-            "WHERE COALESCE(o.waarneming_id,m.waarneming_id,k.waarneming_id) IS NULL "
-            "OR r.identiteit_sha256<>COALESCE(o.identiteit_sha256,m.identiteit_sha256,k.identiteit_sha256);")
+            + storage_joins
+            + "WHERE " + ndff_storage_coalesce(parts, 'waarneming_id') + " IS NULL "
+            "OR r.identiteit_sha256<>" + ndff_storage_coalesce(parts, 'identiteit_sha256') + ";")
         if missing_storage != '0':
             errors.append('NDFF-register zonder volledige, identieke fysieke bronregel: '+missing_storage)
-        for table in ('ndff_open_waarneming','mossen_waarneming',
-                      'korstmossen_waarneming'):
+        for table, _ in parts:
             mismatch = db.sql(
                 f"SELECT COUNT(*) FROM {query_identifier(table)} w "
                 "LEFT JOIN ndff_open_waarneming_register r "
@@ -822,15 +858,12 @@ def central_query_audit(db: CentralQueryDatabase, *, require_guards=True) -> dic
                     joined = (f'{qtable} w LEFT JOIN ndff_open_waarneming o ON '
                         +route['join']+' LEFT JOIN ndff_soorten c ON c.soort_key=o.soort_key ')
                 else:
+                    parts = route['storage_tables']
                     joined = (f'{qtable} w LEFT JOIN ndff_open_waarneming_register r ON '
                     +route['join'].replace('o.waarneming_id','r.waarneming_id')+' '
-                    'LEFT JOIN ndff_open_waarneming o ON o.waarneming_id=r.waarneming_id '
-                    "AND r.opslag_tabel='ndff_open_waarneming' "
-                    'LEFT JOIN mossen_waarneming m ON m.waarneming_id=r.waarneming_id '
-                    "AND r.opslag_tabel='mossen_waarneming' "
-                    'LEFT JOIN korstmossen_waarneming k ON k.waarneming_id=r.waarneming_id '
-                    "AND r.opslag_tabel='korstmossen_waarneming' "
-                    'LEFT JOIN ndff_soorten c ON c.soort_key=COALESCE(o.soort_key,m.soort_key,k.soort_key) ')
+                    +ndff_storage_joins(parts)
+                    +'LEFT JOIN ndff_soorten c ON c.soort_key='
+                    +ndff_storage_coalesce(parts, 'soort_key')+' ')
             else:
                 joined = f'{qtable} w LEFT JOIN {query_identifier(catalogue)} c ON {route["join"]} '
             reference_scope = 'c.taxon_bronkoppeling_id IS NOT NULL AND ' if route.get('role')=='soortreferentie' else ''
@@ -1106,6 +1139,9 @@ def central_query_triggers_sql(plan: dict) -> str:
     """
     statements = ['DELIMITER $$']
     routes = plan['routes']
+    storage_parts = ndff_storage_parts(routes)
+    partition_tables = tuple(table for table, _ in storage_parts
+                             if table != 'ndff_open_waarneming')
     validity = ("SELECT COUNT(*) INTO cq_n FROM taxa_bronkoppeling b JOIN taxa t ON t.taxon_id=b.taxon_id "
         "WHERE b.koppeling_id=NEW.taxon_bronkoppeling_id AND b.koppelstatus IN ('kandidaat','bevestigd');\n"
         "IF cq_n<>1 THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Geen geldige centrale taxonroute'; END IF;\n")
@@ -1129,7 +1165,7 @@ def central_query_triggers_sql(plan: dict) -> str:
             if route.get('role')=='soortreferentie':
                 body='IF NOT EXISTS(SELECT 1 FROM '+query_identifier(route['catalogue'])+' c WHERE '+join+\
                      ' AND c.taxon_bronkoppeling_id IS NULL) THEN '+body+' END IF;'
-            if table in {'mossen_waarneming','korstmossen_waarneming'} and partitioned_routes(routes):
+            if table in partition_tables and partitioned_routes(routes):
                 body += (' IF NOT EXISTS(SELECT 1 FROM ndff_open_waarneming_register r '
                     'LEFT JOIN ndff_open_waarneming o ON o.waarneming_id=r.waarneming_id '
                     'WHERE r.waarneming_id=NEW.waarneming_id AND '
@@ -1241,7 +1277,7 @@ def central_query_triggers_sql(plan: dict) -> str:
         for suffix,event in [('bi','INSERT'),('bu','UPDATE')]:
             trigger=central_trigger_name(table,suffix)
             event_body=body
-            if (table in {'mossen_waarneming','korstmossen_waarneming'}
+            if (table in partition_tables
                     and partitioned_routes(routes) and event=='UPDATE'):
                 event_body += (' IF NOT EXISTS(SELECT 1 FROM ndff_open_waarneming_register r '
                     'WHERE r.waarneming_id=NEW.waarneming_id AND '
@@ -1281,7 +1317,7 @@ def central_query_triggers_sql(plan: dict) -> str:
                 ' g ON g.waarneming_id=r.waarneming_id WHERE r.waarneming_id=OLD.waarneming_id '
                 'AND g.identiteit_sha256=OLD.identiteit_sha256 '
                 "AND r.opslag_tabel='"+table+"')"
-                for table in ('mossen_waarneming','korstmossen_waarneming'))
+                for table in partition_tables)
             condition = 'NOT ('+replacements+')'
         elif partitioned:
             condition = ('NOT (NEW.waarneming_id<=>OLD.waarneming_id) OR '
@@ -1293,16 +1329,19 @@ def central_query_triggers_sql(plan: dict) -> str:
             f'CREATE TRIGGER cq_ndff_parent_{suffix} BEFORE {event} ON ndff_open_waarneming FOR EACH ROW BEGIN '
             'IF '+condition+" THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Verwijder eerst afgeleide NDFF-verwijzingen'; END IF; END$$"]
     if partitioned:
+        present_source = ' OR '.join(
+            f'EXISTS(SELECT 1 FROM {table} {alias} '
+            f'WHERE {alias}.waarneming_id=OLD.waarneming_id)'
+            for table, alias in storage_parts)
+        valid_storage = ' OR '.join(
+            "(NEW.opslag_tabel='"+table+"' AND EXISTS(SELECT 1 FROM "+table+
+            ' g WHERE g.waarneming_id=NEW.waarneming_id AND '
+            'g.identiteit_sha256=NEW.identiteit_sha256))'
+            for table, _ in storage_parts)
         statements += [
             'DROP TRIGGER IF EXISTS cq_ndff_register_bd$$',
             'CREATE TRIGGER cq_ndff_register_bd BEFORE DELETE ON ndff_open_waarneming_register '
-            'FOR EACH ROW BEGIN '
-            'IF EXISTS(SELECT 1 FROM ndff_open_waarneming o '
-            'WHERE o.waarneming_id=OLD.waarneming_id) OR '
-            'EXISTS(SELECT 1 FROM mossen_waarneming m '
-            'WHERE m.waarneming_id=OLD.waarneming_id) OR '
-            'EXISTS(SELECT 1 FROM korstmossen_waarneming k '
-            'WHERE k.waarneming_id=OLD.waarneming_id) THEN '
+            'FOR EACH ROW BEGIN IF '+present_source+' THEN '
             "SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='NDFF-bronregel is nog aanwezig'; "
             'END IF; END$$',
             'DROP TRIGGER IF EXISTS cq_ndff_register_bu$$',
@@ -1310,15 +1349,7 @@ def central_query_triggers_sql(plan: dict) -> str:
             'FOR EACH ROW BEGIN '
             'IF NOT (NEW.waarneming_id<=>OLD.waarneming_id) OR '
             'NOT (NEW.identiteit_sha256<=>OLD.identiteit_sha256) OR NOT ('
-            "(NEW.opslag_tabel='ndff_open_waarneming' AND EXISTS(SELECT 1 FROM ndff_open_waarneming g "
-            'WHERE g.waarneming_id=NEW.waarneming_id AND '
-            'g.identiteit_sha256=NEW.identiteit_sha256)) OR '
-            "(NEW.opslag_tabel='mossen_waarneming' AND EXISTS(SELECT 1 FROM mossen_waarneming g "
-            'WHERE g.waarneming_id=NEW.waarneming_id AND '
-            'g.identiteit_sha256=NEW.identiteit_sha256)) OR '
-            "(NEW.opslag_tabel='korstmossen_waarneming' AND EXISTS(SELECT 1 FROM korstmossen_waarneming g "
-            'WHERE g.waarneming_id=NEW.waarneming_id AND '
-            'g.identiteit_sha256=NEW.identiteit_sha256))) THEN '
+            +valid_storage+') THEN '
             "SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='NDFF-register verwijst niet naar volledige bronregel'; "
             'END IF; END$$',
             'DROP TRIGGER IF EXISTS cq_ndff_parent_ai$$',
@@ -1326,8 +1357,8 @@ def central_query_triggers_sql(plan: dict) -> str:
             "INSERT INTO ndff_open_waarneming_register(waarneming_id,opslag_tabel,identiteit_sha256) "
             "VALUES(NEW.waarneming_id,'ndff_open_waarneming',NEW.identiteit_sha256); END$$",
         ]
-        for table,prefix in [('mossen_waarneming','mossen'),
-                             ('korstmossen_waarneming','korstmossen')]:
+        for table in partition_tables:
+            prefix = table.removesuffix('_waarneming')
             statements += [
                 f'DROP TRIGGER IF EXISTS cq_ndff_{prefix}_bd$$',
                 f'CREATE TRIGGER cq_ndff_{prefix}_bd BEFORE DELETE ON {table} FOR EACH ROW BEGIN '

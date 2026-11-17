@@ -1800,6 +1800,9 @@ def main() -> int:
     source_sql = " ".join(module.vlinder_source_sql().split())
     assert "EXISTS ( SELECT 1" in source_sql
     assert "doel.soortgroep_raw='Dagvlinders'" in source_sql
+    assert "Meijendel.vlinders_waarneming" in source_sql
+    assert "Meijendel.ndff_open_waarneming" in source_sql  # hommels blijven daar
+    assert "Meijendel.vlinders_waarneming" in module.vlinder_observation_sql()
     assert "meijendel_ndff_secure.ndff_vlinder_" not in importer_text.casefold()
     assert module.VLINDER_TABLE_PREFIX == "Meijendel.ndff_vlinder"
     assert module.VLIESVLEUGEL_TABLE_PREFIX == "Meijendel.ndff_vliesvleugel"
@@ -1814,14 +1817,26 @@ def main() -> int:
     assert module.OTTER_BEVER_TABLE_PREFIX == "Meijendel.ndff_otter_bever"
     assert "Meijendel_ndff_secure" not in module.resterende_nem_source_sql().casefold()
     assert "12.202" not in module.resterende_nem_source_sql()
+    assert "Meijendel.vlinders_waarneming" in module.resterende_nem_source_sql()
     liveatlas_source_sql = " ".join(module.liveatlas_source_sql().split())
     assert "o.protocol LIKE '102.005%'" in liveatlas_source_sql
+    assert module.PUBLIC_NDFF_ROWS in module.liveatlas_source_sql()
     assert "Meijendel_ndff_secure" not in liveatlas_source_sql
     kwartiertelling_source_sql = " ".join(
         module.kwartiertelling_source_sql().split()
     )
     assert "o.protocol LIKE '102.007%'" in kwartiertelling_source_sql
+    assert module.PUBLIC_NDFF_ROWS in module.kwartiertelling_source_sql()
     assert "Meijendel_ndff_secure" not in kwartiertelling_source_sql
+    assert module.PUBLIC_NDFF_ROWS in module.tuintelling_source_sql()
+    for sql in (module.tuintelling_source_sql(), module.liveatlas_source_sql(),
+                module.kwartiertelling_source_sql(),
+                module.tuintelling_validation_sql(),
+                module.liveatlas_validation_sql(),
+                module.kwartiertelling_validation_sql()):
+        assert "FROM " + module.PUBLIC_NDFF_ROWS in sql
+        assert "FROM Meijendel.ndff_open_waarneming" not in sql.replace(
+            module.PUBLIC_NDFF_ROWS, "<alle-openbare-bronnen>")
     assert module.REPTILE_TABLE_PREFIX == "Meijendel.ndff_reptiel"
     assert module.AMPHIBIAN_TABLE_PREFIX == "Meijendel.ndff_amfibie"
     assert module.BAT_TABLE_PREFIX == "Meijendel.ndff_vleermuis"
@@ -1853,6 +1868,8 @@ def main() -> int:
     assert "o.protocol LIKE '07.201%'" in libel_source_sql
     assert "o.soortgroep_raw='Libellen'" in libel_source_sql
     assert "Meijendel_ndff_secure" not in libel_source_sql
+    assert "Meijendel.libellen_waarneming" in libel_source_sql
+    assert "Meijendel.libellen_waarneming" in module.libel_analysis_input_sql()
     reptile_source_sql = " ".join(module.reptile_source_sql().split())
     assert "o.protocol LIKE '10.201%'" in reptile_source_sql
     assert "o.soortgroep_raw='Reptielen'" in reptile_source_sql

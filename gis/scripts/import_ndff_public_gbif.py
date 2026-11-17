@@ -701,6 +701,8 @@ JOIN (
   SELECT * FROM Meijendel.ndff_open_waarneming
   UNION ALL SELECT * FROM Meijendel.mossen_waarneming
   UNION ALL SELECT * FROM Meijendel.korstmossen_waarneming
+  UNION ALL SELECT * FROM Meijendel.vlinders_waarneming
+  UNION ALL SELECT * FROM Meijendel.libellen_waarneming
 ) AS o
   ON o.waarneming_id=k.open_waarneming_id
 JOIN Meijendel_ndff_secure.ndff_waarneming_register AS s
@@ -770,6 +772,10 @@ def validation(client: Path, mysql_args: list[str]) -> dict[str, int]:
             "(SELECT COUNT(*) FROM Meijendel.mossen_waarneming "
             "WHERE analyse_status='bronregistratie_niet_toegelaten') + "
             "(SELECT COUNT(*) FROM Meijendel.korstmossen_waarneming "
+            "WHERE analyse_status='bronregistratie_niet_toegelaten') + "
+            "(SELECT COUNT(*) FROM Meijendel.vlinders_waarneming "
+            "WHERE analyse_status='bronregistratie_niet_toegelaten') + "
+            "(SELECT COUNT(*) FROM Meijendel.libellen_waarneming "
             "WHERE analyse_status='bronregistratie_niet_toegelaten')"
         ),
         "gbif_events": "SELECT COUNT(*) FROM Meijendel.vangblik_event",

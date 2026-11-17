@@ -36,7 +36,9 @@ ANALYSIS_TYPES = ("V", "I", "TV", "TA", "TK")
 PUBLIC_NDFF_ROWS = (
     "(SELECT * FROM Meijendel.ndff_open_waarneming "
     "UNION ALL SELECT * FROM Meijendel.mossen_waarneming "
-    "UNION ALL SELECT * FROM Meijendel.korstmossen_waarneming)"
+    "UNION ALL SELECT * FROM Meijendel.korstmossen_waarneming "
+    "UNION ALL SELECT * FROM Meijendel.vlinders_waarneming "
+    "UNION ALL SELECT * FROM Meijendel.libellen_waarneming)"
 )
 MIXED_POSITIVE_PROTOCOLS = {"04.004", "07.001"}
 POSITIVE_ONLY_SOURCE_PROTOCOLS = {
@@ -2868,11 +2870,15 @@ SELECT DATE_FORMAT(o.periode_start,'%Y-%m-%d %H:%i:%s'),
        ST_X(ST_Centroid(o.openbare_geometrie)),
        ST_Y(ST_Centroid(o.openbare_geometrie)),
        ST_Area(o.openbare_geometrie),COUNT(*)
-FROM Meijendel.ndff_open_waarneming o
+FROM (
+  SELECT * FROM Meijendel.vlinders_waarneming
+  UNION ALL SELECT * FROM Meijendel.ndff_open_waarneming
+    WHERE soortgroep_raw='Vliesvleugeligen'
+) o
 WHERE o.protocol LIKE '03.201%'
   AND EXISTS (
     SELECT 1
-    FROM Meijendel.ndff_open_waarneming doel
+    FROM Meijendel.vlinders_waarneming doel
     WHERE doel.protocol LIKE '03.201%'
       AND doel.soortgroep_raw='Dagvlinders'
       AND doel.periode_start=o.periode_start
@@ -2888,7 +2894,7 @@ def vlinder_observation_sql() -> str:
 SELECT DATE_FORMAT(periode_start,'%Y-%m-%d %H:%i:%s'),
        DATE_FORMAT(periode_stop,'%Y-%m-%d %H:%i:%s'),
        wetenschappelijke_naam,SUM(CAST(aantal_raw AS UNSIGNED))
-FROM Meijendel.ndff_open_waarneming
+FROM Meijendel.vlinders_waarneming
 WHERE protocol LIKE '03.201%'
   AND soortgroep_raw='Dagvlinders'
   AND aantal_raw REGEXP '^[0-9]+$'
@@ -2945,7 +2951,7 @@ SELECT DATE_FORMAT(o.periode_start,'%Y-%m-%d %H:%i:%s'),
        ST_X(ST_Centroid(o.openbare_geometrie)),
        ST_Y(ST_Centroid(o.openbare_geometrie)),
        ST_Area(o.openbare_geometrie),COUNT(*)
-FROM Meijendel.ndff_open_waarneming o
+FROM Meijendel.libellen_waarneming o
 WHERE o.protocol LIKE '07.201%'
   AND o.soortgroep_raw='Libellen'
 GROUP BY o.periode_start,o.periode_stop,o.jaar,4,5,6,7
@@ -2958,7 +2964,7 @@ def libel_observation_sql() -> str:
 SELECT DATE_FORMAT(periode_start,'%Y-%m-%d %H:%i:%s'),
        DATE_FORMAT(periode_stop,'%Y-%m-%d %H:%i:%s'),
        wetenschappelijke_naam,SUM(CAST(aantal_raw AS UNSIGNED))
-FROM Meijendel.ndff_open_waarneming
+FROM Meijendel.libellen_waarneming
 WHERE protocol LIKE '07.201%'
   AND soortgroep_raw='Libellen'
   AND aantal_raw REGEXP '^[0-9]+$'
@@ -8382,7 +8388,7 @@ SELECT o.waarneming_id,o.jaar,o.openbare_geometrie_sha256,
        COALESCE(o.aantal_raw,''),COALESCE(o.schaal_telmethode,''),
        COALESCE(o.stadium,''),COALESCE(o.sekse,''),
        r.ruimtelijke_klasse,r.toewijzingskwaliteit
-FROM Meijendel.ndff_open_waarneming o
+FROM {PUBLIC_NDFF_ROWS} o
 JOIN Meijendel.ndff_open_ruimtelijke_beoordeling r
   ON r.waarneming_id=o.waarneming_id
  AND r.regelversie={sql_text(RULE_VERSION)}
@@ -8531,7 +8537,7 @@ SELECT o.waarneming_id,
        COALESCE(o.aantal_raw,''),COALESCE(o.schaal_telmethode,''),
        o.openbare_geometrie_sha256,r.toewijzingskwaliteit,
        r.plotversie_id,r.eenduidig_plot_id
-FROM Meijendel.ndff_open_waarneming o
+FROM {PUBLIC_NDFF_ROWS} o
 JOIN Meijendel.ndff_open_ruimtelijke_beoordeling r
   ON r.waarneming_id=o.waarneming_id
  AND r.regelversie={sql_text(RULE_VERSION)}
@@ -8661,7 +8667,7 @@ SELECT o.waarneming_id,
        COALESCE(o.aantal_raw,''),COALESCE(o.schaal_telmethode,''),
        o.openbare_geometrie_sha256,r.toewijzingskwaliteit,
        r.plotversie_id,r.eenduidig_plot_id
-FROM Meijendel.ndff_open_waarneming o
+FROM {PUBLIC_NDFF_ROWS} o
 JOIN Meijendel.ndff_open_ruimtelijke_beoordeling r
   ON r.waarneming_id=o.waarneming_id
  AND r.regelversie={sql_text(RULE_VERSION)}
@@ -10621,7 +10627,7 @@ SELECT SUBSTRING_INDEX(o.protocol,' ',1),o.waarneming_id,
        o.openbare_geometrie_sha256,COALESCE(o.hoknummer,''),o.vervaagd,
        COALESCE(o.vervagingsniveau_km,0),r.toewijzingskwaliteit,
        r.plotversie_id,COALESCE(r.eenduidig_plot_id,0)
-FROM Meijendel.ndff_open_waarneming o
+FROM {PUBLIC_NDFF_ROWS} o
 JOIN Meijendel.ndff_open_ruimtelijke_beoordeling r
   ON r.waarneming_id=o.waarneming_id
  AND r.regelversie={sql_text(RULE_VERSION)}
@@ -11025,8 +11031,8 @@ def nem_subseries_validation_sql(
   ,'unknown_route_families',(SELECT COUNT(*) FROM {table_prefix}_routefamilie WHERE reconstructieversie={version} AND doelbereikstatus='onbepaald')
   ,'general_visits',(SELECT COUNT(*) FROM {table_prefix}_bezoek WHERE reconstructieversie={version} AND doelbereikstatus='algemene_route')
   ,'unknown_scope_visits',(SELECT COUNT(*) FROM {table_prefix}_bezoek WHERE reconstructieversie={version} AND doelbereikstatus='onbepaald')
-  ,'source_payload_invalid',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '07.201%' AND soortgroep_raw='Libellen' AND (vervaagd<>0 OR stadium<>'imago (adult)' OR schaal_telmethode<>'exact aantal' OR aantal_raw NOT REGEXP '^[0-9]+$'))
-  ,'positive_mismatch',(SELECT COUNT(*) FROM (SELECT SHA2(CONCAT(DATE_FORMAT(periode_start,'%Y-%m-%d %H:%i:%s'),'|',DATE_FORMAT(periode_stop,'%Y-%m-%d %H:%i:%s')),256) bezoek_sleutel,wetenschappelijke_naam,SUM(CAST(aantal_raw AS UNSIGNED)) aantal FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '07.201%' AND soortgroep_raw='Libellen' GROUP BY periode_start,periode_stop,wetenschappelijke_naam) bron LEFT JOIN {table_prefix}_bezoek_taxon t ON t.reconstructieversie={version} AND t.bezoek_sleutel=bron.bezoek_sleutel AND t.wetenschappelijke_naam=bron.wetenschappelijke_naam WHERE t.bezoek_sleutel IS NULL OR t.waarnemingsstatus<>'waargenomen' OR t.aantal<>bron.aantal)
+  ,'source_payload_invalid',(SELECT COUNT(*) FROM Meijendel.libellen_waarneming WHERE protocol LIKE '07.201%' AND soortgroep_raw='Libellen' AND (vervaagd<>0 OR stadium<>'imago (adult)' OR schaal_telmethode<>'exact aantal' OR aantal_raw NOT REGEXP '^[0-9]+$'))
+  ,'positive_mismatch',(SELECT COUNT(*) FROM (SELECT SHA2(CONCAT(DATE_FORMAT(periode_start,'%Y-%m-%d %H:%i:%s'),'|',DATE_FORMAT(periode_stop,'%Y-%m-%d %H:%i:%s')),256) bezoek_sleutel,wetenschappelijke_naam,SUM(CAST(aantal_raw AS UNSIGNED)) aantal FROM Meijendel.libellen_waarneming WHERE protocol LIKE '07.201%' AND soortgroep_raw='Libellen' GROUP BY periode_start,periode_stop,wetenschappelijke_naam) bron LEFT JOIN {table_prefix}_bezoek_taxon t ON t.reconstructieversie={version} AND t.bezoek_sleutel=bron.bezoek_sleutel AND t.wetenschappelijke_naam=bron.wetenschappelijke_naam WHERE t.bezoek_sleutel IS NULL OR t.waarnemingsstatus<>'waargenomen' OR t.aantal<>bron.aantal)
   ,'zero_outside_general',(SELECT COUNT(*) FROM {table_prefix}_bezoek_taxon t JOIN {table_prefix}_bezoek b ON b.reconstructieversie=t.reconstructieversie AND b.bezoek_sleutel=t.bezoek_sleutel WHERE t.reconstructieversie={version} AND t.waarnemingsstatus='echte_nul' AND b.doelbereikstatus<>'algemene_route')
 """.format(table_prefix=table_prefix, version=version) if include_libel_scope else ""
     if include_vlinder_scope:
@@ -11048,7 +11054,7 @@ def nem_subseries_validation_sql(
   ,'positive_source_missing',(SELECT COUNT(*) FROM (
       SELECT SHA2(CONCAT(DATE_FORMAT(periode_start,'%Y-%m-%d %H:%i:%s'),'|',DATE_FORMAT(periode_stop,'%Y-%m-%d %H:%i:%s')),256) bezoek_sleutel,
              wetenschappelijke_naam,SUM(CAST(aantal_raw AS UNSIGNED)) aantal
-      FROM Meijendel.ndff_open_waarneming
+      FROM Meijendel.vlinders_waarneming
       WHERE protocol LIKE '03.201%' AND soortgroep_raw='Dagvlinders'
         AND aantal_raw REGEXP '^[0-9]+$'
       GROUP BY periode_start,periode_stop,wetenschappelijke_naam
@@ -11061,7 +11067,7 @@ def nem_subseries_validation_sql(
     LEFT JOIN (
       SELECT SHA2(CONCAT(DATE_FORMAT(periode_start,'%Y-%m-%d %H:%i:%s'),'|',DATE_FORMAT(periode_stop,'%Y-%m-%d %H:%i:%s')),256) bezoek_sleutel,
              wetenschappelijke_naam,SUM(CAST(aantal_raw AS UNSIGNED)) aantal
-      FROM Meijendel.ndff_open_waarneming
+      FROM Meijendel.vlinders_waarneming
       WHERE protocol LIKE '03.201%' AND soortgroep_raw='Dagvlinders'
         AND aantal_raw REGEXP '^[0-9]+$'
       GROUP BY periode_start,periode_stop,wetenschappelijke_naam
@@ -11260,7 +11266,7 @@ def libel_analysis_input_sql(analysetype: str = "TV") -> str:
     return f"""
 START TRANSACTION WITH CONSISTENT SNAPSHOT, READ ONLY;
 SELECT JSON_OBJECT('soort','controle','bronrecords',COUNT(*))
-FROM Meijendel.ndff_open_waarneming
+FROM Meijendel.libellen_waarneming
 WHERE protocol LIKE '07.201%' AND soortgroep_raw='Libellen';
 SELECT JSON_OBJECT('soort','bron','bezoek_sleutel',b.bezoek_sleutel,
  'bronrecordaantal',b.bronrecordaantal,'jaar',b.jaar,'routefamilie_id',b.routefamilie_id,
@@ -11274,7 +11280,7 @@ SELECT JSON_OBJECT('soort','bron','bezoek_sleutel',b.bezoek_sleutel,
  'analysetype_gegevensgeschiktheid',d.gegevensgeschiktheid,
  'analysetype_kwaliteitsmelding',d.reden)
 FROM Meijendel.ndff_libel_bezoek b
-LEFT JOIN Meijendel.ndff_open_waarneming o
+LEFT JOIN Meijendel.libellen_waarneming o
  ON o.periode_start=b.periode_start AND o.periode_stop=b.periode_stop
  AND o.protocol LIKE '07.201%' AND o.soortgroep_raw='Libellen'
 LEFT JOIN Meijendel_ndff_secure.v_ndff_analyse_record a
@@ -11879,7 +11885,7 @@ def tuintelling_validation_sql() -> str:
     ))
     return f"""
 SELECT JSON_OBJECT(
-  'source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '102.002%'),
+  'source_records',(SELECT COUNT(*) FROM {PUBLIC_NDFF_ROWS} o WHERE o.protocol LIKE '102.002%'),
   'geometry_versions',(SELECT COUNT(*) FROM Meijendel.ndff_tuintelling_geometrie WHERE reconstructieversie={version}),
   'garden_area_families',(SELECT COUNT(*) FROM Meijendel.ndff_tuintelling_tuinvakfamilie WHERE reconstructieversie={version}),
   'periods',(SELECT COUNT(*) FROM Meijendel.ndff_tuintelling_telperiode WHERE reconstructieversie={version}),
@@ -11892,16 +11898,16 @@ SELECT JSON_OBJECT(
   'matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_tuintelling_periode_soortgroep_taxon WHERE reconstructieversie={version}),
   'positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_tuintelling_periode_soortgroep_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen'),
   'preliminary_zero_rows',(SELECT COUNT(*) FROM Meijendel.ndff_tuintelling_periode_soortgroep_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='protocolnul_binnen_lokaal_doelbereik'),
-  'exact_count_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '102.002%' AND schaal_telmethode='exact aantal'),
-  'presence_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '102.002%' AND schaal_telmethode='voorkomen'),
-  'outside_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o JOIN Meijendel.ndff_open_ruimtelijke_beoordeling r ON r.waarneming_id=o.waarneming_id AND r.regelversie={sql_text(RULE_VERSION)} WHERE o.protocol LIKE '102.002%' AND r.toewijzingskwaliteit='outside'),
-  'multiple_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o JOIN Meijendel.ndff_open_ruimtelijke_beoordeling r ON r.waarneming_id=o.waarneming_id AND r.regelversie={sql_text(RULE_VERSION)} WHERE o.protocol LIKE '102.002%' AND r.toewijzingskwaliteit='multiple'),
+  'exact_count_source_records',(SELECT COUNT(*) FROM {PUBLIC_NDFF_ROWS} o WHERE o.protocol LIKE '102.002%' AND o.schaal_telmethode='exact aantal'),
+  'presence_source_records',(SELECT COUNT(*) FROM {PUBLIC_NDFF_ROWS} o WHERE o.protocol LIKE '102.002%' AND o.schaal_telmethode='voorkomen'),
+  'outside_source_records',(SELECT COUNT(*) FROM {PUBLIC_NDFF_ROWS} o JOIN Meijendel.ndff_open_ruimtelijke_beoordeling r ON r.waarneming_id=o.waarneming_id AND r.regelversie={sql_text(RULE_VERSION)} WHERE o.protocol LIKE '102.002%' AND r.toewijzingskwaliteit='outside'),
+  'multiple_source_records',(SELECT COUNT(*) FROM {PUBLIC_NDFF_ROWS} o JOIN Meijendel.ndff_open_ruimtelijke_beoordeling r ON r.waarneming_id=o.waarneming_id AND r.regelversie={sql_text(RULE_VERSION)} WHERE o.protocol LIKE '102.002%' AND r.toewijzingskwaliteit='multiple'),
   'post_renewal_periods',(SELECT COUNT(*) FROM Meijendel.ndff_tuintelling_telperiode WHERE reconstructieversie={version} AND periode_start>='2022-07-07'),
   'plot_linked_rows',(SELECT COUNT(*) FROM Meijendel.ndff_tuintelling_telperiode WHERE reconstructieversie={version} AND plotstatus<>'niet_gekoppeld_geen_meijendelplot'),
   'invalid_matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_tuintelling_periode_soortgroep_taxon WHERE reconstructieversie={version} AND ((waarnemingsstatus='waargenomen' AND (bronrecordaantal=0 OR JSON_LENGTH(meetwaarden_json)=0 OR nulregel<>'niet_van_toepassing')) OR (waarnemingsstatus='protocolnul_binnen_lokaal_doelbereik' AND (bronrecordaantal<>0 OR JSON_LENGTH(meetwaarden_json)<>0 OR nulregel<>'niet_gemeld_binnen_positief_bevestigde_soortgroeptelling')))),
   'matrix_size_mismatch',ABS((SELECT COUNT(*) FROM Meijendel.ndff_tuintelling_periode_soortgroep_taxon WHERE reconstructieversie={version})-(SELECT COALESCE(SUM(lokale_doelsoorten),0) FROM Meijendel.ndff_tuintelling_periode_soortgroep WHERE reconstructieversie={version})),
-  'positive_source_mismatch',ABS((SELECT COALESCE(SUM(bronrecordaantal),0) FROM Meijendel.ndff_tuintelling_periode_soortgroep_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen')-(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '102.002%')),
-  'unlinked_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o LEFT JOIN Meijendel.ndff_tuintelling_recordselectie s ON s.reconstructieversie={version} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '102.002%' AND s.waarneming_id IS NULL),
+  'positive_source_mismatch',ABS((SELECT COALESCE(SUM(bronrecordaantal),0) FROM Meijendel.ndff_tuintelling_periode_soortgroep_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen')-(SELECT COUNT(*) FROM {PUBLIC_NDFF_ROWS} o WHERE o.protocol LIKE '102.002%')),
+  'unlinked_source_records',(SELECT COUNT(*) FROM {PUBLIC_NDFF_ROWS} o LEFT JOIN Meijendel.ndff_tuintelling_recordselectie s ON s.reconstructieversie={version} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '102.002%' AND s.waarneming_id IS NULL),
   'secure_derived_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name IN ({secure_tables}))
 );
 """
@@ -11914,13 +11920,13 @@ def liveatlas_validation_sql() -> str:
     ))
     return f"""
 SELECT JSON_OBJECT(
-  'source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '102.005%'),
+  'source_records',(SELECT COUNT(*) FROM {PUBLIC_NDFF_ROWS} o WHERE o.protocol LIKE '102.005%'),
   'visits',(SELECT COUNT(*) FROM Meijendel.ndff_liveatlas_bezoek WHERE reconstructieversie={version}),
   'group_visits',(SELECT COUNT(*) FROM Meijendel.ndff_liveatlas_bezoek_soortgroep WHERE reconstructieversie={version}),
   'taxon_rows',(SELECT COUNT(*) FROM Meijendel.ndff_liveatlas_bezoek_taxon WHERE reconstructieversie={version}),
   'distinct_taxa',(SELECT COUNT(DISTINCT wetenschappelijke_naam) FROM Meijendel.ndff_liveatlas_bezoek_taxon WHERE reconstructieversie={version}),
-  'geometry_versions',(SELECT COUNT(DISTINCT openbare_geometrie_sha256) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '102.005%'),
-  'exact_count_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '102.005%' AND schaal_telmethode='exact aantal' AND aantal_raw REGEXP '^[0-9]+$'),
+  'geometry_versions',(SELECT COUNT(DISTINCT o.openbare_geometrie_sha256) FROM {PUBLIC_NDFF_ROWS} o WHERE o.protocol LIKE '102.005%'),
+  'exact_count_source_records',(SELECT COUNT(*) FROM {PUBLIC_NDFF_ROWS} o WHERE o.protocol LIKE '102.005%' AND o.schaal_telmethode='exact aantal' AND o.aantal_raw REGEXP '^[0-9]+$'),
   'total_count',(SELECT COALESCE(SUM(totaal_aantal),0) FROM Meijendel.ndff_liveatlas_bezoek_taxon WHERE reconstructieversie={version}),
   'butterfly_visits',(SELECT COUNT(*) FROM Meijendel.ndff_liveatlas_bezoek_soortgroep WHERE reconstructieversie={version} AND soortgroep_raw='Dagvlinders'),
   'dragonfly_visits',(SELECT COUNT(*) FROM Meijendel.ndff_liveatlas_bezoek_soortgroep WHERE reconstructieversie={version} AND soortgroep_raw='Libellen'),
@@ -11934,8 +11940,8 @@ SELECT JSON_OBJECT(
   'completeness_unknown_group_visits',(SELECT COUNT(*) FROM Meijendel.ndff_liveatlas_bezoek_soortgroep WHERE reconstructieversie={version} AND volledigheidsstatus='niet_meegeleverd'),
   'zero_rows',(SELECT COUNT(*) FROM Meijendel.ndff_liveatlas_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus<>'waargenomen'),
   'invalid_taxon_rows',(SELECT COUNT(*) FROM Meijendel.ndff_liveatlas_bezoek_taxon WHERE reconstructieversie={version} AND (bronrecordaantal=0 OR totaal_aantal=0 OR JSON_LENGTH(meetwaarden_json)=0 OR nulregel<>'geen_nul_afleidbaar')),
-  'positive_source_mismatch',ABS((SELECT COALESCE(SUM(bronrecordaantal),0) FROM Meijendel.ndff_liveatlas_bezoek_taxon WHERE reconstructieversie={version})-(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '102.005%')),
-  'unlinked_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o LEFT JOIN Meijendel.ndff_liveatlas_recordselectie s ON s.reconstructieversie={version} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '102.005%' AND s.waarneming_id IS NULL),
+  'positive_source_mismatch',ABS((SELECT COALESCE(SUM(bronrecordaantal),0) FROM Meijendel.ndff_liveatlas_bezoek_taxon WHERE reconstructieversie={version})-(SELECT COUNT(*) FROM {PUBLIC_NDFF_ROWS} o WHERE o.protocol LIKE '102.005%')),
+  'unlinked_source_records',(SELECT COUNT(*) FROM {PUBLIC_NDFF_ROWS} o LEFT JOIN Meijendel.ndff_liveatlas_recordselectie s ON s.reconstructieversie={version} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '102.005%' AND s.waarneming_id IS NULL),
   'secure_derived_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name IN ({secure_tables}))
 );
 """
@@ -11951,13 +11957,13 @@ def kwartiertelling_validation_sql() -> str:
     )
     return f"""
 SELECT JSON_OBJECT(
-  'source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '102.007%'),
+  'source_records',(SELECT COUNT(*) FROM {PUBLIC_NDFF_ROWS} o WHERE o.protocol LIKE '102.007%'),
   'intervals',(SELECT COUNT(*) FROM Meijendel.ndff_kwartiertelling_telinterval WHERE reconstructieversie={version}),
   'group_intervals',(SELECT COUNT(*) FROM Meijendel.ndff_kwartiertelling_interval_soortgroep WHERE reconstructieversie={version}),
   'taxon_rows',(SELECT COUNT(*) FROM Meijendel.ndff_kwartiertelling_interval_taxon WHERE reconstructieversie={version}),
   'distinct_taxa',(SELECT COUNT(DISTINCT wetenschappelijke_naam) FROM Meijendel.ndff_kwartiertelling_interval_taxon WHERE reconstructieversie={version}),
-  'geometry_versions',(SELECT COUNT(DISTINCT openbare_geometrie_sha256) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '102.007%'),
-  'exact_count_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '102.007%' AND schaal_telmethode='exact aantal' AND aantal_raw REGEXP '^[0-9]+$'),
+  'geometry_versions',(SELECT COUNT(DISTINCT o.openbare_geometrie_sha256) FROM {PUBLIC_NDFF_ROWS} o WHERE o.protocol LIKE '102.007%'),
+  'exact_count_source_records',(SELECT COUNT(*) FROM {PUBLIC_NDFF_ROWS} o WHERE o.protocol LIKE '102.007%' AND o.schaal_telmethode='exact aantal' AND o.aantal_raw REGEXP '^[0-9]+$'),
   'total_count',(SELECT COALESCE(SUM(totaal_aantal),0) FROM Meijendel.ndff_kwartiertelling_interval_taxon WHERE reconstructieversie={version}),
   'butterfly_intervals',(SELECT COUNT(*) FROM Meijendel.ndff_kwartiertelling_interval_soortgroep WHERE reconstructieversie={version} AND soortgroep_raw='Dagvlinders'),
   'moth_intervals',(SELECT COUNT(*) FROM Meijendel.ndff_kwartiertelling_interval_soortgroep WHERE reconstructieversie={version} AND soortgroep_raw='Nachtvlinders'),
@@ -11971,8 +11977,8 @@ SELECT JSON_OBJECT(
   'completeness_unknown_group_intervals',(SELECT COUNT(*) FROM Meijendel.ndff_kwartiertelling_interval_soortgroep WHERE reconstructieversie={version} AND volledigheidsstatus='niet_meegeleverd_ononderscheidbaar_soortgericht'),
   'zero_rows',(SELECT COUNT(*) FROM Meijendel.ndff_kwartiertelling_interval_taxon WHERE reconstructieversie={version} AND waarnemingsstatus<>'waargenomen'),
   'invalid_taxon_rows',(SELECT COUNT(*) FROM Meijendel.ndff_kwartiertelling_interval_taxon WHERE reconstructieversie={version} AND (bronrecordaantal=0 OR totaal_aantal=0 OR JSON_LENGTH(meetwaarden_json)=0 OR nulregel<>'geen_nul_afleidbaar')),
-  'positive_source_mismatch',ABS((SELECT COALESCE(SUM(bronrecordaantal),0) FROM Meijendel.ndff_kwartiertelling_interval_taxon WHERE reconstructieversie={version})-(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '102.007%')),
-  'unlinked_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o LEFT JOIN Meijendel.ndff_kwartiertelling_recordselectie s ON s.reconstructieversie={version} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '102.007%' AND s.waarneming_id IS NULL),
+  'positive_source_mismatch',ABS((SELECT COALESCE(SUM(bronrecordaantal),0) FROM Meijendel.ndff_kwartiertelling_interval_taxon WHERE reconstructieversie={version})-(SELECT COUNT(*) FROM {PUBLIC_NDFF_ROWS} o WHERE o.protocol LIKE '102.007%')),
+  'unlinked_source_records',(SELECT COUNT(*) FROM {PUBLIC_NDFF_ROWS} o LEFT JOIN Meijendel.ndff_kwartiertelling_recordselectie s ON s.reconstructieversie={version} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '102.007%' AND s.waarneming_id IS NULL),
   'secure_derived_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name IN ({secure_tables}))
 );
 """
@@ -11996,8 +12002,8 @@ def resterende_nem_validation_sql() -> str:
     ))
     return f"""
 SELECT JSON_OBJECT(
-  'source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '03.203%' OR protocol LIKE '11.204%' OR protocol LIKE '13.201%' OR protocol LIKE '17.207%'),
-  'nachtvlinder_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '03.203%'),
+  'source_records',(SELECT COUNT(*) FROM {PUBLIC_NDFF_ROWS} AS o WHERE protocol LIKE '03.203%' OR protocol LIKE '11.204%' OR protocol LIKE '13.201%' OR protocol LIKE '17.207%'),
+  'nachtvlinder_source_records',(SELECT COUNT(*) FROM Meijendel.vlinders_waarneming WHERE protocol LIKE '03.203%'),
   'nachtvlinder_hokyears',(SELECT COUNT(*) FROM Meijendel.ndff_nachtvlinder_hokjaar WHERE reconstructieversie={night}),
   'nachtvlinder_taxon_rows',(SELECT COUNT(*) FROM Meijendel.ndff_nachtvlinder_hokjaar_taxon WHERE reconstructieversie={night}),
   'nachtvlinder_total_registered',(SELECT SUM(geregistreerd_aantal) FROM Meijendel.ndff_nachtvlinder_hokjaar_taxon WHERE reconstructieversie={night}),
@@ -12022,7 +12028,7 @@ SELECT JSON_OBJECT(
       (SELECT COUNT(*) FROM Meijendel.ndff_poldervis_bezoek_taxon WHERE reconstructieversie={fish} AND waarnemingsstatus NOT IN ('waargenomen','doelsoort_niet_gemeld'))
   ),
   'unlinked_source_records',(
-      (SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o LEFT JOIN Meijendel.ndff_nachtvlinder_recordselectie s ON s.reconstructieversie={night} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '03.203%' AND s.waarneming_id IS NULL)+
+      (SELECT COUNT(*) FROM Meijendel.vlinders_waarneming o LEFT JOIN Meijendel.ndff_nachtvlinder_recordselectie s ON s.reconstructieversie={night} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '03.203%' AND s.waarneming_id IS NULL)+
       (SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o LEFT JOIN Meijendel.ndff_bospaddenstoel_verspreiding_recordselectie s ON s.reconstructieversie={fungus} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '11.204%' AND s.waarneming_id IS NULL)+
       (SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o LEFT JOIN Meijendel.ndff_poldervis_recordselectie s ON s.reconstructieversie={fish} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '13.201%' AND s.waarneming_id IS NULL)+
       (SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o LEFT JOIN Meijendel.ndff_otter_bever_recordselectie s ON s.reconstructieversie={mammal} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '17.207%' AND s.waarneming_id IS NULL)

@@ -280,6 +280,16 @@ FROM (
   JOIN Meijendel.ndff_open_waarneming_register AS r
     ON r.waarneming_id=k.waarneming_id
    AND r.opslag_tabel='korstmossen_waarneming'
+  UNION ALL
+  SELECT v.* FROM Meijendel.vlinders_waarneming AS v
+  JOIN Meijendel.ndff_open_waarneming_register AS r
+    ON r.waarneming_id=v.waarneming_id
+   AND r.opslag_tabel='vlinders_waarneming'
+  UNION ALL
+  SELECT l.* FROM Meijendel.libellen_waarneming AS l
+  JOIN Meijendel.ndff_open_waarneming_register AS r
+    ON r.waarneming_id=l.waarneming_id
+   AND r.opslag_tabel='libellen_waarneming'
 ) AS o
 LEFT JOIN ndff_open_secure_koppeling AS k
   ON k.open_waarneming_id=o.waarneming_id

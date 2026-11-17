@@ -995,6 +995,36 @@ def check_central_query_routes():
     split_schema.pop('ndff_mossen')
     split_schema.pop('ndff_korstmossen')
     module.central_query_schema_contract(split_schema)
+    migrated_schema = {**split_schema,
+        'vlinders_waarneming': actual['ndff_open_waarneming'].copy(),
+        'libellen_waarneming': actual['ndff_open_waarneming'].copy(),
+        **{table:set(columns) for table,columns in module.NDFF_ROUTE_LINK_SCHEMA.items()},
+    }
+    for obsolete in ('ndff_dagvlinders', 'ndff_nachtvlinders',
+                     'ndff_microvlinders', 'ndff_libellen'):
+        migrated_schema.pop(obsolete)
+    module.central_query_schema_contract(migrated_schema)
+    migrated_routes = module.central_query_routes(migrated_schema)
+    assert migrated_routes['vlinders_waarneming']['catalogue'] == 'ndff_soorten'
+    assert migrated_routes['libellen_waarneming']['catalogue'] == 'ndff_soorten'
+    migrated_query = module.central_taxon_query(
+        'ndff_open_waarneming_protocol',
+        migrated_routes['ndff_open_waarneming_protocol'], 7,
+    )
+    assert 'vlinders_waarneming' in migrated_query
+    assert 'libellen_waarneming' in migrated_query
+    migrated_guards = module.central_query_triggers_sql({'routes': migrated_routes})
+    for table in ('vlinders_waarneming', 'libellen_waarneming'):
+        assert f"opslag_tabel='{table}'" in migrated_guards
+        assert f'JOIN {table} g' in migrated_guards
+        assert f'CREATE TRIGGER cq_ndff_{table.removesuffix("_waarneming")}_bd' in migrated_guards
+    try:
+        module.central_query_schema_contract({**migrated_schema,
+            'ndff_dagvlinders': actual['ndff_dagvlinders']})
+    except ValueError:
+        pass
+    else:
+        raise AssertionError('Verouderde dagvlinderindex naast bronregels geaccepteerd')
     for changed in ({**actual,'nieuwe_metingen':{'soortnr','aantal','jaar'}},
                     {**actual,'nieuwe_metingen':{'euring_code','aantal','jaar'}},
                     {**actual,'territoria':actual['territoria']|{'ongecontroleerd_taxon'}}):

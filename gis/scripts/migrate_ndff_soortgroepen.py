@@ -14,10 +14,12 @@ LABEL_CODES = {
     "Geleedpotigen (overig)": "geleedpotigen_overig",
     "Insecten (overig)": "insecten_overig",
     "Kevers": "kevers",
+    "Korstmossen": "korstmossen",
     "Kranswieren, wieren en algen": "kranswieren_wieren_algen",
     "Kreeftachtigen": "kreeftachtigen",
     "Libellen": "libellen",
     "Microvlinders": "microvlinders",
+    "Mossen": "mossen",
     "Nachtvlinders": "nachtvlinders",
     "Ongewervelden (overig)": "ongewervelden_overig",
     "Reptielen": "reptielen",
@@ -33,6 +35,14 @@ LABEL_CODES = {
     "Weekdieren": "weekdieren",
     "Zoogdieren (overig)": "zoogdieren_overig",
 }
+
+PUBLIC_NDFF_ROWS = (
+    "(SELECT * FROM Meijendel.ndff_open_waarneming "
+    "UNION ALL SELECT * FROM Meijendel.mossen_waarneming "
+    "UNION ALL SELECT * FROM Meijendel.korstmossen_waarneming "
+    "UNION ALL SELECT * FROM Meijendel.vlinders_waarneming "
+    "UNION ALL SELECT * FROM Meijendel.libellen_waarneming)"
+)
 
 
 def source_group_matches(raw_group: str, primary_group: str | None) -> bool:
@@ -80,25 +90,27 @@ def query(sql: str) -> list[list[str]]:
 
 def preflight() -> dict:
     """Lees bronverdeling en vastgelegde reeksbesluiten zonder migratieplan."""
-    rows = query("""SELECT o.soortgroep_raw,g.groep_code,COUNT(*)
-        FROM Meijendel.ndff_open_waarneming o
+    rows = query(f"""SELECT o.soortgroep_raw,g.groep_code,COUNT(*)
+        FROM {PUBLIC_NDFF_ROWS} o
         JOIN Meijendel.ndff_soorten s ON s.soort_key=o.soort_key
         JOIN Meijendel.taxa_bronkoppeling b
           ON b.koppeling_id=s.taxon_bronkoppeling_id
         JOIN Meijendel.taxa t ON t.taxon_id=b.taxon_id
-        JOIN Meijendel.taxon_groepen g ON g.groep_id=t.groep_id
+        LEFT JOIN Meijendel.taxon_groepen g ON g.groep_id=t.groep_id
         GROUP BY o.soortgroep_raw,g.groep_code
         ORDER BY o.soortgroep_raw,g.groep_code""")
     groups = {}
     dual_labels = 0
     for raw, code, count_raw in rows:
-        if not source_group_matches(raw, code):
+        if code != 'NULL' and not source_group_matches(raw, code):
             raise RuntimeError(f"Centrale groep {code!r} past niet bij bronlabel {raw!r}")
+        if code == 'NULL':
+            code = 'nog_geen_centrale_groep'
         groups[code] = groups.get(code, 0) + int(count_raw)
         if "|" in raw:
             dual_labels += int(count_raw)
     parent_raw, first_year, last_year = query(
-        "SELECT COUNT(*),MIN(jaar),MAX(jaar) FROM Meijendel.ndff_open_waarneming"
+        f"SELECT COUNT(*),MIN(jaar),MAX(jaar) FROM {PUBLIC_NDFF_ROWS} o"
     )[0]
     parent = int(parent_raw)
     if sum(groups.values()) != parent:

@@ -188,8 +188,11 @@ De lokale technische vervolgcontrole is afgerond. Websitekoppelingen zijn in een
   blijft auditinformatie, geen migratieselectie. Het script
   `gis/scripts/migrate_ndff_soortgroepen.py` bevat nu uitsluitend een
   lezende bron- en reeksinventarisatie; de generator voor 24 volledige
-  soortgroeptabellen is verwijderd. De huidige NDFF-reeksbesluiten leveren
-  geen kandidaat voor fysieke verplaatsing op. Bepaal per bestaande herhaalde
+  soortgroeptabellen is verwijderd. Op 8 november leverden de toenmalige
+  reeksbesluiten geen kandidaat voor fysieke verplaatsing op. De later
+  uitdrukkelijk opgedragen verhuizing van vlinders en libellen staat hieronder
+  bij De Vlinderstichting en heropent geen algemene verplaatsing. Bepaal per
+  bestaande herhaalde
   meetreeks afzonderlijk of zij bruikbaar is en nog buiten een passende
   soortgroeptabel staat; behoud bronwaarden, meetstructuur en taxonroute.
   De eerste concrete verplaatsing is op 8 november lokaal uitgevoerd:
@@ -1008,8 +1011,26 @@ in iCloud **Agenda**.
   CSV toont bij die libellenjaren een vlindertotaal van nul, ook wanneer er
   bezoeken waren. Alle andere 23 objecten zijn buiten de levende database
   gebleven. De geïmporteerde rijen zijn regel voor regel met de selectie uit
-  Toves CSV's vergeleken. Afzonderlijke NDFF-waarnemingen zijn nog niet aan
-  deze primaire jaarcijfers gekoppeld.
+  Toves CSV's vergeleken. Op dat importmoment waren afzonderlijke
+  NDFF-waarnemingen nog niet aan deze primaire jaarcijfers gekoppeld.
+- [x] **Openbare NDFF-vlinders en -libellen fysiek onder de soortgroep,
+  17 november 2026.** De 225.065 dag-, nacht- en microvlinderrecords zijn
+  naar `vlinders_waarneming` verhuisd en de 32.325 libellenrecords naar
+  `libellen_waarneming`, zonder tweede biologische kopie. De stabiele
+  NDFF-identiteit, bestaande beoordelingen en afscherming van 61 beveiligde
+  vlindertegenhangers zijn behouden. Koppelingen met primaire routejaren
+  hebben een afzonderlijke bewijsstatus; Voorlinden-familie 7 (2.219 records)
+  is aannemelijk gekoppeld aan de historische route 1764, maar heeft geen
+  Tove-routejaar. De overige 492.444 NDFF-records blijven in
+  `ndff_open_waarneming`; samen zijn 810.830 openbare records bereikbaar.
+  De oude ID-indexen zijn pas na pariteits- en afnemercontrole verwijderd.
+  Een zware SQL-export, cachebouw en VPS-publicatie vallen buiten deze taak.
+- [ ] **Primaire taxongroep voor 28 reeds aanwezige NDFF-regels beoordelen.**
+  Het gaat om acht korstmos/schimmelnamen met dubbel bronlabel; zij zijn via
+  het centrale taxonregister bereikbaar, maar hebben nog geen gekozen
+  `taxon_groepen`-indeling. De groepsinventarisatie toont ze afzonderlijk,
+  zodat zij in de tussentijd niet uit aantallen verdwijnen. De migratie van
+  vlinders en libellen heeft deze situatie niet veroorzaakt.
 - [x] **De Vlinderstichting — weergavenaam van route 638, 17 november 2026.**
   De 19 lijnstukken liggen in Kijfhoek en Bierlap, niet in Hertenkamp M105.
   Gebruik op kaarten en bij ruimtelijke analyses ‘Bierlap – dagvlinderroute

@@ -45,8 +45,12 @@ validate_dump_structure() {
   grep -q 'CREATE TABLE `ndff_open_waarneming_register`' "$dump" || die "SQL-dump mist het openbare NDFF-ID-register."
   grep -q 'CREATE TABLE `mossen_waarneming`' "$dump" || die "SQL-dump mist de openbare moswaarnemingen."
   grep -q 'CREATE TABLE `korstmossen_waarneming`' "$dump" || die "SQL-dump mist de openbare korstmoswaarnemingen."
-  if LC_ALL=C grep -Eq 'CREATE TABLE `ndff_(mossen|korstmossen)`' "$dump"; then
-    die "SQL-dump bevat nog een verouderde mos- of korstmosgroepsindex."
+  grep -q 'CREATE TABLE `vlinders_waarneming`' "$dump" || die "SQL-dump mist de openbare vlinderwaarnemingen."
+  grep -q 'CREATE TABLE `libellen_waarneming`' "$dump" || die "SQL-dump mist de openbare libellenwaarnemingen."
+  grep -q 'CREATE TABLE `vlinders_waarneming_routekoppeling`' "$dump" || die "SQL-dump mist de vlinderroutekoppelingen."
+  grep -q 'CREATE TABLE `libellen_waarneming_routekoppeling`' "$dump" || die "SQL-dump mist de libellenroutekoppelingen."
+  if LC_ALL=C grep -Eq 'CREATE TABLE `ndff_(mossen|korstmossen|dagvlinders|nachtvlinders|microvlinders|libellen)`' "$dump"; then
+    die "SQL-dump bevat nog een verwijderde NDFF-soortgroepindex."
   fi
   grep -q 'CREATE TABLE `plot_analyse_scope`' "$dump" || die "SQL-dump mist plot_analyse_scope."
   grep -q 'v_meijendel_analyseplot_actueel' "$dump" || die "SQL-dump mist v_meijendel_analyseplot_actueel."

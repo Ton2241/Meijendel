@@ -13,6 +13,24 @@ in de bijlage blijven voor de audit behouden. Voor de actuele opslag gelden
 het [bronregister](../MEIJENDEL_BRONREGISTER.md) en de
 [migratiedocumentatie](NDFF_MOSSEN_KORSTMOSSEN_MIGRATIE.md).
 
+**Actuele openbare NDFF-opslag, 17 november 2026.** Na de afzonderlijk
+opgedragen verhuizing van alle dag-, nacht- en microvlinderwaarnemingen
+(225.065) en libellenwaarnemingen (32.325) bevat `ndff_open_waarneming`
+492.444 bronregels. De andere volledige bronregels staan in
+`vlinders_waarneming` (225.065), `libellen_waarneming` (32.325),
+`mossen_waarneming` (32.353) en `korstmossen_waarneming` (28.643). Samen zijn
+dit 810.830 unieke openbare waarnemingen, elk onder dezelfde
+`waarneming_id` als voorheen. Het smalle `ndff_open_waarneming_register`
+bewaart de fysieke opslagplaats; het bevat geen tweede waarneming. De
+vroegere vier enkelkoloms-groepsindexen voor vlinders en libellen zijn na
+controle verwijderd. De 61 beveiligde vlindertegenhangers blijven uitsluitend
+in `Meijendel_ndff_secure`. Deze verhuizing schept geen nieuwe waarnemingen
+of analysetoelating. De 2.219 bronregels in NDFF-routefamilie 7 zijn
+aannemelijk verbonden met de historische Voorlinden-route 1764; Toves
+levering heeft voor deze route geen telobject of jaarcijfers. De historische
+groepsrijtellingen verderop beschrijven de nulmeting van 26 september en
+zijn geen opgave van nog bestaande ID-indexen.
+
 **Actuele aanvulling, 17 november 2026.** De geselecteerde primaire kaartlocaties
 van De Vlinderstichting staan in vier nieuwe, uitsluitend ruimtelijke tabellen:
 `vlinders_dag_telobject` (11), `vlinders_dag_geometrie` (194),
@@ -20,8 +38,9 @@ van De Vlinderstichting staan in vier nieuwe, uitsluitend ruimtelijke tabellen:
 dagvlindercomponenten bestaan uit 173 lijnen en 21 punten; alle geometrie is
 opgeslagen als EPSG:28992. `bron_code` is bij dagvlinders het oorspronkelijke
 `countobject_id`; het `telobject_id` bij libellen is alleen een lokale sleutel,
-omdat de levering geen broncode bevat. De tabellen bevatten geen soortenregels,
-bezoeken of jaarcijfers en vervangen geen NDFF-reconstructietabel. Het hieronder
+omdat de levering geen broncode bevat. Bij de kaartimport bevatten deze
+tabellen geen soortenregels, bezoeken of jaarcijfers en vervingen zij geen
+NDFF-reconstructietabel. Het hieronder
 staande voorstel om bestaande `ndff_vlinder_*`-tabellen later naar
 `dagvlinders_*` te migreren blijft een afzonderlijk, nog niet uitgevoerd
 voorstel; Tons keuze `vlinders_*` geldt voor deze nieuwe primaire kaartlaag.
@@ -56,9 +75,11 @@ zijn uit deze levering geen soortuitkomsten of nulwaarnemingen ingevoerd. De
 148 dagvlinder-soortcodejaren uit 2026 hebben `jaarstatus=voorlopig` op hun
 routejaar; 2026 wordt niet met de afgesloten meetjaren samengevoegd. Alle
 overige 23 bronobjecten zijn uitgesloten. De ingevoerde rijen zijn regel voor
-regel vergeleken met de oorspronkelijke geselecteerde CSV-rijen. De NDFF-
-reconstructie is niet fysiek vervangen en afzonderlijke NDFF-records zijn
-nog niet aan deze jaargegevens gekoppeld.
+regel vergeleken met de oorspronkelijke geselecteerde CSV-rijen. De
+NDFF-protocolreconstructie is niet fysiek vervangen. De latere, afzonderlijke
+verhuizing van volledige NDFF-bronregels en hun aannemelijke routejaarkoppeling
+staat in de actuele opslagnotitie hierboven; een bronrecord is daardoor geen
+extra Tove-jaarcijfer of bewezen identiek bezoek.
 
 ## Hoofdkeuze
 

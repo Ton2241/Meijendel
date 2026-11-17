@@ -39,8 +39,12 @@ class MigratieDDLTest(unittest.TestCase):
         self.assertIn("Meijendel.ndff_open_waarneming_register", canonical)
         self.assertIn("Meijendel.mossen_waarneming", canonical)
         self.assertIn("Meijendel.korstmossen_waarneming", canonical)
+        self.assertIn("Meijendel.vlinders_waarneming", canonical)
+        self.assertIn("Meijendel.libellen_waarneming", canonical)
         self.assertIn("r.opslag_tabel='mossen_waarneming'", canonical)
         self.assertIn("r.opslag_tabel='korstmossen_waarneming'", canonical)
+        self.assertIn("r.opslag_tabel='vlinders_waarneming'", canonical)
+        self.assertIn("r.opslag_tabel='libellen_waarneming'", canonical)
 
     def test_nieuwe_schema_bevat_slechts_een_smal_register(self):
         module = load_module()
