@@ -615,6 +615,12 @@ CENTRAL_QUERY_SCHEMA.update({
     'toegankelijkheidsstatus': frozenset('status_code omschrijving'.split()),
     'plot_jaar_infra': frozenset('plot_id jaar bron variabele waarde geldig_vanaf geldig_vanaf_grondslag geldig_tot'.split()),
     'maatregel_registratie_herkomst': frozenset('herkomst_id brontabel bronsleutel oorspronkelijke_rij rij_sha256 migratieversie beheer_registratie_id uitvoering_id plot_id jaar'.split()),
+    # Primaire kaartlocaties van De Vlinderstichting bevatten geen soort- of
+    # waarnemingsregels; jaarcijfers krijgen pas later een centrale taxonroute.
+    'vlinders_dag_telobject': frozenset('bron_code bronnaam projectnaam bron_eerste_jaar bron_laatste_jaar bronkaart_sha256 basisgebiedversie aangemaakt_op'.split()),
+    'vlinders_dag_geometrie': frozenset('bron_code kaartcomponent_nr geometrie geometrie_sha256'.split()),
+    'libellen_telobject': frozenset('telobject_id bronnaam projectnaam bron_eerste_jaar bron_laatste_jaar bronkaart_sha256 basisgebiedversie aangemaakt_op'.split()),
+    'libellen_geometrie': frozenset('telobject_id kaartcomponent_nr geometrie geometrie_sha256'.split()),
 })
 
 def central_query_schema_contract(schema: dict[str, set[str]]) -> None:

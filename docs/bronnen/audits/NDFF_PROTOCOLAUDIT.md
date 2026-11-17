@@ -93,6 +93,20 @@ noordelijke geometrieën zijn als `ruimtelijke_uitbijter` gemarkeerd. Op 76
 tijdstippen komen beide componenten binnen hetzelfde geregistreerde bezoek
 voor; splitsing zou die bezoeken kunstmatig over twee routes verdelen.
 
+**Primaire kaartlocaties, 17 november 2026.** Uit Toves routekaart zijn op
+uitdrukkelijke selectie van Ton elf dagvlinderlocaties en elf libellenlocaties
+met 218 kaartcomponenten in vier nieuwe `Meijendel.vlinders_dag_*`- en
+`libellen_*`-tabellen opgenomen. Pan van Persijn (code 230) en de andere
+niet-geselecteerde locaties zijn uitgesloten. De dagvlindercodes 393, 635,
+638, 640, 929, 1149, 4439, 4410, 4588, 4615 en 5169 komen rechtstreeks uit
+de primaire levering; de elf libellenlocaties hebben daarin geen eigen code,
+dus hun database-ID is alleen intern. De 21 dagvlinderpunten bij Bierlap en
+Vallei Meijendel zijn geen bewezen volledige looproutes. Deze kaartlaag is
+een primaire locatiebron, maar bewijst nog geen koppeling van een afzonderlijk
+NDFF-record aan een route of bezoek. Laat de bestaande NDFF-reconstructies en
+hun kwaliteitsvlaggen daarom staan totdat de recordkoppeling is getoetst.
+Primaire jaarcijfers en bezoekaantallen zijn in deze stap niet geïmporteerd.
+
 De 1.535 vliesvleugelrecords onder hetzelfde protocol betreffen uitsluitend
 taxa van het geslacht *Bombus*. De handleidingen tonen twee mogelijke
 bovenliggende structuren: een eigen hommelroute of de optionele hommeltelling

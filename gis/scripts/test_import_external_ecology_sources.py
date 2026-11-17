@@ -961,6 +961,13 @@ def check_central_query_routes():
     assert module.source_usage_projection({'name':'A','register_broncontext':{'extra':1}})['name'] == 'A'
     assert 'register_broncontext' not in module.source_usage_projection({'register_broncontext':{}})
     actual={k:set(v) for k,v in module.CENTRAL_QUERY_SCHEMA.items()}
+    locatie_tabellen = {
+        'vlinders_dag_telobject', 'vlinders_dag_geometrie',
+        'libellen_telobject', 'libellen_geometrie',
+    }
+    assert locatie_tabellen <= set(actual), 'Primaire Tove-locatietabellen ontbreken in het schemacontract'
+    assert not locatie_tabellen & set(module.central_query_routes(actual)), \
+        'Taxonvrije kaartlocaties mogen geen biologische waarnemingsroute worden'
     assert len([table for table in actual if table.startswith('sovon_bmp_')]) == 5
     module.central_query_schema_contract(actual)
     split_schema = {**actual,

@@ -13,6 +13,19 @@ in de bijlage blijven voor de audit behouden. Voor de actuele opslag gelden
 het [bronregister](../MEIJENDEL_BRONREGISTER.md) en de
 [migratiedocumentatie](NDFF_MOSSEN_KORSTMOSSEN_MIGRATIE.md).
 
+**Actuele aanvulling, 17 november 2026.** De geselecteerde primaire kaartlocaties
+van De Vlinderstichting staan in vier nieuwe, uitsluitend ruimtelijke tabellen:
+`vlinders_dag_telobject` (11), `vlinders_dag_geometrie` (194),
+`libellen_telobject` (11) en `libellen_geometrie` (24). De 194
+dagvlindercomponenten bestaan uit 173 lijnen en 21 punten; alle geometrie is
+opgeslagen als EPSG:28992. `bron_code` is bij dagvlinders het oorspronkelijke
+`countobject_id`; het `telobject_id` bij libellen is alleen een lokale sleutel,
+omdat de levering geen broncode bevat. De tabellen bevatten geen soortenregels,
+bezoeken of jaarcijfers en vervangen geen NDFF-reconstructietabel. Het hieronder
+staande voorstel om bestaande `ndff_vlinder_*`-tabellen later naar
+`dagvlinders_*` te migreren blijft een afzonderlijk, nog niet uitgevoerd
+voorstel; Tons keuze `vlinders_*` geldt voor deze nieuwe primaire kaartlaag.
+
 ## Hoofdkeuze
 
 De hoofdindeling wordt de soortgroep. Libelleninformatie hoort herkenbaar onder `libellen_*`, keverinformatie onder `kevers_*`, enzovoort. De organisatie die gegevens levert en het moment waarop bestanden gezamenlijk zijn geïmporteerd, bepalen niet langer de indeling. Rechtstreekse leveringen moeten dezelfde tabelfamilies kunnen aanvullen als de informatie die via NDFF is ontvangen.

@@ -990,9 +990,17 @@ in iCloud **Agenda**.
   2026.** De routekaart en 8.714 dagvlinderjaarcijfers zijn vergeleken met de
   actuele Meijendel-grens en de elf NDFF-routefamilies. Elf van de zeventien
   telobjecten liggen binnen het basisgebied; negen zijn kandidaten voor
-  routegebonden trends tot en met 2025. Er is niets geïmporteerd. Zie het
+  routegebonden trends tot en met 2025. Zie het
   [bronregister](docs/MEIJENDEL_BRONREGISTER.md).
-- [ ] **De Vlinderstichting — resterende toetsen vóór soorttrends of import.**
+- [x] **De Vlinderstichting — geselecteerde kaartlocaties, 17 november 2026.**
+  De 11 door Ton gekozen dagvlinderlocaties en 11 libellenlocaties staan nu
+  met 218 primaire RD-kaartcomponenten in `Meijendel.vlinders_dag_*` en
+  `libellen_*`. Pan van Persijn (230) en alle andere niet-geselecteerde
+  locaties zijn uitgesloten. De vier oorspronkelijke bestanden zijn ongewijzigd
+  op T7 bewaard. De bronjaarcijfers, bezoeken en NDFF-regels zijn nog niet
+  gekoppeld of verplaatst; de locatie-import telt niet als extra waarneming.
+- [ ] **De Vlinderstichting — resterende toetsen vóór soorttrends en
+  resultaatimport.**
   Bevestig voor Vallei Meijendel en Bierlap dat de slechts als punten getoonde
   telobjecten daadwerkelijk geheel binnen het basisgebied zijn gevolgd.
   De soortidentiteit van alle 57 codes is eenduidig vastgesteld via 36
