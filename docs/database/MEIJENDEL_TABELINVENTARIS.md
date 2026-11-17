@@ -41,6 +41,25 @@ en `ndff-vlinderroute-identificatie-20261117.sql` (SHA-256
 De centrale routepoort controleerde 133 routes zonder fout; de v2-vlinderaudit
 was groen. Jaarcijfers, bezoeken en NDFF-records zijn hierdoor niet gewijzigd.
 
+**Primaire jaargegevens van De Vlinderstichting, 17 november 2026.**
+`vlinderstichting_levering` bewaart de herkomst van de vier oorspronkelijke
+bestanden. `vlinders_dag_routejaar` koppelt 195 routejaren met 3.020 bezoeken
+en hun ruwe jaartotalen aan de elf bestaande `vlinders_dag_telobject`-codes.
+`vlinders_dag_routejaar_soortcode` bevat 7.409 jaarcijfers op de sleutel
+routecode–jaar–oorspronkelijke soortcode; `ntell` blijft per soortcodejaar
+behouden. De 56 broncodes zijn via `taxa_bronkoppeling` met 35 centrale taxa
+verbonden. Van deze 7.409 jaarcijfers zijn er 2.710 expliciet nul. Dit zijn
+jaarlijkse bronwaarden, geen nullen voor afzonderlijke bezoeken; lege
+combinaties zijn onbekend. `libellen_routejaar` koppelt 69 locatiejaren met
+628 bezoeken aan de elf bestaande `libellen_telobject`-rijen. Voor libellen
+zijn uit deze levering geen soortuitkomsten of nulwaarnemingen ingevoerd. De
+148 dagvlinder-soortcodejaren uit 2026 hebben `jaarstatus=voorlopig` op hun
+routejaar; 2026 wordt niet met de afgesloten meetjaren samengevoegd. Alle
+overige 23 bronobjecten zijn uitgesloten. De ingevoerde rijen zijn regel voor
+regel vergeleken met de oorspronkelijke geselecteerde CSV-rijen. De NDFF-
+reconstructie is niet fysiek vervangen en afzonderlijke NDFF-records zijn
+nog niet aan deze jaargegevens gekoppeld.
+
 ## Hoofdkeuze
 
 De hoofdindeling wordt de soortgroep. Libelleninformatie hoort herkenbaar onder `libellen_*`, keverinformatie onder `kevers_*`, enzovoort. De organisatie die gegevens levert en het moment waarop bestanden gezamenlijk zijn geïmporteerd, bepalen niet langer de indeling. Rechtstreekse leveringen moeten dezelfde tabelfamilies kunnen aanvullen als de informatie die via NDFF is ontvangen.

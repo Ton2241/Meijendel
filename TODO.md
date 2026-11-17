@@ -997,8 +997,19 @@ in iCloud **Agenda**.
   met 218 primaire RD-kaartcomponenten in `Meijendel.vlinders_dag_*` en
   `libellen_*`. Pan van Persijn (230) en alle andere niet-geselecteerde
   locaties zijn uitgesloten. De vier oorspronkelijke bestanden zijn ongewijzigd
-  op T7 bewaard. De bronjaarcijfers, bezoeken en NDFF-regels zijn nog niet
-  gekoppeld of verplaatst; de locatie-import telt niet als extra waarneming.
+  op T7 bewaard. De locatie-import telt niet als extra waarneming; afzonderlijke
+  NDFF-regels zijn nog niet aan de primaire telobjecten gekoppeld.
+- [x] **De Vlinderstichting — jaargegevens voor de 22 geolokaliseerde objecten,
+  17 november 2026.** In de levende database staan voor elf dagvlinderobjecten
+  195 routejaren met 3.020 bezoeken en 7.409 oorspronkelijke
+  soortcodejaarcijfers (waaronder 2.710 expliciete jaarlijkse nullen). `ntell`
+  staat per soortcodejaar; 2026 is voorlopig. Voor elf libellenobjecten staan
+  69 locatiejaren met 628 bezoeken, zonder soortresultaten of nullen. De andere
+  CSV toont bij die libellenjaren een vlindertotaal van nul, ook wanneer er
+  bezoeken waren. Alle andere 23 objecten zijn buiten de levende database
+  gebleven. De geïmporteerde rijen zijn regel voor regel met de selectie uit
+  Toves CSV's vergeleken. Afzonderlijke NDFF-waarnemingen zijn nog niet aan
+  deze primaire jaarcijfers gekoppeld.
 - [x] **De Vlinderstichting — weergavenaam van route 638, 17 november 2026.**
   De 19 lijnstukken liggen in Kijfhoek en Bierlap, niet in Hertenkamp M105.
   Gebruik op kaarten en bij ruimtelijke analyses ‘Bierlap – dagvlinderroute
@@ -1006,8 +1017,8 @@ in iCloud **Agenda**.
   bronnaam. Code 4439 blijft de afzonderlijke telling van Groot dikkopje.
   Vermeld de naamcorrectie bij het eerstvolgende passende contact met Tove;
   stuur hiervoor nu geen afzonderlijke e-mail.
-- [ ] **De Vlinderstichting — resterende toetsen vóór soorttrends en
-  resultaatimport.**
+- [ ] **De Vlinderstichting — resterende toetsen vóór formele soorttrends en
+  NDFF-recordkoppeling.**
   Bevestig voor Vallei Meijendel en Bierlap dat de slechts als punten getoonde
   telobjecten daadwerkelijk geheel binnen het basisgebied zijn gevolgd.
   De soortidentiteit van alle 57 codes is eenduidig vastgesteld via 36

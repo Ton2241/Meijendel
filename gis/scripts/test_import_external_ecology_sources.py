@@ -969,6 +969,22 @@ def check_central_query_routes():
     assert 'weergavenaam_override' in actual['vlinders_dag_telobject']
     assert not locatie_tabellen & set(module.central_query_routes(actual)), \
         'Taxonvrije kaartlocaties mogen geen biologische waarnemingsroute worden'
+    tove_tabellen = {
+        'vlinderstichting_levering', 'vlinders_dag_routejaar',
+        'vlinders_dag_routejaar_soortcode', 'libellen_routejaar',
+    }
+    assert tove_tabellen <= set(actual), 'Primaire Tove-jaarresultaten ontbreken in het schemacontract'
+    routes = module.central_query_routes(actual)
+    assert routes['vlinders_dag_routejaar_soortcode']['kind'] == 'direct'
+    assert not (tove_tabellen - {'vlinders_dag_routejaar_soortcode'}) & set(routes), \
+        'Levering en routejaarinspanning zijn geen losse soortwaarnemingen'
+    tove_condition = module.central_source_condition(
+        'vlinders_dag_routejaar_soortcode', routes['vlinders_dag_routejaar_soortcode'])
+    assert "De Vlinderstichting" in tove_condition
+    assert "Meetnet Vlinders - Meijendel en Berkheide" in tove_condition
+    assert "2026-11-16" in tove_condition
+    assert "04d9ea76b546c3d7a7b4136f500a159d45cc296a26c1721d6aa94ed85cb5beb2" in tove_condition
+    assert 'soortcode' in tove_condition
     assert len([table for table in actual if table.startswith('sovon_bmp_')]) == 5
     module.central_query_schema_contract(actual)
     split_schema = {**actual,

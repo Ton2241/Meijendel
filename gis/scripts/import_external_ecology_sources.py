@@ -217,6 +217,16 @@ def derived_key_sql(route: dict, alias: str = 'w') -> str:
 def central_source_condition(table: str, route: dict, alias='w') -> str:
     """Same semantic check in the acceptance gate and in BEFORE row triggers."""
     kind = route['kind']
+    if table == 'vlinders_dag_routejaar_soortcode':
+        return (
+            "b.bron_systeem='De Vlinderstichting' AND "
+            "BINARY b.bron_dataset=BINARY 'Meetnet Vlinders - Meijendel en Berkheide' AND "
+            "BINARY b.bron_versie=BINARY '2026-11-16' AND "
+            "BINARY b.bron_taxon_id=BINARY CAST("
+            f'{alias}.soortcode AS CHAR) AND '
+            "BINARY b.bronbestand_sha256=BINARY "
+            "'04d9ea76b546c3d7a7b4136f500a159d45cc296a26c1721d6aa94ed85cb5beb2'"
+        )
     if table in BMP_NONBIRD_GROUP_TABLES:
         groups = ('zoogdieren_overig', 'vleermuizen') if table == 'zoogdieren' else (table,)
         group_names = ','.join(query_literal(name) for name in groups)
@@ -621,6 +631,10 @@ CENTRAL_QUERY_SCHEMA.update({
     'vlinders_dag_geometrie': frozenset('bron_code kaartcomponent_nr geometrie geometrie_sha256'.split()),
     'libellen_telobject': frozenset('telobject_id bronnaam projectnaam bron_eerste_jaar bron_laatste_jaar bronkaart_sha256 basisgebiedversie aangemaakt_op'.split()),
     'libellen_geometrie': frozenset('telobject_id kaartcomponent_nr geometrie geometrie_sha256'.split()),
+    'vlinderstichting_levering': frozenset('levering_id bronhouder ontvangen_op bronbestanden_json importversie rechtenstatus aangemaakt_op'.split()),
+    'vlinders_dag_routejaar': frozenset('bron_code jaar bezoekaantal ruw_totaal jaarstatus levering_id'.split()),
+    'vlinders_dag_routejaar_soortcode': frozenset('bron_code jaar soortcode jaarcijfer ntell taxon_bronkoppeling_id'.split()),
+    'libellen_routejaar': frozenset('telobject_id jaar bezoekaantal jaarstatus levering_id'.split()),
 })
 
 def central_query_schema_contract(schema: dict[str, set[str]]) -> None:
