@@ -1020,8 +1020,8 @@ in iCloud **Agenda**.
 - [ ] **Provincie Zuid-Holland — originele luchtfoto’s van Meijendel.** Wacht
   op antwoord op Tons e-mail aan Team Geo-informatie van 15 november 2026
   over de oorspronkelijke opnamen van heel Meijendel uit 2003 en eventuele
-  andere beschikbare jaren. Controleer op 30 november de correspondentie en
-  eventuele levering. Leg bij een reactie de dekking, bronbestanden en
+  andere beschikbare jaren. Ton controleert op **30 november om 09.00 uur**
+  de reactie van de provincie en een eventuele levering. Leg bij een reactie de dekking, bronbestanden en
   gebruiksrechten voor analyse en publicatie vast. Zet zonder reactie of
   levering een rappel klaar voor Ton. Het verzonden bericht staat lokaal in
   `~/.local/share/meijendel/correspondentie/2026-11-15-Provincie-Zuid-Holland-luchtfotos-verzonden.eml`.
