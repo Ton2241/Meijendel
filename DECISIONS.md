@@ -848,6 +848,14 @@
   dezelfde familie, omdat beide componenten op 76 tijdstippen binnen hetzelfde
   geregistreerde bezoek voorkomen. Lentevreugd is conform besluit niet
   opgenomen.
+- Vanaf 17 november 2026 behandelt Ton de nulwaarden in Toves primaire
+  dagvlinderjaarcijfers voorlopig als echte nullen van de berekende jaar-score:
+  er is gezocht, maar geen score boven nul geregistreerd. Zij zijn geen bewijs
+  dat bij ieder afzonderlijk bezoek geen dier is waargenomen. Zo zijn op de
+  soortgerichte Bierlap-route 4439 in 2025 bij één bezoek 33 Groot dikkopjes
+  geteld, terwijl het jaarcijfer nul is. Bewaar beide bronwaarden; gebruik de
+  jaar-score niet als bezoeknul. De vraag of die nul samenhangt met minder dan
+  drie bezoeken in de vliegtijd staat voor de dankmail aan Tove in `TODO.md`.
 - De 1.535 vliesvleugelrecords onder `03.201` vormen vanaf 11 september 2026
   een eigen NEM-deelreeks `ndff-vliesvleugelroute-v1`, niet een bijvangstreeks.
   Zij omvat 217 bevestigde bezoeken en zes gevolgde taxa. De matrix bevat

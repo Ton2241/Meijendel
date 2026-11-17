@@ -1017,6 +1017,15 @@ in iCloud **Agenda**.
   bronnaam. Code 4439 blijft de afzonderlijke telling van Groot dikkopje.
   Vermeld de naamcorrectie bij het eerstvolgende passende contact met Tove;
   stuur hiervoor nu geen afzonderlijke e-mail.
+- [ ] **De Vlinderstichting — gerichte vraag in de dankmail over route 4439.**
+  Vraag Tove of het jaarcijfer nul voor Groot dikkopje op de soortgerichte
+  Bierlap-route in 2025 voortkomt uit slechts één bezoek, terwijl daarbij
+  33 exemplaren zijn geteld en voor een betrouwbaar jaarcijfer ten minste
+  drie bezoeken in de vliegtijd nodig zijn. In de voorlopige 2026-gegevens
+  staat opnieuw één bezoek met een positieve ruwe telling en jaarcijfer nul.
+  Vraag welke betekenis deze nul in haar export heeft; stuur hierover nu
+  geen afzonderlijke e-mail. Neem ook de al vastgelegde naamcorrectie van
+  route 638 mee in de dankmail.
 - [ ] **De Vlinderstichting — resterende toetsen vóór formele soorttrends en
   NDFF-recordkoppeling.**
   Bevestig voor Vallei Meijendel en Bierlap dat de slechts als punten getoonde
