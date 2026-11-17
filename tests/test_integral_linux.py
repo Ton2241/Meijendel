@@ -51,6 +51,37 @@ class LinuxContract(unittest.TestCase):
   linux.approved_migration('sql/123_example.sql','a'*64,catalogue)
   for name,digest in [('sql/123_example.sql','b'*64),('sql/999_arbitrary.sql','a'*64),('/etc/passwd','a'*64)]:
    with self.assertRaises(ValueError):linux.approved_migration(name,digest,catalogue)
+class ManagedReceiveContract(unittest.TestCase):
+ def test_receive_checks_signed_approval_before_reading(self):
+  from unittest.mock import Mock,patch
+  source=Mock()
+  with patch.object(linux,'queue_check',side_effect=ValueError('Geen akkoord')):
+   with self.assertRaisesRegex(ValueError,'Geen akkoord'):
+    linux.receive_release('a'*40,'b'*64,10,source)
+  source.read.assert_not_called()
+ def test_stream_requires_exact_size_and_hash(self):
+  import hashlib,io
+  data=b'Meijendel T7'
+  digest=hashlib.sha256(data).hexdigest()
+  with tempfile.TemporaryDirectory() as d:
+   path=Path(d)/'package'
+   linux.receive_archive(path,len(data),digest,io.BytesIO(data))
+   self.assertEqual(path.read_bytes(),data)
+   for received,size,expected in [(data[:-1],len(data),digest),(data+b'x',len(data),digest),(data,len(data),'0'*64)]:
+    path.unlink()
+    with self.assertRaises(ValueError):
+     linux.receive_archive(path,size,expected,io.BytesIO(received))
+ def test_active_policy_only_accepts_private_receive_stage(self):
+  from unittest.mock import patch
+  with tempfile.TemporaryDirectory() as d, patch.object(linux,'QUEUE_POLICY',Path(d)/'active'):
+   with self.assertRaises(FileNotFoundError):
+    linux.queue_stage('receive-queued')
+   linux.QUEUE_POLICY.touch()
+   with patch.object(linux,'secure_file'):
+    self.assertEqual(linux.queue_stage('receive-queued'),('receive',True))
+    with self.assertRaises(ValueError):
+     linux.queue_stage('receive')
+
 class RecoveryContract(unittest.TestCase):
  def test_second_stop_preserves_initial_timer_set(self):
   from unittest.mock import patch

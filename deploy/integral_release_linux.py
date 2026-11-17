@@ -1,12 +1,15 @@
 #!/usr/bin/python3
 """Fixed Linux hooks for the hash-bound VWG gateway; no arbitrary commands/paths."""
 from __future__ import annotations
-import argparse,contextlib,hashlib,ipaddress,socket,http.server,importlib.util,json,os,re,shutil,stat,subprocess,sys,time,urllib.parse,urllib.request
+import argparse,contextlib,hashlib,ipaddress,socket,http.server,importlib.util,json,os,re,shutil,signal,stat,subprocess,sys,tempfile,time,urllib.parse,urllib.request
 from pathlib import Path
 BASE=Path('/srv/vwgm');STATE=BASE/'deploy-state';CONTROL=Path('/var/lib/vwgm-integral');INSTALL=Path(__file__).resolve().parent
 spec=importlib.util.spec_from_file_location('integral_release',INSTALL/'integral_release.py');core=importlib.util.module_from_spec(spec);spec.loader.exec_module(core)
 QUEUE_POLICY=Path('/etc/vwgm/vps-queue-required')
 QUEUE_HELPER=Path('/usr/local/libexec/vwgm-admin/vps-queue.py')
+GIB=1024**3
+MAX_RECEIVE_BYTES=16*GIB
+RECEIVE_TIMEOUT=600
 OBJECTS=('vogelstand_1924','website_species_mapping','website_plot_mapping','website_species_mapping_public','website_plot_mapping_public','website_species_territoria','website_species_trends','website_plot_year_totals','website_plot_species_totals')
 
 def root_directory(path,mode=0o751):
@@ -459,12 +462,16 @@ def safe_extract(archive,destination):
  if destination.exists():raise ValueError('Nieuw uitpakpad vereist')
  destination.mkdir(mode=0o700,parents=True)
  with tarfile.open(archive,'r:gz') as tar:
+  expanded=sql_size=0
+  for count,item in enumerate(tar,1):
+   if not (item.isfile() or item.isdir()) or '\\' in item.name or item.size<0:
+    raise ValueError('Geen links of bijzondere archiefbestanden')
+   expanded+=item.size
+   if count>100000 or expanded>16*GIB:raise ValueError('Archief groter dan releasegrens')
+   if item.name in ('payload/data/meijendel.sql','payload/data/Meijendel.sql'):sql_size+=item.size
   members=tar.getmembers()
-  expanded=sum(m.size for m in members);sql_size=sum(m.size for m in members if m.name in ('payload/data/meijendel.sql','payload/data/Meijendel.sql'))
-  if len(members)>100000 or expanded>16*1024**3:raise ValueError('Archief groter dan releasegrens')
   if sys.platform=='linux' and shutil.disk_usage(destination).free<expanded+5*sql_size+8*1024**3:raise ValueError('Onvoldoende ruimte voor pakket, proefdata, drie backups en 8GiB reserve')
   for item in members:
-   if not (item.isfile() or item.isdir()) or '\\' in item.name:raise ValueError('Geen links of bijzondere archiefbestanden')
    path=core.safe_path(destination,item.name)
    if item.isdir():path.mkdir(parents=True,exist_ok=True,mode=0o755)
    else:
@@ -472,13 +479,15 @@ def safe_extract(archive,destination):
     with tar.extractfile(item) as source,path.open('xb') as target:shutil.copyfileobj(source,target)
     os.chmod(path,0o644);os.utime(path,(item.mtime,item.mtime))
 
-def freeze(commit,digest):
+def freeze(commit,digest,*,allow_inbox=True):
  if not re.fullmatch('[0-9a-f]{64}',digest):raise ValueError('Exacte pakkethash vereist')
  source=STATE/'integral-inbox'/(commit+'.tar.gz');base=CONTROL/'packages'/digest
- if base.exists():
+ if base.exists() or base.is_symlink():
+  root_directory(base,0o700)
   secure_file(base/'sealed.json')
   if jsonfile(base/'sealed.json')!={'commit':commit,'sha256':digest}:raise ValueError('Verkeerde verzegeling')
  else:
+  if not allow_inbox:raise ValueError('Pakket ontbreekt in de afgeschermde ontvangst')
   source_stat=source.lstat()
   if not stat.S_ISREG(source_stat.st_mode) or source.is_symlink():raise ValueError('Geen regulier pakket')
   if shutil.disk_usage(BASE).free<28*1024**3:raise RuntimeError('Minder dan 28GiB vrij; proef niet gestart')
@@ -488,12 +497,81 @@ def freeze(commit,digest):
   os.chmod(archive,0o600)
   if core.sha(archive)!=digest:raise ValueError('Pakkethash wijkt af')
   safe_extract(archive,base);secret_json(base/'sealed.json',dict(commit=commit,sha256=digest));archive.unlink()
+ receipt,m=verify_release(base,commit)
+ return base,receipt,m
+
+
+def verify_release(base,commit):
  receipt=jsonfile(base/'receipt.json')
  if set(receipt.get('commits',{}))!={'Meijendel','VWG_M','VWG_Project'} or any(not re.fullmatch('[0-9a-f]{40}',v) for v in receipt['commits'].values()):raise ValueError('Onbekende commitvelden')
  if receipt.get('schema')!='meijendel-integral-gateway-v1' or receipt['commits']['Meijendel']!=commit or not re.fullmatch('[0-9a-f]{40}',receipt['commits'].get('VWG_M','')):raise ValueError('Releasecommits ontbreken')
  package=base/'payload';m=core.verify(package);guard_payload(m)
  if m.get('source_hash')!=receipt.get('source_hash') or m['year_to']!=receipt['year_to']:raise ValueError('Ontvangstbewijs en payload verschillen')
- return base,receipt,m
+ return receipt,m
+
+
+def receive_archive(path,size,digest,source):
+ checksum=hashlib.sha256()
+ remaining=size
+ output=path.open('xb') if path is not None else contextlib.nullcontext()
+ with output as out:
+  while remaining:
+   block=source.read(min(1024*1024,remaining))
+   if not block:raise ValueError('Pakketstream is afgebroken')
+   if out is not None:out.write(block)
+   checksum.update(block);remaining-=len(block)
+  if source.read(1):raise ValueError('Pakketstream bevat meer bytes dan opgegeven')
+  if checksum.hexdigest()!=digest:raise ValueError('Pakkethash wijkt af')
+
+
+def production_preflight(receipt,manifest,*,root_owned=True):
+ commits={}
+ for name in ('Meijendel','VWG_M'):
+  path=STATE/(name+'.commit')
+  if root_owned:secure_file(path)
+  value=path.read_text().strip()
+  if not re.fullmatch('[0-9a-f]{40}',value):raise ValueError('Ongeldige geregistreerde productiecommit: '+name)
+  commits[name]=value
+ return dict(stage='preflight',source_hash=manifest['source_hash'],year_to=manifest['year_to'],
+             commits=receipt['commits'],production_commits=commits)
+
+
+def receive_release(commit,digest,size,source):
+ if not 0<size<=MAX_RECEIVE_BYTES:raise ValueError('Pakketgrootte valt buiten de ontvangstgrens')
+ queue_check('check',digest)
+ package_root=root_directory(CONTROL/'packages',0o700)
+ sealed=package_root/digest
+ if sealed.exists() or sealed.is_symlink():
+  base,receipt,manifest=freeze(commit,digest,allow_inbox=False)
+  check_production_release('apply',base,receipt,manifest)
+  response=jsonfile(base/'preflight.json')
+  if response.get('archive_sha256')!=digest or response.get('archive_bytes')!=size:
+   raise ValueError('Pakketgrootte of SHA-256 komt niet overeen met de bestaande ontvangst')
+  receive_archive(None,size,digest,source)
+  queue_check('check',digest)
+  return response
+ # Keep the existing low-space guard for the integral release, plus an upload budget.
+ if shutil.disk_usage(package_root).free<max(28*GIB,size+8*GIB):
+  raise RuntimeError('Onvoldoende vrije ruimte om het pakket te ontvangen')
+ with tempfile.TemporaryDirectory(prefix='.receive-',dir=package_root) as scratch:
+  scratch=Path(scratch);archive=scratch/'archive';base=scratch/'verified'
+  receive_archive(archive,size,digest,source)
+  safe_extract(archive,base)
+  if {item.name for item in base.iterdir()}!={'payload','receipt.json'}:
+   raise ValueError('Onbekend bestand op hoofdniveau van het pakket')
+  receipt,manifest=verify_release(base,commit)
+  verify_production_intent(receipt,manifest)
+  payload=base/'payload'
+  contents={str(item.relative_to(payload)) for item in payload.rglob('*') if item.is_file()}
+  if contents!=set(manifest['files'])|{'release.json'} or 'www/release-config.json' not in manifest['files']:
+   raise ValueError('Pakket bevat niet-gecontroleerde bestanden of mist de releaseconfiguratie')
+  response=production_preflight(receipt,manifest) | dict(archive_sha256=digest,archive_bytes=size)
+  secret_json(base/'sealed.json',dict(commit=commit,sha256=digest))
+  secret_json(base/'preflight.json',response)
+  queue_check('check',digest)
+  base.rename(sealed)
+  return response
+
 
 @contextlib.contextmanager
 def global_lock():
@@ -517,9 +595,9 @@ def global_lock():
 
 def queue_stage(stage):
  required=QUEUE_POLICY.exists() or QUEUE_POLICY.is_symlink()
- if stage=='apply-queued':
+ if stage in ('apply-queued','receive-queued'):
   secure_file(QUEUE_POLICY)
-  return 'apply',True
+  return stage.removesuffix('-queued'),True
  if required and stage!='preflight':
   raise ValueError('Actief VPS-wachtrijbeleid vereist de begrensde Meijendel-ingang')
  return stage,False
@@ -527,7 +605,9 @@ def queue_stage(stage):
 
 def queue_check(mode,digest):
  secure_file(QUEUE_HELPER)
- run(['/usr/bin/python3','-I',QUEUE_HELPER,mode,'meijendel-deploy',digest])
+ args=['/usr/bin/python3','-I',QUEUE_HELPER,mode,'meijendel-deploy',digest]
+ if mode=='check':run(args,stdout=sys.stderr)
+ else:run(args)
 
 def make_readable(package):
  # This payload has ecological source/code only; private CMS/env/backups live elsewhere.
@@ -685,8 +765,13 @@ def phase_commits(stage,marker,receipt):
  return marker['production_commits'] if stage=='apply' else {n:receipt['commits'][n] for n in ('Meijendel','VWG_M')}
 
 
+def verify_production_intent(receipt,manifest):
+ if receipt.get('intent')!='production' or receipt.get('canonical_export_validated') is not True or manifest['mode']!='production' or not manifest['official_data_validated']:
+  raise ValueError('Geen expliciete gevalideerde productierelease')
+
+
 def check_production_release(stage,base,receipt,m):
- if receipt.get('intent')!='production' or receipt.get('canonical_export_validated') is not True or m['mode']!='production' or not m['official_data_validated']:raise ValueError('Geen expliciete gevalideerde productierelease')
+ verify_production_intent(receipt,m)
  secure_file(base/'preflight.json')
  marker=jsonfile(base/'preflight.json')
  if marker.get('commits')!=receipt['commits']:raise ValueError('Geen passende gecontroleerde preflight')
@@ -758,19 +843,32 @@ def main():
   if os.geteuid()==0:raise SystemExit('Diensten draaien nooit als root')
   if sys.argv[1]=='_website':return website(sys.argv[2])
   return dashboard(sys.argv[2],sys.argv[3])
- import signal
  def interrupted(signum,frame):raise RuntimeError('Onderbroken Linux-release: '+str(signum))
- signal.signal(signal.SIGTERM,interrupted);signal.signal(signal.SIGINT,interrupted)
- parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('stage',choices=['preflight','rehearse','apply','apply-queued','rollback','cleanup','recover']);parser.add_argument('commit');parser.add_argument('sha256');a=parser.parse_args()
+ def upload_expired(signum,frame):raise RuntimeError('Ontvangsttermijn voor Meijendel-pakket is verlopen')
+ for signum in (signal.SIGTERM,signal.SIGINT,signal.SIGHUP):signal.signal(signum,interrupted)
+ parser=argparse.ArgumentParser(description=__doc__)
+ parser.add_argument('stage',choices=['preflight','rehearse','apply','apply-queued','receive-queued','rollback','cleanup','recover'])
+ parser.add_argument('commit');parser.add_argument('sha256');parser.add_argument('byte_count',nargs='?');a=parser.parse_args()
  layout(a.commit,True)
  if os.geteuid()!=0:raise SystemExit('Alleen via de gesloten root-gateway')
  secure_file(Path(__file__));secure_file(INSTALL/'integral_release.py')
  if not re.fullmatch('[0-9a-f]{64}',a.sha256):raise ValueError('Exacte pakkethash vereist')
- a.stage,queued=queue_stage(a.stage)
+ requested=a.stage
+ a.stage,queued=queue_stage(requested)
+ size=None
+ if a.stage=='receive':
+  if not re.fullmatch('[1-9][0-9]{0,10}',a.byte_count or ''):parser.error('Exacte pakketgrootte vereist')
+  size=int(a.byte_count)
+ elif a.byte_count is not None:parser.error('Pakketgrootte is alleen toegestaan bij ontvangst')
  with global_lock() as start_mutation:
   # Recheck after taking the lock to close the activation race.
-  if queue_stage('apply-queued' if queued else a.stage)!=(a.stage,queued):
+  if queue_stage(requested)!=(a.stage,queued):
    raise ValueError('Wachtrijbeleid is gewijzigd; begin opnieuw')
+  if a.stage=='receive':
+   signal.signal(signal.SIGALRM,upload_expired);signal.alarm(RECEIVE_TIMEOUT)
+   try:response=receive_release(a.commit,a.sha256,size,sys.stdin.buffer)
+   finally:signal.alarm(0)
+   print(json.dumps(response));return
   if queued:
    sealed=CONTROL/'packages'/a.sha256
    secure_file(sealed/'sealed.json');secure_file(sealed/'preflight.json')
@@ -790,10 +888,15 @@ def main():
     h.stop();raise
    if getattr(h,'timers',[]):h.logged(['systemctl','start',*h.timers])
    print('INTEGRAL_HOST_RECOVERY_OK');return
-  base,receipt,m=freeze(a.commit,a.sha256)
+  managed_preflight=a.stage=='preflight' and (QUEUE_POLICY.exists() or QUEUE_POLICY.is_symlink())
+  if managed_preflight:secure_file(QUEUE_POLICY)
+  base,receipt,m=freeze(a.commit,a.sha256,allow_inbox=not (queued or managed_preflight))
   if a.stage=='preflight':
-   response=dict(stage='preflight',source_hash=m['source_hash'],year_to=m['year_to'],commits=receipt['commits'],production_commits={n:(STATE/(n+'.commit')).read_text().strip() for n in ('Meijendel','VWG_M')})
-   secret_json(base/'preflight.json',response);print(json.dumps(response));return
+   if managed_preflight:
+    check_production_release('apply',base,receipt,m);response=jsonfile(base/'preflight.json')
+   else:
+    response=production_preflight(receipt,m,root_owned=False);secret_json(base/'preflight.json',response)
+   print(json.dumps(response));return
   if a.stage=='rehearse':
    if receipt.get('intent')!='isolated_trial' or m['mode']!='local_rehearsal' or m['year_to']>2025:raise ValueError('Alleen de uitdrukkelijke historische proef')
    evidence=CONTROL/'evidence'/(a.commit+'.json')

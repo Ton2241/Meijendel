@@ -803,24 +803,29 @@ vastgelegd pakket of receipt. Nieuwe proeven blijven afzonderlijk goedkeuringspl
 
 ### Meijendel via de gedeelde VPS-wachtrij
 
-Bij actief beleid voert de afgeschermde ingang `meijendel-apply` uitsluitend
-een vooraf gecontroleerd en verzegeld pakket uit. Bereid dat pakket met
-`deploy/integral_gateway_client.py` en de bestaande integrale preflight
-voor. De bevoegde beheerroute plaatst het pakket vooraf in
-`/srv/vwgm/deploy-state/integral-inbox`. De roothelper verzegelt het onder
-`/var/lib/vwgm-integral/packages/<pakket-sha256>`. Deze stagingstap
-gebruikt dezelfde lock en verandert geen actieve release. Controleer vóór
-autorisatie dat beide door de preflight gemelde productiecommits voorouders
-zijn van de overeenkomstige kandidaatcommits.
+Stel het pakket samen met `deploy/integral_gateway_client.py`. Stel
+`VWG_MANAGED_DEPLOY_TARGET` en `VWG_MANAGED_DEPLOY_SSH_KEY` in voor het
+afgeschermde deployaccount. Het getekende wachtrijakkoord voor
+`meijendel-deploy` moet de SHA-256 van dit archief bevatten.
 
-De aanroep `deploy/integral_gateway_client.py --prepared BESTAND --stage apply
---yes` gebruikt `VWG_MANAGED_DEPLOY_TARGET` en `VWG_MANAGED_DEPLOY_SSH_KEY`
-samen. Via dat account wordt alleen de aanvraag met de exacte broncommit en
-pakket-SHA-256 verstuurd. Onder `production.lock` controleert de host het
-getekende akkoord voor operatie `meijendel-deploy` en die pakket-SHA-256.
-Daarna controleert hij opnieuw het ontvangstbewijs, de gekoppelde
-preflight, beide geregistreerde commits en de hashes van de releasebestanden,
-waaronder SQL, cache en dashboarduitvoer.
+`deploy/integral_gateway_client.py --prepared BESTAND --stage receive`
+stuurt uitsluitend het archief naar de vaste SSH-ingang. Onder
+`production.lock` controleert de VPS het akkoord vóór het lezen en vlak vóór
+verzegeling. Daarna kan de client in `managed-preflight.json` de
+geregistreerde commits en het ontvangen archief terugvinden. De host eist het
+exacte byte-aantal, de SHA-256, de kandidaatcommit en de complete
+bestandsinventaris. Een afgebroken overdracht laat geen bruikbaar pakket achter.
+De ontvangst duurt maximaal tien minuten, accepteert hoogstens 16 GiB
+gecomprimeerd en houdt de vereiste vrije opslag aan. De eerder gebruikte
+integrale inbox accepteert via de standaard preflight geen nieuw pakket
+wanneer het wachtrijbeleid actief is.
+
+`deploy/integral_gateway_client.py --prepared BESTAND --stage apply --yes`
+is de afzonderlijke publicatieaanroep. De client controleert bij ontvangst en
+apply of beide gemelde productiecommits voorouders zijn van de bijbehorende
+kandidaten. De host vergelijkt beide productiecommits opnieuw onder dezelfde
+lock, controleert het verzegelde pakket en verbruikt het akkoord pas voor
+apply. Ontvangst en verzegeling veranderen de actieve release niet.
 
 Bij een onbevestigde fout nadat de wijzigende fase is gestart, houdt de host
 de lock vast. Beoordeel dan het integrale journaal, de actieve release en beide

@@ -4,7 +4,7 @@
 No model fits. Preparation is local; the isolated Linux rehearsal is explicit.
 Installing gateway code requires the visible standard macOS Terminal window.
 """
-import argparse,importlib.util,json,os,secrets,shlex,subprocess,sys,tarfile
+import argparse,importlib.util,json,os,re,secrets,shlex,subprocess,sys,tarfile
 from pathlib import Path
 sys.path.insert(0,str(Path.home()/'Documents/GitHub/VWG_Project/scripts'))
 from trial_storage import checked_tree
@@ -40,10 +40,47 @@ def prepare(recipe_file,baseline,output,project):
  print('PREPARED='+str(output/'prepared.json'),flush=True)
  return output/'prepared.json'
 
+def check_preflight_commits(response,prepared,repos):
+ if response.get('stage')!='preflight' or response.get('commits')!=prepared['commits']:
+  raise ValueError('Preflight hoort niet bij de voorbereide release')
+ previous=response.get('production_commits',{})
+ if set(previous)!={'Meijendel','VWG_M'}:
+  raise ValueError('Preflight mist de geregistreerde componentcommits')
+ for name,old in previous.items():
+  if not isinstance(old,str) or not re.fullmatch('[0-9a-f]{40}',old):
+   raise ValueError('Ongeldige productiecommit: '+name)
+  run(['git','-C',repos[name],'merge-base','--is-ancestor',old,prepared['commits'][name]])
+
+
+def managed_execute(prepared,stage,target,key,out,repos):
+ commit=prepared['commits']['Meijendel'];digest=prepared['sha256']
+ archive=Path(prepared['archive']);size=archive.stat().st_size
+ ssh=['/usr/bin/ssh','-T','-o','BatchMode=yes','-o','IdentitiesOnly=yes',
+      '-o','StrictHostKeyChecking=yes','-i',key,'--',target]
+ evidence=out/'managed-preflight.json'
+ if stage=='receive':
+  with archive.open('rb') as source:
+   command=f'meijendel-receive {commit} {digest} {size}'
+   result=run([*ssh,command],stdin=source,stdout=subprocess.PIPE,text=True)
+  response=json.loads(result.stdout)
+ else:
+  if not evidence.is_file():raise ValueError('Ontvang eerst het pakket via --stage receive')
+  response=json.loads(evidence.read_text())
+ if response.get('archive_sha256')!=digest or response.get('archive_bytes')!=size:
+  raise ValueError('Preflight hoort niet bij dit archief')
+ check_preflight_commits(response,prepared,repos)
+ if stage=='receive':
+  core.atomic_json(evidence,response)
+  print('MEIJENDEL_PAKKET_VERZEGELD='+digest,flush=True)
+ else:
+  run([*ssh,f'meijendel-apply {commit} {digest}'],stdin=subprocess.DEVNULL)
+
+
 def execute(prepared_file,stage,install=False,yes=False):
  p=json.loads(prepared_file.read_text());analysis=Path(p['recipe']['analysis_root']);website=Path(p['recipe']['website_root']);project=Path(p['project_root']);out=prepared_file.parent
  if p['intent']=='isolated_trial':out=checked_tree(out)
- for name,path in [('Meijendel',analysis),('VWG_M',website),('VWG_Project',project)]:
+ repos={'Meijendel':analysis,'VWG_M':website,'VWG_Project':project}
+ for name,path in repos.items():
   if check_checkout(path)!=p['commits'][name]:raise ValueError('Broncommit veranderd sinds pakketbouw: '+name)
  if core.sha(p['archive'])!=p['sha256']:raise ValueError('Lokaal pakket gewijzigd')
  if stage in ('apply','rollback') and (p['intent']!='production' or not yes):raise ValueError('Productieactie vraagt een productiepak en --yes')
@@ -52,12 +89,10 @@ def execute(prepared_file,stage,install=False,yes=False):
  if managed_target or managed_key:
   if not managed_target or not managed_key or not Path(managed_key).is_file():
    raise ValueError('Gebruik tegelijk de afgeschermde doelhost en deploysleutel')
-  if stage!='apply' or install:
-   raise ValueError('De afgeschermde aanvraag ondersteunt apply van een vooraf verzegeld pakket')
-  commit=p['commits']['Meijendel'];digest=p['sha256']
-  run(['/usr/bin/ssh','-T','-o','BatchMode=yes','-o','IdentitiesOnly=yes',
-       '-o','StrictHostKeyChecking=yes','-i',managed_key,'--',managed_target,f'meijendel-apply {commit} {digest}'])
-  return
+  if stage not in ('receive','apply') or install or p['intent']!='production':
+   raise ValueError('De afgeschermde ingang ondersteunt ontvangst en apply van een productiepak')
+  return managed_execute(p,stage,managed_target,managed_key,out,repos)
+ if stage=='receive':raise ValueError('Ontvangst vereist de afgeschermde doelhost en deploysleutel')
  if install:
   if not os.isatty(0) or os.getenv('TERM_PROGRAM')!='Apple_Terminal':raise ValueError('Start installatie zelf in het standaard macOS Terminal-venster')
   env=os.environ|dict(VWG_M_DIR=str(website),MEIJENDEL_DIR=str(analysis))
@@ -83,9 +118,7 @@ def execute(prepared_file,stage,install=False,yes=False):
   item['state']='complete';core.atomic_json(operations,saved);return (out/(operation+'.log')).read_text()
  if stage in ('rehearse','apply'):
   text=gateway('preflight');response=next(json.loads(line) for line in text.splitlines() if line.startswith('{') and 'production_commits' in line)
-  for name,old in response['production_commits'].items():
-   path=analysis if name=='Meijendel' else website
-   run(['git','-C',path,'merge-base','--is-ancestor',old,p['commits'][name]])
+  check_preflight_commits(response,p,repos)
  text=gateway(stage)
  if stage=='rehearse':
   evidence=next(json.loads(line) for line in text.splitlines() if line.startswith('{') and 'meijendel-integral-linux-proof-v1' in line)
@@ -95,7 +128,7 @@ def execute(prepared_file,stage,install=False,yes=False):
 
 
 def main():
- a=argparse.ArgumentParser(description=__doc__);a.add_argument('--recipe',type=Path);a.add_argument('--baseline-bootstrap',type=Path);a.add_argument('--output',type=Path);a.add_argument('--project-root',type=Path);a.add_argument('--prepared',type=Path);a.add_argument('--stage',choices=['prepare','preflight','rehearse','apply','rollback','cleanup'],default='prepare');a.add_argument('--install-gateway',action='store_true');a.add_argument('--yes',action='store_true');args=a.parse_args()
+ a=argparse.ArgumentParser(description=__doc__);a.add_argument('--recipe',type=Path);a.add_argument('--baseline-bootstrap',type=Path);a.add_argument('--output',type=Path);a.add_argument('--project-root',type=Path);a.add_argument('--prepared',type=Path);a.add_argument('--stage',choices=['prepare','receive','preflight','rehearse','apply','rollback','cleanup'],default='prepare');a.add_argument('--install-gateway',action='store_true');a.add_argument('--yes',action='store_true');args=a.parse_args()
  if args.stage=='prepare':
   if not all([args.recipe,args.output,args.project_root]):a.error('prepare vraagt recipe, output en project-root')
   prepare(args.recipe,args.baseline_bootstrap,args.output,args.project_root)
