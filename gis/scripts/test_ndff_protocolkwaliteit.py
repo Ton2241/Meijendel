@@ -1017,6 +1017,10 @@ def main() -> int:
     assert by_family[2]["officieel_routenummer"] == 117
     assert by_family[2]["officiele_routenaam"] == "Parnassiapad"
     assert by_family[3]["officieel_routenummer"] == 1844
+    assert by_family[4]["officieel_routenummer"] == 205
+    assert by_family[4]["officiele_routenaam"] == "Hertenkamp"
+    assert "Kijfhoek/Bierlap" in by_family[4]["bewijsgrond"]
+    assert "niet in Hertenkamp M105" in by_family[4]["bewijsgrond"]
     assert by_family[7]["officieel_routenummer"] == 1764
     assert by_family[7]["officiele_routenaam"] == "Voorlinden"
     assert by_family[9]["officieel_routenummer"] == 1767

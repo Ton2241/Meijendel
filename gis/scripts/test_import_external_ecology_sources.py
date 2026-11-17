@@ -966,6 +966,7 @@ def check_central_query_routes():
         'libellen_telobject', 'libellen_geometrie',
     }
     assert locatie_tabellen <= set(actual), 'Primaire Tove-locatietabellen ontbreken in het schemacontract'
+    assert 'weergavenaam_override' in actual['vlinders_dag_telobject']
     assert not locatie_tabellen & set(module.central_query_routes(actual)), \
         'Taxonvrije kaartlocaties mogen geen biologische waarnemingsroute worden'
     assert len([table for table in actual if table.startswith('sovon_bmp_')]) == 5

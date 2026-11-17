@@ -1469,7 +1469,7 @@ def vlinder_route_identifications() -> list[dict[str, object]]:
          "officiele_routenaam": "Hertenkamp", "zekerheidsniveau": "aannemelijk",
          "bron_eerste_jaar": 1991, "bron_laatste_jaar": 2013, "doelsoort": None,
          "bewijsbron_uri": source,
-         "bewijsgrond": "Startjaar 1991, ligging en gebruiksperiode passen bij Hertenkamp."},
+         "bewijsgrond": "Historische route 205 heet Hertenkamp, maar Toves kaart en de NDFF-geometrie liggen in Kijfhoek/Bierlap (M12a/M64/M65), niet in Hertenkamp M105. De routenaam bewijst geen gebiedstoewijzing."},
         {"routefamilie_id": 5, "officieel_routenummer": 206,
          "officiele_routenaam": "Helmduinen", "zekerheidsniveau": "hoog",
          "bron_eerste_jaar": 1991, "bron_laatste_jaar": 2011, "doelsoort": None,

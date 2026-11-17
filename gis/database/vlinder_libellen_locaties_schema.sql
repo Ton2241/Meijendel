@@ -6,6 +6,7 @@ USE Meijendel;
 CREATE TABLE IF NOT EXISTS vlinders_dag_telobject (
   bron_code SMALLINT UNSIGNED NOT NULL,
   bronnaam VARCHAR(160) NOT NULL,
+  weergavenaam_override VARCHAR(160) DEFAULT NULL,
   projectnaam VARCHAR(80) NOT NULL,
   bron_eerste_jaar SMALLINT UNSIGNED NOT NULL,
   bron_laatste_jaar SMALLINT UNSIGNED NOT NULL,

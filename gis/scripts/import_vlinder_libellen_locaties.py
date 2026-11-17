@@ -56,6 +56,9 @@ SELECTED_DAG = {
     5169: "Vallei Meijendel Eikenpage",
 }
 
+# De oorspronkelijke naam blijft onaangeroerd; dit is uitsluitend de lokale kaartnaam.
+DAG_WEERGAVENAAM_OVERRIDES = {638: "Bierlap – dagvlinderroute 638"}
+
 SELECTED_LIBELLEN = (
     "De Hertenkamp, bospoel",
     "De Hertenkamp, poel",
@@ -235,6 +238,7 @@ def build_location_rows(source: Path, basis_gpkg: Path) -> dict[str, list[dict]]
         period = mapped[key]["period"]
         rows["vlinders_dag_telobject"].append({
             "bron_code": code, "bronnaam": name, "projectnaam": visits[key],
+            "weergavenaam_override": DAG_WEERGAVENAAM_OVERRIDES.get(code),
             "bron_eerste_jaar": period[0], "bron_laatste_jaar": period[1],
             "bronkaart_sha256": kaart_hash, "basisgebiedversie": BASISVERSIE,
         })
@@ -282,7 +286,8 @@ def sql_quote(value: str) -> str:
 
 def sql_values(rows: list[dict], columns: tuple[str, ...]) -> str:
     return ",\n".join(
-        "(" + ",".join(str(row[col]) if isinstance(row[col], int) else sql_quote(row[col])
+        "(" + ",".join("NULL" if row[col] is None else
+                       str(row[col]) if isinstance(row[col], int) else sql_quote(row[col])
                        for col in columns) + ")"
         for row in rows
     )
@@ -300,7 +305,7 @@ def geometry_values(rows: list[dict], key: str) -> str:
 def build_insert_sql(rows: dict[str, list[dict]]) -> str:
     parent_columns = ("bronnaam", "projectnaam", "bron_eerste_jaar",
                       "bron_laatste_jaar", "bronkaart_sha256", "basisgebiedversie")
-    day_columns = ("bron_code", *parent_columns)
+    day_columns = ("bron_code", *parent_columns, "weergavenaam_override")
     libel_columns = ("telobject_id", *parent_columns)
     day_parents = sql_values(rows["vlinders_dag_telobject"], day_columns)
     libel_parents = sql_values(rows["libellen_telobject"], libel_columns)

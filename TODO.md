@@ -999,6 +999,13 @@ in iCloud **Agenda**.
   locaties zijn uitgesloten. De vier oorspronkelijke bestanden zijn ongewijzigd
   op T7 bewaard. De bronjaarcijfers, bezoeken en NDFF-regels zijn nog niet
   gekoppeld of verplaatst; de locatie-import telt niet als extra waarneming.
+- [x] **De Vlinderstichting — weergavenaam van route 638, 17 november 2026.**
+  De 19 lijnstukken liggen in Kijfhoek en Bierlap, niet in Hertenkamp M105.
+  Gebruik op kaarten en bij ruimtelijke analyses ‘Bierlap – dagvlinderroute
+  638’; behoud ‘Hertenkamp (Meijendel)’ uitsluitend als oorspronkelijke
+  bronnaam. Code 4439 blijft de afzonderlijke telling van Groot dikkopje.
+  Vermeld de naamcorrectie bij het eerstvolgende passende contact met Tove;
+  stuur hiervoor nu geen afzonderlijke e-mail.
 - [ ] **De Vlinderstichting — resterende toetsen vóór soorttrends en
   resultaatimport.**
   Bevestig voor Vallei Meijendel en Bierlap dat de slechts als punten getoonde

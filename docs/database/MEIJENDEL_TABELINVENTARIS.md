@@ -25,6 +25,21 @@ bezoeken of jaarcijfers en vervangen geen NDFF-reconstructietabel. Het hieronder
 staande voorstel om bestaande `ndff_vlinder_*`-tabellen later naar
 `dagvlinders_*` te migreren blijft een afzonderlijk, nog niet uitgevoerd
 voorstel; Tons keuze `vlinders_*` geldt voor deze nieuwe primaire kaartlaag.
+Voor dagvlindercode 638 blijft `bronnaam` letterlijk ‘Hertenkamp (Meijendel)’
+zoals geleverd, terwijl de weergavenaam ‘Bierlap – dagvlinderroute 638’ is.
+Alle 19 lijnstukken liggen in Kijfhoek en Bierlap, niet in Hertenkamp M105.
+Gebruik de weergavenaam voor kaarten en de onveranderde `bron_code` als sleutel;
+code 4439 is de afzonderlijke soortgerichte Bierlap-telling.
+De live controle van 17 november 2026 vond precies één naamoverride op route
+638, elf dagvlindertelobjecten en 194 geometriecomponenten. De checksums van
+de bron- en geometrievelden waren vóór en na de wijziging identiek. De
+herstelkopieën staan onder `/Volumes/T7 Data/Home_Ton/Meijendel data/Backups-archief/Meijendel/`:
+`vlinderroute638-naamcorrectie-20261117.sql` (SHA-256
+`21bc4ab6216ae01a0fb72756ba3ea87649ba198d7a395a6e77f452570adb82c2`)
+en `ndff-vlinderroute-identificatie-20261117.sql` (SHA-256
+`1c4391ccb874e16103f675d3afd79f86288965d74e8db81e86372575d9da2ec6`).
+De centrale routepoort controleerde 133 routes zonder fout; de v2-vlinderaudit
+was groen. Jaarcijfers, bezoeken en NDFF-records zijn hierdoor niet gewijzigd.
 
 ## Hoofdkeuze
 

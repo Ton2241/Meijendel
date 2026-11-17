@@ -30,6 +30,12 @@ def main() -> None:
     assert {row["bron_code"] for row in dag} == {
         393, 635, 638, 640, 929, 1149, 4439, 4410, 4588, 4615, 5169
     }
+    assert next(row for row in dag if row["bron_code"] == 638)["bronnaam"] == \
+        "Hertenkamp (Meijendel)"
+    assert next(row for row in dag if row["bron_code"] == 638)["weergavenaam_override"] == \
+        "Bierlap – dagvlinderroute 638"
+    assert all(row["weergavenaam_override"] is None
+               for row in dag if row["bron_code"] != 638)
     assert len(libel) == 11
     assert len({row["bronnaam"] for row in libel}) == 11
     assert len(dag_geom) == 194
@@ -41,6 +47,9 @@ def main() -> None:
     assert not any("Pan van Persijn" in str(row) for group in rows.values() for row in group)
 
     sql = module.build_insert_sql(rows)
+    assert "weergavenaam_override" in module.SCHEMA.read_text(encoding="utf-8")
+    assert "weergavenaam_override" in sql
+    assert "Bierlap – dagvlinderroute 638" in sql
     assert sql.count("ST_GeomFromWKB(") == 218
     assert "Pan van Persijn" not in sql
     assert "ndff_open_waarneming" not in sql

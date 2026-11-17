@@ -87,6 +87,16 @@ bewijsbron en zekerheid.
 | 10 | Kijfhoekhoogte | 204 | hoog |
 | 11 | De Klip | 1753 | hoog |
 
+Bij familie 4 is ‘Hertenkamp’ de oorspronkelijke, als officiële routenaam
+geregistreerde identificatie, geen juiste geografische gebiedsnaam voor de
+ontvangen lijngeometrie. Die ligt bij M12a, M64 en M65 in Kijfhoek en Bierlap;
+geen lijnstuk raakt Hertenkamp M105. Ton heeft voor de overeenkomende primaire
+dagvlinderroute met broncode 638 de weergavenaam ‘Bierlap – dagvlinderroute 638’
+vastgesteld. De afzonderlijke Bierlap-route voor Groot dikkopje is code 4439,
+hier familie 9. De bronlabels en oorspronkelijke NDFF-identificatie blijven als
+auditinformatie bewaard; gebruik familie 4 niet als bewijs voor een telling in
+Hertenkamp M105.
+
 Lentevreugd valt buiten de afgesproken selectie. Familie 7 is niet gesplitst:
 24 geometrieën vormen de ruimtelijke hoofdcomponent bij Voorlinden en twee
 noordelijke geometrieën zijn als `ruimtelijke_uitbijter` gemarkeerd. Op 76
