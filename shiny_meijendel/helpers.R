@@ -684,30 +684,32 @@ read_dagwaarnemingen_bmp_fast <- function(path) {
   if (nzchar(perl)) {
     out_file <- tempfile(fileext = ".tsv")
     script_file <- tempfile(fileext = ".pl")
-    script <- paste0(
-      "binmode(STDIN); binmode(STDOUT); ",
-      "local $/; my $s=<>; ",
-      "$s =~ s/^.*?INSERT INTO `dagwaarnemingen_bmp` .*? VALUES //s; ",
-      "$s = (split(/\\/\\*!40000 ALTER TABLE `dagwaarnemingen_bmp` ENABLE KEYS/, $s))[0]; ",
-      "while ($s =~ /(?:^|\\),)\\(([^,]+),[^,]*,([^,]+),([^,]+),([^,]+),([^,]+),[^,]*,[^,]*,([^,]+),([^,]+),([^,]*),([^,]*)/g) { ",
-      "my @v=($1,$2,$3,$4,$5,$6,$7,$8,$9); ",
-      "for (@v) { s/^'//; s/'$//; s/\\\\'/'/g; s/\\t/ /g; } ",
-      "print join(\"\\t\", @v), \"\\n\"; ",
-      "}"
-    )
+    script <- r"---(binmode(STDIN); binmode(STDOUT);
+my $field = qr/(?:(?:_binary\s+)?'(?:\\.|[^'\\])*'|[^(),' ]+)/;
+while (my $line = <>) {
+  next unless $line =~ /^INSERT INTO `dagwaarnemingen_bmp` .*?VALUES\s+/;
+  my $values = substr($line, $+[0]);
+  while ($values =~ /\G(?:\s*,\s*)?\((($field)(?:\s*,\s*$field){25})\)/gc) {
+    my @fields = $1 =~ /($field)/g;
+    die "Onverwacht aantal BMP-waarnemingskolommen" unless @fields == 26;
+    my @selected = @fields[0,2,3,4,5,8,9,10,11,18,20];
+    $selected[8] =~ s/^'|'$//g;
+    print join("\t", @selected), "\n";
+  }
+  die "BMP-waarnemingsregels zijn onvolledig gelezen" unless substr($values,pos($values) // 0) =~ /^\s*;\s*$/;
+}
+)---"
     writeLines(script, script_file, useBytes = TRUE)
-    status <- system2(perl, c(script_file, path), stdout = out_file, stderr = FALSE)
+    status <- system2(perl, shQuote(c(script_file, path)), stdout = out_file, stderr = FALSE)
     if (identical(status, 0L) && file.exists(out_file) && file.info(out_file)$size > 0) {
       out <- utils::read.delim(out_file, header = FALSE, stringsAsFactors = FALSE, colClasses = "character", quote = "")
-      names(out) <- c("id", "bezoek_id", "plot_id", "soort_id", "jaar", "dagvanjaar", "aantal", "broedcode", "wrntype")
+      names(out) <- c("id", "bezoek_id", "plot_id", "soort_id", "jaar", "dagvanjaar", "aantal", "broedcode", "wrntype", "cluster_territorium", "in_plot")
       out[out == "NULL"] <- NA_character_
       out[out == ""] <- NA_character_
-      out$cluster_territorium <- NA_integer_
-      out$in_plot <- NA_integer_
       return(out)
     }
   }
-  stop("Perl is niet beschikbaar; dagwaarnemingen_bmp kan niet snel uit de SQL-dump worden gelezen.")
+  stop("Dagwaarnemingen_bmp kan niet met Perl uit de SQL-dump worden gelezen.")
 }
 
 read_dagbezoeken_bmp_fast <- function(path) {
@@ -715,19 +717,34 @@ read_dagbezoeken_bmp_fast <- function(path) {
   if (nzchar(perl)) {
     out_file <- tempfile(fileext = ".tsv")
     script_file <- tempfile(fileext = ".pl")
-    script <- paste0(
-      "binmode(STDIN); binmode(STDOUT); ",
-      "local $/; my $s=<>; ",
-      "$s =~ s/^.*?INSERT INTO `dagbezoeken_bmp` .*? VALUES //s; ",
-      "$s = (split(/\\/\\*!40000 ALTER TABLE `dagbezoeken_bmp` ENABLE KEYS/, $s))[0]; ",
-      "while ($s =~ /(?:^|\\),)\\(([^,]+),([^,]+),([^,]+),[^,]*,([^,]+),[^,]*,[^,]*,([^,]*),[^,]*,[^,]*,([^,]*)/g) { ",
-      "my @v=($1,$2,$3,$4,$5,$6,'',''); ",
-      "for (@v) { s/^'//; s/'$//; s/\\\\'/'/g; s/\\t/ /g; } ",
-      "print join(\"\\t\", @v), \"\\n\"; ",
-      "}"
-    )
+    script <- r"---(binmode(STDIN); binmode(STDOUT);
+my %excluded;
+my @visits;
+my $field = qr/(?:'(?:\\.|[^'\\])*'|[^(),' ]+)/;
+while (my $line = <>) {
+  if ($line =~ /^INSERT INTO `bronnen` .*?VALUES\s+/) {
+    my $values = substr($line, $+[0]);
+    while ($values =~ /\((\d+),'sovon_bmp_grenscorrectie_kopie',/g) {
+      $excluded{$1} = 1;
+    }
+  } elsif ($line =~ /^INSERT INTO `dagbezoeken_bmp` .*?VALUES\s+/) {
+    my $values = substr($line, $+[0]);
+    while ($values =~ /\G(?:\s*,\s*)?\((($field)(?:\s*,\s*$field){16})\)/gc) {
+      my @columns = $1 =~ /($field)/g;
+      die "Onverwacht aantal BMP-bezoekkolommen" unless @columns == 17;
+      push @visits, [@columns[0,1,2,4,7,10,13,14,15]];
+    }
+    die "BMP-bezoekregels zijn onvolledig gelezen" unless substr($values,pos($values) // 0) =~ /^\s*;\s*$/;
+  }
+}
+for my $visit (@visits) {
+  my $source = pop @$visit;
+  next if $excluded{$source};
+  print join("\t", @$visit), "\n";
+}
+)---"
     writeLines(script, script_file, useBytes = TRUE)
-    status <- system2(perl, c(script_file, path), stdout = out_file, stderr = FALSE)
+    status <- system2(perl, shQuote(c(script_file, path)), stdout = out_file, stderr = FALSE)
     if (identical(status, 0L) && file.exists(out_file) && file.info(out_file)$size > 0) {
       out <- utils::read.delim(out_file, header = FALSE, stringsAsFactors = FALSE, colClasses = "character", quote = "")
       names(out) <- c("bezoek_id", "plot_id", "jaar", "dagvanjaar", "bezoekduur_min", "gunstig", "aantal_soorten", "aantal_records")
@@ -736,7 +753,7 @@ read_dagbezoeken_bmp_fast <- function(path) {
       return(out)
     }
   }
-  stop("Perl is niet beschikbaar; dagbezoeken_bmp kan niet snel uit de SQL-dump worden gelezen.")
+  stop("Dagbezoeken_bmp kan niet met Perl uit de SQL-dump worden gelezen.")
 }
 
 to_integer <- function(x) as.integer(x)
@@ -5348,11 +5365,11 @@ load_dagwaarnemingen_bmp_lazy <- function(tbls) {
   if (is.null(tbls$sql_path) || !file.exists(tbls$sql_path)) {
     stop("SQL-pad ontbreekt; dagwaarnemingen kunnen niet lazy worden gelezen.")
   }
-  cache_path <- file.path(tempdir(), "meijendel_dagwaarnemingen_bmp_cache.rds")
+  cache_path <- file.path(tempdir(), "meijendel_dagwaarnemingen_bmp_ligging_cache.rds")
   signature <- make_cache_signature(tbls$sql_path)
   if (file.exists(cache_path)) {
     cache <- tryCatch(readRDS(cache_path), error = function(e) NULL)
-    required_cols <- c("bezoek_id", "plot_id", "jaar", "dagvanjaar", "bezoekduur_min", "gunstig")
+    required_cols <- c("bezoek_id", "plot_id", "jaar", "dagvanjaar", "cluster_territorium", "in_plot")
     if (!is.null(cache) && identical(cache$signature, signature) && !is.null(cache$data) && all(required_cols %in% names(cache$data))) {
       return(cache$data)
     }
@@ -5380,7 +5397,7 @@ load_dagbezoeken_bmp_lazy <- function(tbls) {
   if (is.null(tbls$sql_path) || !file.exists(tbls$sql_path)) {
     stop("SQL-pad ontbreekt; dagbezoeken kunnen niet lazy worden gelezen.")
   }
-  cache_path <- file.path(tempdir(), "meijendel_dagbezoeken_bmp_cache.rds")
+  cache_path <- file.path(tempdir(), "meijendel_dagbezoeken_bmp_veldbezoeken_cache.rds")
   signature <- make_cache_signature(tbls$sql_path)
   if (file.exists(cache_path)) {
     cache <- tryCatch(readRDS(cache_path), error = function(e) NULL)
