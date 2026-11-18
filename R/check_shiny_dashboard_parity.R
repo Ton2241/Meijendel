@@ -265,7 +265,10 @@ if (!is.finite(functional_max_diff) || functional_max_diff > 1e-8) {
 functional_modes <- unique(functional_merged$analysis_mode)
 functional_groups <- unique(functional_merged$group_code)
 if (!setequal(functional_modes, c("binair", "gewogen"))) fail("Niet beide functionele analysemethoden aanwezig.")
-if (length(functional_groups) != 6L) fail("Verwacht zes functionele groepen, gevonden: ", length(functional_groups))
+expected_functional_groups <- functional_group_metadata(functional_config)$group_code
+if (!setequal(functional_groups, expected_functional_groups)) {
+  fail("Functionele groepen wijken af van de vastgestelde indeling.")
+}
 
 functional_dashboard_trends <- read.csv(functional_dashboard_trends_path, stringsAsFactors = FALSE, check.names = FALSE)
 compare_contract_table(

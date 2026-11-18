@@ -1,0 +1,220 @@
+[
+  {
+    "cluster": "voedsel",
+    "label": "Voedsel",
+    "groups": [
+      {
+        "code": "fg_v1_bodem_insect",
+        "slug": "bodemfoeragerende-insecteneters",
+        "chart": "functioneel-bodem-insect",
+        "title": "Bodemfoeragerende insecteneters",
+        "text": "De uitkomst is gevoelig voor de gebruikte traitdrempel. Vergelijk de binaire en gewogen analyse."
+      },
+      {
+        "code": "fg_v1_lucht",
+        "slug": "luchtfoerageerders",
+        "chart": "functioneel-lucht",
+        "title": "Luchtfoerageerders — exploratief",
+        "text": "Met zeven soorten blijft deze groepsindicator uitsluitend exploratief."
+      },
+      {
+        "code": "fg_v1_vis",
+        "slug": "viseters",
+        "chart": "functioneel-vis",
+        "title": "Viseters",
+        "text": "Vis vormt het hoofdbestanddeel of een substantieel deel van het voedsel van volwassen vogels. In de TRIM-reeks 1958–2025 dragen negen soorten bij. Vier hebben een bruikbare reeks in beide modelperioden. De volledige groepsreeks is exploratief. De brugbare selectie haalt de minimumgrens van vijf soorten.",
+        "primary": [
+          5,
+          11,
+          2,
+          137,
+          7,
+          116
+        ],
+        "secondary": [
+          107,
+          106,
+          108
+        ]
+      },
+      {
+        "code": "fg_v1_zaad",
+        "slug": "zaadeters",
+        "chart": "functioneel-zaad",
+        "title": "Zaadeters"
+      }
+    ]
+  },
+  {
+    "cluster": "broedlocatie",
+    "label": "Broedlocatie",
+    "groups": [
+      {
+        "code": "fg_v1_grondbroed",
+        "slug": "grondbroeders",
+        "chart": "functioneel-grondbroed",
+        "title": "Grondbroeders"
+      },
+      {
+        "code": "fg_v1_holenbroed",
+        "slug": "holenbroeders",
+        "chart": "functioneel-holenbroed",
+        "title": "Holenbroeders"
+      },
+      {
+        "code": "fg_v1_struweelbroed",
+        "slug": "struweelbroeders",
+        "chart": "functioneel-struweelbroed",
+        "title": "Struweelbroeders",
+        "text": "Deze soorten bouwen hun nest gewoonlijk of geregeld in struiken, heggen of houtig struweel. In de TRIM-reeks 1958–2025 dragen zestien soorten bij. De richting blijft gelijk bij beide wegingen en bij weglating van telkens één soort.",
+        "primary": [
+          192,
+          246,
+          193,
+          219,
+          236,
+          165,
+          239,
+          175,
+          190,
+          207,
+          194,
+          177,
+          195
+        ],
+        "secondary": [
+          237,
+          166,
+          233
+        ]
+      },
+      {
+        "code": "fg_v1_boomkroonbroed",
+        "slug": "boomkroonbroeders",
+        "chart": "functioneel-boomkroonbroed",
+        "title": "Boomkroonbroeders",
+        "text": "Deze soorten nestelen gewoonlijk of geregeld in de takken van een boomkroon. In de volledige TRIM-reeks 1958–2025 dragen 21 soorten bij. Bij de gewogen analyse verandert de richting als Aalscholver wegvalt.",
+        "primary": [
+          5,
+          11,
+          66,
+          62,
+          223,
+          222,
+          201,
+          60,
+          243,
+          225,
+          238,
+          61,
+          202,
+          53,
+          218,
+          226
+        ],
+        "secondary": [
+          248,
+          179,
+          123,
+          237,
+          124,
+          233,
+          177
+        ]
+      }
+    ]
+  },
+  {
+    "cluster": "trekgedrag",
+    "label": "Trekgedrag",
+    "groups": [
+      {
+        "code": "fg_v1_stand",
+        "slug": "standvogels",
+        "chart": "functioneel-stand",
+        "title": "Standvogels",
+        "text": "Een groot of substantieel deel van de Nederlandse broedpopulatie overwintert in of nabij de eigen broedregio. In de brugbare TRIM-reeks 1958–2025 verandert de richting voor de 29 bijdragende soorten als Boomklever wegvalt.",
+        "primary": [
+          248,
+          206,
+          215,
+          217,
+          131,
+          28,
+          180,
+          223,
+          222,
+          71,
+          208,
+          246,
+          142,
+          144,
+          126,
+          122,
+          231,
+          224,
+          128,
+          146,
+          214,
+          147,
+          210,
+          32,
+          209,
+          175,
+          30,
+          27,
+          69,
+          213,
+          132,
+          232,
+          207,
+          121,
+          130,
+          124,
+          233,
+          77,
+          164,
+          226,
+          212,
+          143
+        ],
+        "secondary": [
+          11,
+          7,
+          166
+        ]
+      },
+      {
+        "code": "fg_v1_korte_trek",
+        "slug": "korteafstandstrekkers",
+        "chart": "functioneel-korte-trek",
+        "title": "Korteafstandstrekkers",
+        "text": "Een groot of substantieel deel van de Nederlandse broedpopulatie trekt geregeld naar West- of Zuid-Europa of het Middellandse Zeegebied, inclusief de Noord-Afrikaanse Middellandse Zeekust. Bij de gewogen brugbare TRIM-reeks 1958–2025, met elf bijdragende soorten, verandert de richting zonder Kleine Mantelmeeuw.",
+        "primary": [
+          148,
+          107,
+          82,
+          239,
+          198,
+          162,
+          169,
+          195
+        ],
+        "secondary": [
+          11,
+          85,
+          88,
+          175,
+          98,
+          108
+        ]
+      },
+      {
+        "code": "fg_v1_lange_trek",
+        "slug": "langeafstandstrekkers",
+        "chart": "functioneel-lange-trek",
+        "title": "Langeafstandstrekkers"
+      }
+    ]
+  }
+]

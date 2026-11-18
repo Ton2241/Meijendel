@@ -998,8 +998,9 @@ function getEcologischeGroepen(){
 function getFunctioneleGroepen(){
   const rows=getTableRows("functional_group_definition")
     .filter(r=>String(r.status)==="approved"&&String(r.group_version)==="v1")
-    .map(r=>({code:String(r.group_code),naam:String(r.naam_nl||r.group_code)}));
-  if(rows.length)return rows.sort((a,b)=>a.naam.localeCompare(b.naam,"nl",{sensitivity:"base"}));
+    .map(r=>({code:String(r.group_code),naam:String(r.naam_nl||r.group_code),
+      cluster:r.cluster||"",volgorde:r.presentatievolgorde??Number.MAX_SAFE_INTEGER,waarschuwing:r.waarschuwing||""}));
+  if(rows.length)return rows.sort((a,b)=>a.volgorde-b.volgorde||a.naam.localeCompare(b.naam,"nl",{sensitivity:"base"}));
   const seen=new Map();
   (S.functionalMsiData||[]).forEach(r=>{if(r.group_code)seen.set(String(r.group_code),String(r.groep_titel||r.group_code));});
   return [...seen.entries()].map(([code,naam])=>({code,naam})).sort((a,b)=>a.naam.localeCompare(b.naam,"nl",{sensitivity:"base"}));
@@ -1049,8 +1050,13 @@ function getTrimMsiRowsForGroup(groep100){
     .filter(r=>Number.isFinite(r.jaar)&&Number.isFinite(r.waarde)&&r.waarde>0)
     .sort((a,b)=>a.jaar-b.jaar);
 }
+function getFunctionalTrendStatus(groupCode,variant){
+  return (S.functionalTrendData||[]).find(r=>r.group_code===groupCode&&
+    r.analysis_mode===S.functionalMode&&r.msi_variant===variant)?.publicatiestatus;
+}
 function getTrimMsiVariantRows(groep100,variant){
   if(isFunctionalGroup(groep100)){
+    if(getFunctionalTrendStatus(groep100,variant)==="geen_groepsindicator")return [];
     return (S.functionalMsiData||[])
       .filter(r=>String(r.group_code)===String(groep100))
       .filter(r=>(r.analysis_mode||"binair")===S.functionalMode&&(r.msi_variant||"volledig")===variant)
@@ -1122,6 +1128,11 @@ function renderTrimVariantSummary(groepNaam,variantFilter){
   const grid=el("div",{className:"interp-grid"});
   const addCell=(label,value)=>{const cell=el("div",{className:"interp-cell"});cell.appendChild(el("div",{className:"lbl"},label));cell.appendChild(el("div",{className:"val"},String(value??"-")));grid.appendChild(cell);};
   rows.forEach(row=>{
+    if(row.publicatiestatus==="geen_groepsindicator"){
+      addCell("Status","Geen groepsindicator");
+      addCell("Bruikbare soorten",row.n_bruikbare_soorten);
+      return;
+    }
     const pct=value=>value!==null&&value!==undefined&&String(value).trim()!==""&&Number.isFinite(Number(value))?`${Number(value).toFixed(2)}% per jaar`:"-";
     [
       ["Variant",row.msi_variant||"volledig"],
@@ -1401,10 +1412,10 @@ function renderMsiGroupButton(group){
   b.addEventListener("click",()=>setState({msiGroep:group.code}));
   return b;
 }
-function renderMsiGroupSection(title,groups){
+function renderMsiGroupSection(title,groups,initiallyOpen=false){
   const available=groups.map(g=>typeof g==="string"?getMsiGroupByCode(g):getMsiGroupByCode(g.code)||g).filter(g=>g&&S.msiGroepen.some(x=>String(x.code)===String(g.code)));
   const active=available.some(g=>String(g.code)===String(S.msiGroep));
-  const d=el("details",{className:"filter-gray",open:active});
+  const d=el("details",{className:"filter-gray",open:initiallyOpen||active});
   const sm=el("summary",{},title);
   if(active)sm.appendChild(el("span",{className:"badge badge-blue",style:{marginLeft:"8px"}},"actief"));
   d.appendChild(sm);
@@ -1414,6 +1425,18 @@ function renderMsiGroupSection(title,groups){
   body.appendChild(wrap);
   d.appendChild(body);
   return d;
+}
+function renderFunctionalGroupSections(){
+  const groups=getFunctioneleGroepen();
+  const block=el("div");
+  if(!groups.length)return block;
+  if(!groups.some(group=>group.cluster))return renderMsiGroupSection("Functionele vogelgroepen",groups);
+  block.appendChild(el("h3",{},"Functionele vogelgroepen"));
+  const clusters=[...new Set(groups.map(group=>group.cluster))];
+  clusters.forEach(cluster=>block.appendChild(renderMsiGroupSection(
+    cluster||"Overige functionele vogelgroepen",groups.filter(group=>group.cluster===cluster),true
+  )));
+  return block;
 }
 function renderMsiGroupSelector(){
   const box=el("div",{style:{marginBottom:"16px"}});
@@ -1430,7 +1453,7 @@ function renderMsiGroupSelector(){
   ]));
   box.appendChild(renderMsiGroupSection("Habitattypen",HABITAT_GROEPEN.map(h=>({code:`${HABITAT_GROEP_PREFIX}${h.code}`,naam:h.naam}))));
   box.appendChild(renderMsiGroupSection("Ecologische Vogelgroepen",S.msiGroepen.filter(g=>Number.isFinite(Number(g.code)))));
-  box.appendChild(renderMsiGroupSection("Functionele Vogelgroepen",getFunctioneleGroepen()));
+  box.appendChild(renderFunctionalGroupSections());
   if(isFunctionalGroup(S.msiGroep)){
     const modeBox=el("div",{style:{marginTop:"12px",padding:"12px",background:"#f8fafc",border:"1px solid #dbeafe",borderRadius:"8px"}});
     modeBox.appendChild(el("div",{style:{fontSize:"12px",fontWeight:"600",color:"#374151",marginBottom:"8px"}},"Analysewijze"));
@@ -1441,11 +1464,11 @@ function renderMsiGroupSelector(){
       toggle.appendChild(button);
     });
     modeBox.appendChild(toggle);
-    const warning=String(S.msiGroep)==="fg_v1_lucht"
+    const warning=getMsiGroupByCode(S.msiGroep)?.waarschuwing||(String(S.msiGroep)==="fg_v1_lucht"
       ?"Deze groep telt zeven soorten en wordt uitsluitend exploratief geïnterpreteerd."
       :String(S.msiGroep)==="fg_v1_bodem_insect"
         ?"Deze groep is gevoelig voor de traitdrempel; vergelijk binair en gewogen en gebruik de gevoeligheidsanalyse."
-        :"Vergelijk binair en gewogen om de invloed van secundair lidmaatschap te beoordelen.";
+         :"Vergelijk binair en gewogen om de invloed van secundair lidmaatschap te beoordelen.");
     modeBox.appendChild(el("p",{style:{fontSize:"12px",color:"#6b7280",lineHeight:"1.5",marginTop:"10px"}},warning));
     box.appendChild(modeBox);
   }
@@ -2736,11 +2759,16 @@ function renderMsiPanel(){const p=el("div",{className:"panel"});const srcTog=el(
 function renderTrimGamSection(groepNaam,variant){
   const label=variant==="robuust"?"Robuuste MSI":"Volledige MSI";
   const id=variant==="robuust"?"msiGamChartRobust":"msiGamChartFull";
+  const summary=renderTrimVariantSummary(groepNaam,variant);
+  if(getFunctionalTrendStatus(S.msiGroep,variant)==="geen_groepsindicator")return summary;
+  const functional=isFunctionalGroup(S.msiGroep);
+  const title=functional?"Meijendel-TRIM GAM":"Meijendel-TRIM GAM en landelijke GAM";
+  const national=functional?"":" · zwart gestreept = landelijke GAM";
   return el("div",{className:"trim-gam-section"},[
-    el("h3",{style:{fontSize:"14px",fontWeight:"600",color:"#374151",marginTop:"18px",marginBottom:"4px"}},`${groepNaam} — Meijendel-TRIM GAM en landelijke GAM (${label})`),
-    el("p",{style:{fontSize:"12px",color:"#9ca3af",marginBottom:"12px"}},`Blauw = Meijendel ${label.toLowerCase()} als GAM met beschrijvende 95%-band · zwart gestreept = landelijke GAM. De band is geen volledige TRIM-onzekerheid.`),
+    el("h3",{style:{fontSize:"14px",fontWeight:"600",color:"#374151",marginTop:"18px",marginBottom:"4px"}},`${groepNaam} — ${title} (${label})`),
+    el("p",{style:{fontSize:"12px",color:"#9ca3af",marginBottom:"12px"}},`Blauw = Meijendel ${label.toLowerCase()} als GAM met beschrijvende 95%-band${national}. De band is geen volledige TRIM-onzekerheid.`),
     el("div",{className:"chart-wrap",id}),
-    renderTrimVariantSummary(groepNaam,variant)
+    summary
   ]);
 }
 function ensureTrimGamChartBlock(){
@@ -2766,6 +2794,7 @@ function ensureTrimGamChartBlock(){
 function renderTrimGamComparisonChart(){
   if(!ensureTrimGamChartBlock())return;
   [["robuust","msiGamChartRobust"],["volledig","msiGamChartFull"]].forEach(([variant,containerId])=>{
+    if(!document.getElementById(containerId))return;
     const cmp=isFunctionalGroup(S.msiGroep)
       ?buildMsiGamComparison(S.msiGroep,S.msiYearRange,variant)
       :isLijstGroep(S.msiGroep)

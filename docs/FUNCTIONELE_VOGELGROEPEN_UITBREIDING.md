@@ -72,3 +72,11 @@ Alle tien combinaties van groep en soortselectie hebben groepswaarden voor 68 ka
 De richtingsomslagen treden op zonder Aalscholver bij gewogen Boomkroonbroeders (volledig), zonder Boomklever bij Standvogels (brugbaar, beide wegingen) en zonder Kleine Mantelmeeuw bij gewogen Korteafstandstrekkers (brugbaar). Struweelbroeders hebben in beide selecties dezelfde 16 soorten en houden bij alle weglatingen dezelfde richting. Bij Viseters blijft de richting dalend, maar de brugbare selectie telt slechts vier soorten en haalt de minimumgrens niet.
 
 Gevolg voor presentatie. Label Viseters in de volledige reeks als exploratief en geef bij de brugbare reeks de status geen groepsindicator. Toon bij Boomkroonbroeders, Standvogels en Korteafstandstrekkers de concrete gevoeligheid naast de grafiek. Zet de jaardekking en aantallen bij alle vijf. De toets betreft de bestaande historische reeks. Een latere reeks met gevalideerde cijfers voor 2026 krijgt een nieuwe dekkings- en gevoeligheidstoets.
+
+## Releasekandidaat
+
+De vastgestelde groepsmetadata staat in `R/functionele_vogelgroepen.json`. De vijf nieuwe soortenlijsten vullen bij het berekenen de zes SQL-groepen aan. De website gebruikt de afgeleide JSON-configuratie in `VWG_M/website/vwg-m-linux-app/app/`, zonder de soort-ID's. De browserdataset vangt dezelfde groepsvolgorde en lidmaatschappen uit de Meijendel-configuratie op. De historische uitvoer is uit de bestaande TRIM-jaarindices opgebouwd met `R/extend_functional_group_outputs.R`. De normale TRIM-bouw gebruikt dezelfde groepsdefinities voor een latere actuele reeks.
+
+De website gebruikt de vooraf berekende dichtheid uit `groepen_grafieken/`. Dag- en territoriumgegevens en de zes bestaande groepsreeksen zijn niet aangepast. De historische export en bestaande cache zijn uitsluitend als invoer gebruikt. De gezamenlijke release van Meijendel en VWG_M volgt na publicatieakkoord en de geldende export-, preflight- en rookcontroles. Bij gelijktijdige opname van de officiële broedcijfers voor 2026 worden de groepsuitvoer en de dekkingswaarschuwingen in dezelfde actualisering opnieuw beoordeeld.
+
+Voor de lokale vergelijking van de publieke configuratie en grafieken levert `R/check_dashboard_website_parity.R` als derde argument het pad naar `app/functionele_vogelgroepen.json` uit VWG_M.

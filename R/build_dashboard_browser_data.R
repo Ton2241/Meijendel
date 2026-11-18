@@ -91,6 +91,19 @@ tables <- cache[["data"]]
 missing_tables <- setdiff(required_tables, names(tables))
 if (length(missing_tables)) stop("Dashboardcache mist: ", paste(missing_tables, collapse = ", "), ".", call. = FALSE)
 tables <- tables[required_tables]
+script_path <- sub("^--file=", "", grep("^--file=", commandArgs(FALSE), value = TRUE)[1L])
+script_dir <- dirname(normalizePath(script_path, mustWork = TRUE))
+source(file.path(script_dir, "functionele_vogelgroepen.R"))
+config <- functional_group_config(file.path(script_dir, "functionele_vogelgroepen.json"))
+tables <- functional_group_tables(tables, config)
+metadata <- functional_group_metadata(config)
+definition <- tables$functional_group_definition
+lookup <- match(definition$group_code, metadata$group_code)
+definition$cluster <- metadata$cluster[lookup]
+definition$presentatievolgorde <- lookup
+definition$waarschuwing <- metadata$waarschuwing[lookup]
+definition$naam_nl[!is.na(lookup)] <- metadata$naam_nl[lookup[!is.na(lookup)]]
+tables$functional_group_definition <- definition
 for(name in c("toegankelijkheidsgebied_plot_afleiding","maatregel_beheer_jaar")) {
   for(field in c("bron","opmerking","intensiteit_code","uitvoerder_of_diersoort","deel_label","dekking_pct")) {
     if(field %in% names(tables[[name]])) required_columns[[name]]<-unique(c(required_columns[[name]],field))

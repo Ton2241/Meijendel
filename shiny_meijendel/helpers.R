@@ -32,6 +32,8 @@ if (is.na(cache_contract_helper)) {
   stop("R/meijendel_cache_contract.R ontbreekt; de Shiny-cache kan niet veilig worden gevalideerd.")
 }
 source(cache_contract_helper)
+source(file.path(dirname(cache_contract_helper), "functionele_vogelgroepen.R"))
+functional_config <- functional_group_config(file.path(dirname(cache_contract_helper), "functionele_vogelgroepen.json"))
 source(file.path(dirname(cache_contract_helper),"trim_release_runtime.R"))
 MEIJENDEL_PARSER_CACHE_VERSION <- 18L
 rm(helpers_source_path, species_synonym_helpers, species_synonym_helper, trim_trend_helpers, trim_trend_helper, cache_contract_helpers, cache_contract_helper)
@@ -2052,6 +2054,7 @@ analyse_groups_subset <- function(species_indices, group_mapping, msi_variant = 
 }
 
 build_functional_group_mapping <- function(tbls) {
+  tbls <- functional_group_tables(tbls, functional_config)
   definitions <- tbls$functional_group_definition
   definitions <- definitions[definitions$status == "approved" & definitions$group_version == "v1", , drop = FALSE]
   memberships <- tbls$functional_group_membership

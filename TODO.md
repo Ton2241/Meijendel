@@ -850,6 +850,13 @@ drempelvarianten en leave-one-species-out-minimumstatus zijn vastgelegd.
   zichtbare legacykwaliteitsissues; corrigeer ze alleen gecontroleerd en zonder
   historische data stilzwijgend te herschrijven.
 
+- De vijf nieuwe soortenlijsten en beide wegingen zijn lokaal uitgewerkt in
+  [Functionele vogelgroepen](docs/FUNCTIONELE_VOGELGROEPEN_UITBREIDING.md).
+  De drie clusters, dichtheden en TRIM-uitvoer over 1958–2025 zijn getest.
+  Publicatie van de samenhangende wijziging in Meijendel en VWG_M wacht op
+  afzonderlijk akkoord. Viseters blijft in TRIM exploratief. De brugbare
+  selectie telt vier soorten en krijgt de status geen groepsindicator.
+
 ### TRIM-bootstrap — voorbereid; productie wacht op complete cijfers 2026
 
 - De nieuwe 50-herhalingenpilot over alle 156 soorten uit 1958–2025 is

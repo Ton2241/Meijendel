@@ -536,14 +536,12 @@ for (groep in sort(unique(group_msi$groep_100))) {
   add_density_rows(as.character(groep), title, tbls, species_part$soort_id)
 }
 
-functional_slugs <- c(
-  fg_v1_bodem_insect = "functioneel-bodem-insect",
-  fg_v1_lucht = "functioneel-lucht",
-  fg_v1_grondbroed = "functioneel-grondbroed",
-  fg_v1_holenbroed = "functioneel-holenbroed",
-  fg_v1_lange_trek = "functioneel-lange-trek",
-  fg_v1_zaad = "functioneel-zaad"
-)
+functional_metadata <- functional_group_metadata(functional_config)
+functional_slugs <- stats::setNames(functional_metadata$chart, functional_metadata$group_code)
+functional_mapping <- build_functional_group_mapping(tbls)
+new_functional_codes <- unlist(lapply(functional_config, function(cluster) {
+  vapply(Filter(function(group) !is.null(group$primary), cluster$groups), function(group) group$code, "")
+}))
 functional_msi <- read.csv(functional_msi_path, stringsAsFactors = FALSE)
 functional_msi <- functional_msi[functional_msi$msi_variant == "volledig", , drop = FALSE]
 functional_composition <- read.csv(functional_composition_path, stringsAsFactors = FALSE)
@@ -564,6 +562,11 @@ for (group_code in names(functional_slugs)) {
       ,
       drop = FALSE
     ]
+    if (group_code %in% new_functional_codes) {
+      species_part <- functional_mapping[functional_mapping$group_code == group_code, ]
+      species_part$soort_naam <- tbls$soorten$soort_naam[match(species_part$soort_id, tbls$soorten$id)]
+      if (anyNA(species_part$soort_naam)) stop("Onbekende soort-ID in ", group_code)
+    }
     species_part <- unique(species_part[, c("soort_id", "soort_naam", "membership_weight")])
     add_species_rows(chart_id, title, species_part$soort_naam)
     if (analysis_mode == "gewogen") {

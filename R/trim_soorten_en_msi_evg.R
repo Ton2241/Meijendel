@@ -12,6 +12,8 @@ source(file.path(script_dir, "trim_trend_contract.R"), local = TRUE)
 source(file.path(script_dir, "meijendel_cache_contract.R"), local = TRUE)
 source(file.path(script_dir, "trim_analysis_config.R"), local = TRUE)
 source(file.path(script_dir, "write_trim_uncertainty_outputs.R"), local = TRUE)
+source(file.path(script_dir, "functionele_vogelgroepen.R"))
+functional_config <- functional_group_config(file.path(script_dir, "functionele_vogelgroepen.json"))
 
 historische_kavels <- c(
   "1", "1a", "1b", "2", "3", "4", "4-5", "5", "6", "7", "8", "8/9", "8/11",
@@ -854,6 +856,7 @@ analyse_groups <- function(species_indices, group_mapping, msi_variant = "volled
 }
 
 build_functional_group_mapping <- function(tbls) {
+  tbls <- functional_group_tables(tbls, functional_config)
   definitions <- tbls$functional_group_definition
   definitions <- definitions[definitions$status == "approved" & definitions$group_version == "v1", , drop = FALSE]
   memberships <- tbls$functional_group_membership

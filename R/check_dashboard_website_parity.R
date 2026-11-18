@@ -14,14 +14,24 @@ required_chart_ids <- c(
   "rode-lijst", "oranje-lijst", "vogelrichtlijn", "rode-en-oranje-lijst",
   "2110-embryonale-wandelende-duinen", "2120-witte-duinen", "2130-grijze-duinen",
   "2160-duindoornstruwelen", "2180-duinbossen", "2190-vochtige-duinvalleien",
-  "3140-kranswierwateren", "6430-ruigten-en-zomen",
-  "functioneel-bodem-insect-binair", "functioneel-bodem-insect-gewogen",
-  "functioneel-lucht-binair", "functioneel-lucht-gewogen",
-  "functioneel-grondbroed-binair", "functioneel-grondbroed-gewogen",
-  "functioneel-holenbroed-binair", "functioneel-holenbroed-gewogen",
-  "functioneel-lange-trek-binair", "functioneel-lange-trek-gewogen",
-  "functioneel-zaad-binair", "functioneel-zaad-gewogen"
+  "3140-kranswierwateren", "6430-ruigten-en-zomen"
 )
+source(file.path(repo_dir, "R", "functionele_vogelgroepen.R"))
+metadata <- functional_group_metadata(functional_group_config(file.path(repo_dir, "R", "functionele_vogelgroepen.json")))
+required_chart_ids <- c(required_chart_ids, as.vector(outer(metadata$chart, c("binair", "gewogen"), paste, sep = "-")))
+if (length(args) >= 3L) {
+  config <- functional_group_config(file.path(repo_dir, "R", "functionele_vogelgroepen.json"))
+  public_config <- lapply(config, function(cluster) {
+    cluster$groups <- lapply(cluster$groups, function(group) {
+      group[c("primary", "secondary")] <- NULL
+      group
+    })
+    cluster
+  })
+  if (!identical(public_config, functional_group_config(args[[3L]]))) {
+    stop("De publieke groepsconfiguratie uit VWG_M wijkt af van Meijendel.", call. = FALSE)
+  }
+}
 
 fail <- function(...) {
   stop(paste0(...), call. = FALSE)
@@ -53,7 +63,7 @@ if (!file.exists(dashboard_path)) fail("Dashboard ontbreekt: ", dashboard_path)
 dashboard <- paste(readLines(dashboard_path, warn = FALSE, encoding = "UTF-8"), collapse = "\n")
 required_dashboard_fragments <- c(
   'S.msiGroepen.push(...getFunctioneleGroepen())',
-  'box.appendChild(renderMsiGroupSection("Functionele Vogelgroepen",getFunctioneleGroepen()))',
+  'box.appendChild(renderFunctionalGroupSections())',
   'S.functionalMode==="gewogen"',
   'Number(r.membership_weight)'
 )
