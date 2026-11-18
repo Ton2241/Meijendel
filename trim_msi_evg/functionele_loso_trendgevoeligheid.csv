@@ -865,3 +865,339 @@
 "fg_v1_zaad","Zaadeters","gewogen","robuust",239,"Kneu",-1.53976255550935,-1.54143055328222,-0.00166799777286952,FALSE
 "fg_v1_zaad","Zaadeters","gewogen","robuust",246,"Goudvink",-1.53976255550935,-1.60968459110871,-0.0699220355993568,FALSE
 "fg_v1_zaad","Zaadeters","gewogen","robuust",251,"Rietgors",-1.53976255550935,-1.51775164027644,0.0220109152329062,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","binair","volledig",5,"Aalscholver",0.7093316517788,0.197451524417969,-0.511880127360831,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","binair","volledig",11,"Blauwe Reiger",0.7093316517788,1.0373336064591,0.328001954680301,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","binair","volledig",60,"Havik",0.7093316517788,0.59912370003552,-0.11020795174328,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","binair","volledig",61,"Sperwer",0.7093316517788,0.748007274874074,0.0386756230952745,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","binair","volledig",62,"Buizerd",0.7093316517788,0.593058564709437,-0.116273087069363,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","binair","volledig",66,"Boomvalk",0.7093316517788,0.899560052427417,0.190228400648618,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","binair","volledig",123,"Houtduif",0.7093316517788,0.998942908053246,0.289611256274447,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","binair","volledig",124,"Turkse Tortel",0.7093316517788,0.703752895620879,-0.00557875615792014,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","binair","volledig",177,"Zanglijster",0.7093316517788,0.630329613588354,-0.0790020381904455,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","binair","volledig",179,"Grote Lijster",0.7093316517788,0.824030379580609,0.11469872780181,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","binair","volledig",201,"Goudhaan",0.7093316517788,0.64408041805164,-0.0652512337271594,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","binair","volledig",202,"Vuurgoudhaan",0.7093316517788,0.938998965782734,0.229667314003934,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","binair","volledig",218,"Wielewaal",0.7093316517788,0.507586407610661,-0.201745244168139,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","binair","volledig",222,"Gaai",0.7093316517788,0.63115487350005,-0.078176778278749,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","binair","volledig",223,"Ekster",0.7093316517788,1.01066648127224,0.301334829493438,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","binair","volledig",226,"Zwarte Kraai",0.7093316517788,0.675782001127967,-0.0335496506508326,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","binair","volledig",233,"Vink",0.7093316517788,0.29643592674975,-0.41289572502905,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","binair","volledig",237,"Putter",0.7093316517788,0.529946754267474,-0.179384897511325,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","binair","volledig",238,"Sijs",0.7093316517788,0.935845442585825,0.226513790807026,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","binair","volledig",243,"Kruisbek",0.7093316517788,0.995775238904573,0.286443587125773,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","binair","volledig",248,"Appelvink",0.7093316517788,0.503617216788177,-0.205714434990623,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","binair","volledig",11,"Blauwe Reiger",-3.09832811873656,-2.63097740247282,0.467350716263737,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","binair","volledig",88,"Kievit",-3.09832811873656,-3.12781565032927,-0.029487531592709,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","binair","volledig",98,"Tureluur",-3.09832811873656,-3.28653647862933,-0.188208359892772,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","binair","volledig",107,"Kleine Mantelmeeuw",-3.09832811873656,-1.7131043603703,1.38522375836626,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","binair","volledig",108,"Zilvermeeuw",-3.09832811873656,-1.14759033035028,1.95073778838628,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","binair","volledig",148,"Boomleeuwerik",-3.09832811873656,-3.83666910963306,-0.738340990896502,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","binair","volledig",162,"Witte Kwikstaart",-3.09832811873656,-3.51972952687547,-0.421401408138911,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","binair","volledig",169,"Zwarte Roodstaart",-3.09832811873656,-3.05852917081082,0.0397989479257399,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","binair","volledig",175,"Merel",-3.09832811873656,-3.50020858922205,-0.401880470485494,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","binair","volledig",195,"Zwartkop",-3.09832811873656,-3.89949138540928,-0.801163266672722,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","binair","volledig",198,"Tjiftjaf",-3.09832811873656,-4.15381754801034,-1.05548942927378,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","binair","volledig",239,"Kneu",-3.09832811873656,-3.26112596464438,-0.162797845907825,FALSE
+"fg_v1_stand","Standvogels","binair","volledig",7,"Roerdomp",-0.832877433073653,-0.914362488507914,-0.0814850554342605,FALSE
+"fg_v1_stand","Standvogels","binair","volledig",11,"Blauwe Reiger",-0.832877433073653,-0.65686062487833,0.176016808195323,FALSE
+"fg_v1_stand","Standvogels","binair","volledig",27,"Nijlgans",-0.832877433073653,-0.885593078146518,-0.052715645072865,FALSE
+"fg_v1_stand","Standvogels","binair","volledig",69,"Patrijs",-0.832877433073653,-1.17615954701278,-0.343282113939125,FALSE
+"fg_v1_stand","Standvogels","binair","volledig",71,"Gewone Fazant",-0.832877433073653,-0.572943093989409,0.259934339084245,FALSE
+"fg_v1_stand","Standvogels","binair","volledig",77,"Waterhoen",-0.832877433073653,-0.788245970017798,0.0446314630558553,FALSE
+"fg_v1_stand","Standvogels","binair","volledig",122,"Holenduif",-0.832877433073653,-0.716140881816818,0.116736551256835,FALSE
+"fg_v1_stand","Standvogels","binair","volledig",124,"Turkse Tortel",-0.832877433073653,-0.884908723493516,-0.0520312904198628,FALSE
+"fg_v1_stand","Standvogels","binair","volledig",126,"Halsbandparkiet",-0.832877433073653,-0.914145785504905,-0.0812683524312519,FALSE
+"fg_v1_stand","Standvogels","binair","volledig",128,"Kerkuil",-0.832877433073653,-0.850600213334063,-0.0177227802604096,FALSE
+"fg_v1_stand","Standvogels","binair","volledig",131,"Bosuil",-0.832877433073653,-0.799011344445777,0.0338660886278763,FALSE
+"fg_v1_stand","Standvogels","binair","volledig",132,"Ransuil",-0.832877433073653,-0.71993052438617,0.112946908687483,FALSE
+"fg_v1_stand","Standvogels","binair","volledig",142,"Groene Specht",-0.832877433073653,-0.87528441892093,-0.0424069858472764,FALSE
+"fg_v1_stand","Standvogels","binair","volledig",143,"Zwarte Specht",-0.832877433073653,-0.357589970865979,0.475287462207674,FALSE
+"fg_v1_stand","Standvogels","binair","volledig",144,"Grote Bonte Specht",-0.832877433073653,-0.990614930838241,-0.157737497764587,FALSE
+"fg_v1_stand","Standvogels","binair","volledig",146,"Kleine Bonte Specht",-0.832877433073653,-0.970509200823166,-0.137631767749513,FALSE
+"fg_v1_stand","Standvogels","binair","volledig",147,"Kuifleeuwerik",-0.832877433073653,-0.878373609689387,-0.0454961766157336,FALSE
+"fg_v1_stand","Standvogels","binair","volledig",164,"Winterkoning",-0.832877433073653,-0.842640616132995,-0.00976318305934143,FALSE
+"fg_v1_stand","Standvogels","binair","volledig",166,"Roodborst",-0.832877433073653,-0.907938120046392,-0.0750606869727388,FALSE
+"fg_v1_stand","Standvogels","binair","volledig",175,"Merel",-0.832877433073653,-0.841542204203938,-0.00866477113028452,FALSE
+"fg_v1_stand","Standvogels","binair","volledig",180,"Cetti's Zanger",-0.832877433073653,-0.868886162162963,-0.0360087290893096,FALSE
+"fg_v1_stand","Standvogels","binair","volledig",207,"Staartmees",-0.832877433073653,-0.964281239218157,-0.131403806144503,FALSE
+"fg_v1_stand","Standvogels","binair","volledig",208,"Glanskop",-0.832877433073653,-0.89199636239945,-0.0591189293257965,FALSE
+"fg_v1_stand","Standvogels","binair","volledig",209,"Matkop",-0.832877433073653,-0.671195226479204,0.161682206594449,FALSE
+"fg_v1_stand","Standvogels","binair","volledig",210,"Kuifmees",-0.832877433073653,-0.746337704178368,0.0865397288952852,FALSE
+"fg_v1_stand","Standvogels","binair","volledig",212,"Zwarte Mees",-0.832877433073653,-0.858530778110145,-0.0256533450364915,FALSE
+"fg_v1_stand","Standvogels","binair","volledig",213,"Pimpelmees",-0.832877433073653,-0.992100499852422,-0.159223066778769,FALSE
+"fg_v1_stand","Standvogels","binair","volledig",214,"Koolmees",-0.832877433073653,-0.892245193398922,-0.0593677603252685,FALSE
+"fg_v1_stand","Standvogels","binair","volledig",215,"Boomklever",-0.832877433073653,-0.327385286271953,0.5054921468017,FALSE
+"fg_v1_stand","Standvogels","binair","volledig",217,"Boomkruiper",-0.832877433073653,-1.04650937212399,-0.21363193905034,FALSE
+"fg_v1_stand","Standvogels","binair","volledig",222,"Gaai",-0.832877433073653,-0.947554025122377,-0.114676592048724,FALSE
+"fg_v1_stand","Standvogels","binair","volledig",223,"Ekster",-0.832877433073653,-0.784497572693255,0.0483798603803987,FALSE
+"fg_v1_stand","Standvogels","binair","volledig",224,"Kauw",-0.832877433073653,-0.853805474464808,-0.020928041391155,FALSE
+"fg_v1_stand","Standvogels","binair","volledig",226,"Zwarte Kraai",-0.832877433073653,-0.909228330255241,-0.0763508971815874,FALSE
+"fg_v1_stand","Standvogels","binair","volledig",231,"Huismus",-0.832877433073653,-0.810120159780736,0.0227572732929171,FALSE
+"fg_v1_stand","Standvogels","binair","volledig",232,"Ringmus",-0.832877433073653,-0.459346163794083,0.37353126927957,FALSE
+"fg_v1_stand","Standvogels","binair","volledig",233,"Vink",-0.832877433073653,-1.07284847882315,-0.239971045749499,FALSE
+"fg_v1_stand","Standvogels","binair","volledig",246,"Goudvink",-0.832877433073653,-0.860468618537569,-0.0275911854639155,FALSE
+"fg_v1_stand","Standvogels","binair","volledig",248,"Appelvink",-0.832877433073653,-0.975590384911129,-0.142712951837476,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","binair","volledig",165,"Heggenmus",2.19766193340791,2.2871939278674,0.0895319944594908,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","binair","volledig",166,"Roodborst",2.19766193340791,2.22861784489843,0.0309559114905156,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","binair","volledig",175,"Merel",2.19766193340791,2.27193260772254,0.0742706743146249,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","binair","volledig",177,"Zanglijster",2.19766193340791,2.04791327675555,-0.14974865665236,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","binair","volledig",190,"Spotvogel",2.19766193340791,2.45790312281713,0.260241189409216,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","binair","volledig",192,"Braamsluiper",2.19766193340791,2.16465685742815,-0.033005075979764,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","binair","volledig",193,"Grasmus",2.19766193340791,2.29687364081277,0.099211707404856,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","binair","volledig",194,"Tuinfluiter",2.19766193340791,1.98270317300067,-0.214958760407247,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","binair","volledig",195,"Zwartkop",2.19766193340791,1.97134026344084,-0.226321669967078,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","binair","volledig",207,"Staartmees",2.19766193340791,2.0758376560106,-0.121824277397309,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","binair","volledig",219,"Grauwe Klauwier",2.19766193340791,2.38282851926024,0.185166585852325,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","binair","volledig",233,"Vink",2.19766193340791,1.85973569765279,-0.337926235755126,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","binair","volledig",236,"Groenling",2.19766193340791,2.18957849663597,-0.00808343677194401,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","binair","volledig",237,"Putter",2.19766193340791,2.16980040315995,-0.0278615302479635,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","binair","volledig",239,"Kneu",2.19766193340791,2.44716604799398,0.249504114586063,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","binair","volledig",246,"Goudvink",2.19766193340791,2.33074658121111,0.133084647803194,FALSE
+"fg_v1_vis","Viseters","binair","volledig",2,"Fuut",-6.80115923709634,-7.99013798925876,-1.18897875216242,FALSE
+"fg_v1_vis","Viseters","binair","volledig",5,"Aalscholver",-6.80115923709634,-8.8804807842238,-2.07932154712746,FALSE
+"fg_v1_vis","Viseters","binair","volledig",7,"Roerdomp",-6.80115923709634,-7.83340933704726,-1.03225009995092,FALSE
+"fg_v1_vis","Viseters","binair","volledig",11,"Blauwe Reiger",-6.80115923709634,-6.26593467207647,0.535224565019877,FALSE
+"fg_v1_vis","Viseters","binair","volledig",106,"Stormmeeuw",-6.80115923709634,-6.31368395828306,0.487475278813288,FALSE
+"fg_v1_vis","Viseters","binair","volledig",107,"Kleine Mantelmeeuw",-6.80115923709634,-5.18109496264546,1.62006427445088,FALSE
+"fg_v1_vis","Viseters","binair","volledig",108,"Zilvermeeuw",-6.80115923709634,-4.5688624412347,2.23229679586164,FALSE
+"fg_v1_vis","Viseters","binair","volledig",116,"Visdief",-6.80115923709634,-6.77951734480798,0.0216418922883603,FALSE
+"fg_v1_vis","Viseters","binair","volledig",137,"IJsvogel",-6.80115923709634,-7.31589213474994,-0.514732897653592,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","gewogen","volledig",5,"Aalscholver",0.426807197730561,-0.219733874480443,-0.646541072211004,TRUE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","gewogen","volledig",11,"Blauwe Reiger",0.426807197730561,0.814203791908752,0.387396594178191,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","gewogen","volledig",60,"Havik",0.426807197730561,0.273000281081437,-0.153806916649124,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","gewogen","volledig",61,"Sperwer",0.426807197730561,0.455863091182729,0.0290558934521679,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","gewogen","volledig",62,"Buizerd",0.426807197730561,0.265464898528855,-0.161342299201706,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","gewogen","volledig",66,"Boomvalk",0.426807197730561,0.623637453701864,0.196830255971303,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","gewogen","volledig",123,"Houtduif",0.426807197730561,0.602284050024959,0.175476852294398,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","gewogen","volledig",124,"Turkse Tortel",0.426807197730561,0.414361248082895,-0.0124459496476659,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","gewogen","volledig",177,"Zanglijster",0.426807197730561,0.380378543482762,-0.0464286542477987,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","gewogen","volledig",179,"Grote Lijster",0.426807197730561,0.46882714602785,0.0420199482972894,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","gewogen","volledig",201,"Goudhaan",0.426807197730561,0.327888463699089,-0.0989187340314723,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","gewogen","volledig",202,"Vuurgoudhaan",0.426807197730561,0.691383981113702,0.264576783383141,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","gewogen","volledig",218,"Wielewaal",0.426807197730561,0.127313963844755,-0.299493233885806,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","gewogen","volledig",222,"Gaai",0.426807197730561,0.324638691192458,-0.102168506538103,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","gewogen","volledig",223,"Ekster",0.426807197730561,0.838212096235025,0.411404898504464,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","gewogen","volledig",226,"Zwarte Kraai",0.426807197730561,0.377810009070112,-0.048997188660449,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","gewogen","volledig",233,"Vink",0.426807197730561,0.165800954920847,-0.261006242809714,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","gewogen","volledig",237,"Putter",0.426807197730561,0.302885383883833,-0.123921813846728,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","gewogen","volledig",238,"Sijs",0.426807197730561,0.687270179234378,0.260462981503817,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","gewogen","volledig",243,"Kruisbek",0.426807197730561,0.763304263923081,0.33649706619252,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","gewogen","volledig",248,"Appelvink",0.426807197730561,0.295165975627376,-0.131641222103185,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","gewogen","volledig",11,"Blauwe Reiger",-2.10667042832662,-1.79217018307289,0.314500245253724,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","gewogen","volledig",88,"Kievit",-2.10667042832662,-2.05875007490802,0.0479203534185957,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","gewogen","volledig",98,"Tureluur",-2.10667042832662,-2.1880843221182,-0.081413893791582,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","gewogen","volledig",107,"Kleine Mantelmeeuw",-2.10667042832662,-0.258157872893849,1.84851255543277,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","gewogen","volledig",108,"Zilvermeeuw",-2.10667042832662,-0.899376453961709,1.20729397436491,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","gewogen","volledig",148,"Boomleeuwerik",-2.10667042832662,-2.90375213154818,-0.797081703221558,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","gewogen","volledig",162,"Witte Kwikstaart",-2.10667042832662,-2.50804275392392,-0.401372325597305,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","gewogen","volledig",169,"Zwarte Roodstaart",-2.10667042832662,-1.90327461402713,0.20339581429949,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","gewogen","volledig",175,"Merel",-2.10667042832662,-2.29606147436685,-0.189391046040233,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","gewogen","volledig",195,"Zwartkop",-2.10667042832662,-2.99754293202353,-0.890872503696916,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","gewogen","volledig",198,"Tjiftjaf",-2.10667042832662,-3.31847539157468,-1.21180496324806,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","gewogen","volledig",239,"Kneu",-2.10667042832662,-2.19577272339656,-0.0891022950699427,FALSE
+"fg_v1_stand","Standvogels","gewogen","volledig",7,"Roerdomp",-0.822212905853714,-0.863527428722644,-0.0413145228689293,FALSE
+"fg_v1_stand","Standvogels","gewogen","volledig",11,"Blauwe Reiger",-0.822212905853714,-0.730680097176395,0.0915328086773193,FALSE
+"fg_v1_stand","Standvogels","gewogen","volledig",27,"Nijlgans",-0.822212905853714,-0.875963895524179,-0.0537509896704647,FALSE
+"fg_v1_stand","Standvogels","gewogen","volledig",69,"Patrijs",-0.822212905853714,-1.17370800109876,-0.351495095245047,FALSE
+"fg_v1_stand","Standvogels","gewogen","volledig",71,"Gewone Fazant",-0.822212905853714,-0.552637848724991,0.269575057128724,FALSE
+"fg_v1_stand","Standvogels","gewogen","volledig",77,"Waterhoen",-0.822212905853714,-0.775917706962137,0.0462951988915772,FALSE
+"fg_v1_stand","Standvogels","gewogen","volledig",122,"Holenduif",-0.822212905853714,-0.700486819499391,0.121726086354323,FALSE
+"fg_v1_stand","Standvogels","gewogen","volledig",124,"Turkse Tortel",-0.822212905853714,-0.875855683842097,-0.053642777988383,FALSE
+"fg_v1_stand","Standvogels","gewogen","volledig",126,"Halsbandparkiet",-0.822212905853714,-0.906327555041053,-0.084114649187339,FALSE
+"fg_v1_stand","Standvogels","gewogen","volledig",128,"Kerkuil",-0.822212905853714,-0.841782675811997,-0.0195697699582831,FALSE
+"fg_v1_stand","Standvogels","gewogen","volledig",131,"Bosuil",-0.822212905853714,-0.786402953807186,0.0358099520465283,FALSE
+"fg_v1_stand","Standvogels","gewogen","volledig",132,"Ransuil",-0.822212905853714,-0.703217375284415,0.118995530569299,FALSE
+"fg_v1_stand","Standvogels","gewogen","volledig",142,"Groene Specht",-0.822212905853714,-0.866242622000923,-0.0440297161472092,FALSE
+"fg_v1_stand","Standvogels","gewogen","volledig",143,"Zwarte Specht",-0.822212905853714,-0.329094421922205,0.49311848393151,FALSE
+"fg_v1_stand","Standvogels","gewogen","volledig",144,"Grote Bonte Specht",-0.822212905853714,-0.985316490707433,-0.163103584853719,FALSE
+"fg_v1_stand","Standvogels","gewogen","volledig",146,"Kleine Bonte Specht",-0.822212905853714,-0.964202379132628,-0.141989473278914,FALSE
+"fg_v1_stand","Standvogels","gewogen","volledig",147,"Kuifleeuwerik",-0.822212905853714,-0.868368685657284,-0.0461557798035694,FALSE
+"fg_v1_stand","Standvogels","gewogen","volledig",164,"Winterkoning",-0.822212905853714,-0.83596170040674,-0.0137487945530257,FALSE
+"fg_v1_stand","Standvogels","gewogen","volledig",166,"Roodborst",-0.822212905853714,-0.860597294250631,-0.038384388396917,FALSE
+"fg_v1_stand","Standvogels","gewogen","volledig",175,"Merel",-0.822212905853714,-0.833102943411612,-0.010890037557898,FALSE
+"fg_v1_stand","Standvogels","gewogen","volledig",180,"Cetti's Zanger",-0.822212905853714,-0.859510351426385,-0.0372974455726705,FALSE
+"fg_v1_stand","Standvogels","gewogen","volledig",207,"Staartmees",-0.822212905853714,-0.959394832153615,-0.137181926299901,FALSE
+"fg_v1_stand","Standvogels","gewogen","volledig",208,"Glanskop",-0.822212905853714,-0.883339363121272,-0.0611264572675574,FALSE
+"fg_v1_stand","Standvogels","gewogen","volledig",209,"Matkop",-0.822212905853714,-0.653795568703996,0.168417337149718,FALSE
+"fg_v1_stand","Standvogels","gewogen","volledig",210,"Kuifmees",-0.822212905853714,-0.730825044652827,0.0913878612008867,FALSE
+"fg_v1_stand","Standvogels","gewogen","volledig",212,"Zwarte Mees",-0.822212905853714,-0.848521588752593,-0.026308682898879,FALSE
+"fg_v1_stand","Standvogels","gewogen","volledig",213,"Pimpelmees",-0.822212905853714,-0.987999495508973,-0.165786589655259,FALSE
+"fg_v1_stand","Standvogels","gewogen","volledig",214,"Koolmees",-0.822212905853714,-0.885527149184451,-0.0633142433307365,FALSE
+"fg_v1_stand","Standvogels","gewogen","volledig",215,"Boomklever",-0.822212905853714,-0.29018037316284,0.532032532690874,FALSE
+"fg_v1_stand","Standvogels","gewogen","volledig",217,"Boomkruiper",-0.822212905853714,-1.04344194094136,-0.221229035087644,FALSE
+"fg_v1_stand","Standvogels","gewogen","volledig",222,"Gaai",-0.822212905853714,-0.941047355808022,-0.118834449954308,FALSE
+"fg_v1_stand","Standvogels","gewogen","volledig",223,"Ekster",-0.822212905853714,-0.774616435861231,0.0475964699924836,FALSE
+"fg_v1_stand","Standvogels","gewogen","volledig",224,"Kauw",-0.822212905853714,-0.845717673284219,-0.0235047674305044,FALSE
+"fg_v1_stand","Standvogels","gewogen","volledig",226,"Zwarte Kraai",-0.822212905853714,-0.901458825390078,-0.0792459195363637,FALSE
+"fg_v1_stand","Standvogels","gewogen","volledig",231,"Huismus",-0.822212905853714,-0.798557923256016,0.0236549825976984,FALSE
+"fg_v1_stand","Standvogels","gewogen","volledig",232,"Ringmus",-0.822212905853714,-0.435265793568129,0.386947112285585,FALSE
+"fg_v1_stand","Standvogels","gewogen","volledig",233,"Vink",-0.822212905853714,-1.07057532193174,-0.24836241607803,FALSE
+"fg_v1_stand","Standvogels","gewogen","volledig",246,"Goudvink",-0.822212905853714,-0.85131518177548,-0.0291022759217663,FALSE
+"fg_v1_stand","Standvogels","gewogen","volledig",248,"Appelvink",-0.822212905853714,-0.969634723871149,-0.147421818017435,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","gewogen","volledig",165,"Heggenmus",2.02650268871749,2.10719105512507,0.0806883664075775,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","gewogen","volledig",166,"Roodborst",2.02650268871749,2.03878235804544,0.0122796693279525,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","gewogen","volledig",175,"Merel",2.02650268871749,2.08731951472527,0.0608168260077813,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","gewogen","volledig",177,"Zanglijster",2.02650268871749,1.84665561426021,-0.179847074457284,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","gewogen","volledig",190,"Spotvogel",2.02650268871749,2.31083933200187,0.284336643284377,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","gewogen","volledig",192,"Braamsluiper",2.02650268871749,1.96221838795014,-0.0642843007673477,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","gewogen","volledig",193,"Grasmus",2.02650268871749,2.1237989119312,0.0972962232137053,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","gewogen","volledig",194,"Tuinfluiter",2.02650268871749,1.77434390851727,-0.252158780200218,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","gewogen","volledig",195,"Zwartkop",2.02650268871749,1.76233593819455,-0.264166750522943,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","gewogen","volledig",207,"Staartmees",2.02650268871749,1.87986362326997,-0.146639065447518,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","gewogen","volledig",219,"Grauwe Klauwier",2.02650268871749,2.23469359090447,0.208190902186978,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","gewogen","volledig",233,"Vink",2.02650268871749,1.84014358419209,-0.186359104525402,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","gewogen","volledig",236,"Groenling",2.02650268871749,2.00638607352157,-0.0201166151959198,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","gewogen","volledig",237,"Putter",2.02650268871749,2.0065092089868,-0.0199934797306955,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","gewogen","volledig",239,"Kneu",2.02650268871749,2.28865795856064,0.262155269843145,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","gewogen","volledig",246,"Goudvink",2.02650268871749,2.16413459706568,0.13763190834819,FALSE
+"fg_v1_vis","Viseters","gewogen","volledig",2,"Fuut",-4.44330614343385,-5.41511289160145,-0.971806748167602,FALSE
+"fg_v1_vis","Viseters","gewogen","volledig",5,"Aalscholver",-4.44330614343385,-6.70468325900696,-2.26137711557312,FALSE
+"fg_v1_vis","Viseters","gewogen","volledig",7,"Roerdomp",-4.44330614343385,-5.32534705382359,-0.882040910389748,FALSE
+"fg_v1_vis","Viseters","gewogen","volledig",11,"Blauwe Reiger",-4.44330614343385,-3.59495327433639,0.848352869097457,FALSE
+"fg_v1_vis","Viseters","gewogen","volledig",106,"Stormmeeuw",-4.44330614343385,-3.98751266479467,0.455793478639177,FALSE
+"fg_v1_vis","Viseters","gewogen","volledig",107,"Kleine Mantelmeeuw",-4.44330614343385,-3.20300949948115,1.2402966439527,FALSE
+"fg_v1_vis","Viseters","gewogen","volledig",108,"Zilvermeeuw",-4.44330614343385,-2.93049590747437,1.51281023595947,FALSE
+"fg_v1_vis","Viseters","gewogen","volledig",116,"Visdief",-4.44330614343385,-4.30703749513246,0.136268648301385,FALSE
+"fg_v1_vis","Viseters","gewogen","volledig",137,"IJsvogel",-4.44330614343385,-4.70401058295153,-0.260704439517689,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","binair","robuust",66,"Boomvalk",0.92972438988288,1.53210839723505,0.602384007352175,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","binair","robuust",123,"Houtduif",0.92972438988288,1.23053797253962,0.300813582656745,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","binair","robuust",124,"Turkse Tortel",0.92972438988288,0.95522353526396,0.0254991453810804,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","binair","robuust",177,"Zanglijster",0.92972438988288,0.621219127015338,-0.308505262867542,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","binair","robuust",179,"Grote Lijster",0.92972438988288,1.49041736057014,0.56069297068726,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","binair","robuust",218,"Wielewaal",0.92972438988288,0.852151607101748,-0.0775727827811323,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","binair","robuust",222,"Gaai",0.92972438988288,0.760320084996113,-0.169404304886767,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","binair","robuust",223,"Ekster",0.92972438988288,1.11717194125029,0.187447551367415,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","binair","robuust",226,"Zwarte Kraai",0.92972438988288,0.813503964309725,-0.116220425573155,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","binair","robuust",233,"Vink",0.92972438988288,0.202942359964386,-0.726782029918493,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","binair","robuust",237,"Putter",0.92972438988288,0.659043108656632,-0.270681281226248,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","binair","robuust",88,"Kievit",-2.63097740247282,-2.6032150665668,0.0277623359060231,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","binair","robuust",98,"Tureluur",-2.63097740247282,-2.79451181105999,-0.163534408587163,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","binair","robuust",107,"Kleine Mantelmeeuw",-2.63097740247282,-1.14010397598675,1.49087342648607,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","binair","robuust",108,"Zilvermeeuw",-2.63097740247282,-0.536639980263653,2.09433742220917,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","binair","robuust",148,"Boomleeuwerik",-2.63097740247282,-3.35396557706373,-0.722988174590911,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","binair","robuust",162,"Witte Kwikstaart",-2.63097740247282,-3.02416139065558,-0.393183988182755,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","binair","robuust",169,"Zwarte Roodstaart",-2.63097740247282,-2.51286014537205,0.118117257100769,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","binair","robuust",175,"Merel",-2.63097740247282,-3.02513106438582,-0.394153661912999,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","binair","robuust",195,"Zwartkop",-2.63097740247282,-3.43542876339454,-0.804451360921721,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","binair","robuust",198,"Tjiftjaf",-2.63097740247282,-3.70494163871845,-1.07396423624563,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","binair","robuust",239,"Kneu",-2.63097740247282,-2.76238385369502,-0.131406451222194,FALSE
+"fg_v1_stand","Standvogels","binair","robuust",27,"Nijlgans",-0.572905849841687,-0.617210630608922,-0.0443047807672348,FALSE
+"fg_v1_stand","Standvogels","binair","robuust",77,"Waterhoen",-0.572905849841687,-0.51730259507049,0.0556032547711971,FALSE
+"fg_v1_stand","Standvogels","binair","robuust",122,"Holenduif",-0.572905849841687,-0.405536385173189,0.167369464668499,FALSE
+"fg_v1_stand","Standvogels","binair","robuust",124,"Turkse Tortel",-0.572905849841687,-0.628025494992301,-0.0551196451506142,FALSE
+"fg_v1_stand","Standvogels","binair","robuust",131,"Bosuil",-0.572905849841687,-0.514461968277902,0.0584438815637855,FALSE
+"fg_v1_stand","Standvogels","binair","robuust",132,"Ransuil",-0.572905849841687,-0.413949229620081,0.158956620221606,FALSE
+"fg_v1_stand","Standvogels","binair","robuust",142,"Groene Specht",-0.572905849841687,-0.621770945484723,-0.0488650956430359,FALSE
+"fg_v1_stand","Standvogels","binair","robuust",144,"Grote Bonte Specht",-0.572905849841687,-0.752762048677369,-0.179856198835682,FALSE
+"fg_v1_stand","Standvogels","binair","robuust",146,"Kleine Bonte Specht",-0.572905849841687,-0.723776517453656,-0.150870667611969,FALSE
+"fg_v1_stand","Standvogels","binair","robuust",164,"Winterkoning",-0.572905849841687,-0.627499869159098,-0.054594019317411,FALSE
+"fg_v1_stand","Standvogels","binair","robuust",166,"Roodborst",-0.572905849841687,-0.662675788165523,-0.089769938323836,FALSE
+"fg_v1_stand","Standvogels","binair","robuust",175,"Merel",-0.572905849841687,-0.603969172169594,-0.0310633223279067,FALSE
+"fg_v1_stand","Standvogels","binair","robuust",207,"Staartmees",-0.572905849841687,-0.74216081183015,-0.169254961988463,FALSE
+"fg_v1_stand","Standvogels","binair","robuust",208,"Glanskop",-0.572905849841687,-0.64062558962672,-0.0677197397850327,FALSE
+"fg_v1_stand","Standvogels","binair","robuust",209,"Matkop",-0.572905849841687,-0.359329350297266,0.213576499544421,FALSE
+"fg_v1_stand","Standvogels","binair","robuust",210,"Kuifmees",-0.572905849841687,-0.440146383915296,0.132759465926391,FALSE
+"fg_v1_stand","Standvogels","binair","robuust",212,"Zwarte Mees",-0.572905849841687,-0.585118008451246,-0.0122121586095592,FALSE
+"fg_v1_stand","Standvogels","binair","robuust",213,"Pimpelmees",-0.572905849841687,-0.770494306809588,-0.197588456967901,FALSE
+"fg_v1_stand","Standvogels","binair","robuust",214,"Koolmees",-0.572905849841687,-0.665006807853163,-0.0921009580114762,FALSE
+"fg_v1_stand","Standvogels","binair","robuust",215,"Boomklever",-0.572905849841687,0.120214840035437,0.693120689877125,TRUE
+"fg_v1_stand","Standvogels","binair","robuust",217,"Boomkruiper",-0.572905849841687,-0.823378141188325,-0.250472291346637,FALSE
+"fg_v1_stand","Standvogels","binair","robuust",222,"Gaai",-0.572905849841687,-0.712175698215922,-0.139269848374235,FALSE
+"fg_v1_stand","Standvogels","binair","robuust",223,"Ekster",-0.572905849841687,-0.535757304583651,0.0371485452580367,FALSE
+"fg_v1_stand","Standvogels","binair","robuust",224,"Kauw",-0.572905849841687,-0.603314817238076,-0.0304089673963892,FALSE
+"fg_v1_stand","Standvogels","binair","robuust",226,"Zwarte Kraai",-0.572905849841687,-0.663551582210808,-0.0906457323691212,FALSE
+"fg_v1_stand","Standvogels","binair","robuust",231,"Huismus",-0.572905849841687,-0.537503765077962,0.0354020847637249,FALSE
+"fg_v1_stand","Standvogels","binair","robuust",232,"Ringmus",-0.572905849841687,-0.104481313776483,0.468424536065204,FALSE
+"fg_v1_stand","Standvogels","binair","robuust",233,"Vink",-0.572905849841687,-0.853435820502357,-0.28052997066067,FALSE
+"fg_v1_stand","Standvogels","binair","robuust",246,"Goudvink",-0.572905849841687,-0.603285074969828,-0.030379225128141,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","binair","robuust",165,"Heggenmus",2.19766193340791,2.2871939278674,0.0895319944594908,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","binair","robuust",166,"Roodborst",2.19766193340791,2.22861784489843,0.0309559114905156,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","binair","robuust",175,"Merel",2.19766193340791,2.27193260772254,0.0742706743146249,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","binair","robuust",177,"Zanglijster",2.19766193340791,2.04791327675555,-0.14974865665236,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","binair","robuust",190,"Spotvogel",2.19766193340791,2.45790312281713,0.260241189409216,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","binair","robuust",192,"Braamsluiper",2.19766193340791,2.16465685742815,-0.033005075979764,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","binair","robuust",193,"Grasmus",2.19766193340791,2.29687364081277,0.099211707404856,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","binair","robuust",194,"Tuinfluiter",2.19766193340791,1.98270317300067,-0.214958760407247,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","binair","robuust",195,"Zwartkop",2.19766193340791,1.97134026344084,-0.226321669967078,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","binair","robuust",207,"Staartmees",2.19766193340791,2.0758376560106,-0.121824277397309,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","binair","robuust",219,"Grauwe Klauwier",2.19766193340791,2.38282851926024,0.185166585852325,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","binair","robuust",233,"Vink",2.19766193340791,1.85973569765279,-0.337926235755126,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","binair","robuust",236,"Groenling",2.19766193340791,2.18957849663597,-0.00808343677194401,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","binair","robuust",237,"Putter",2.19766193340791,2.16980040315995,-0.0278615302479635,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","binair","robuust",239,"Kneu",2.19766193340791,2.44716604799398,0.249504114586063,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","binair","robuust",246,"Goudvink",2.19766193340791,2.33074658121111,0.133084647803194,FALSE
+"fg_v1_vis","Viseters","binair","robuust",2,"Fuut",-11.5750046039377,-15.8707859114438,-4.29578130750613,FALSE
+"fg_v1_vis","Viseters","binair","robuust",106,"Stormmeeuw",-11.5750046039377,-11.8975860766901,-0.322581472752381,FALSE
+"fg_v1_vis","Viseters","binair","robuust",107,"Kleine Mantelmeeuw",-11.5750046039377,-10.182114107468,1.39289049646965,FALSE
+"fg_v1_vis","Viseters","binair","robuust",108,"Zilvermeeuw",-11.5750046039377,-8.16616620239282,3.40883840154487,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","gewogen","robuust",66,"Boomvalk",0.657133666057308,1.50878532473719,0.851651658679886,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","gewogen","robuust",123,"Houtduif",0.657133666057308,0.82986434754353,0.172730681486222,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","gewogen","robuust",124,"Turkse Tortel",0.657133666057308,0.656594019817902,-0.000539646239405833,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","gewogen","robuust",177,"Zanglijster",0.657133666057308,0.427708246903169,-0.229425419154139,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","gewogen","robuust",179,"Grote Lijster",0.657133666057308,1.02088851040785,0.363754844350539,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","gewogen","robuust",218,"Wielewaal",0.657133666057308,0.538003955384903,-0.119129710672405,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","gewogen","robuust",222,"Gaai",0.657133666057308,0.378399607681601,-0.278734058375707,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","gewogen","robuust",223,"Ekster",0.657133666057308,0.855145037387106,0.198011371329798,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","gewogen","robuust",226,"Zwarte Kraai",0.657133666057308,0.445742762554269,-0.211390903503039,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","gewogen","robuust",233,"Vink",0.657133666057308,0.14951601982387,-0.507617646233438,FALSE
+"fg_v1_boomkroonbroed","Boomkroonbroeders","gewogen","robuust",237,"Putter",0.657133666057308,0.453282102491093,-0.203851563566215,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","gewogen","robuust",88,"Kievit",-1.79217018307289,-1.7202814805626,0.0718887025102921,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","gewogen","robuust",98,"Tureluur",-1.79217018307289,-1.86258689043514,-0.0704167073622419,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","gewogen","robuust",107,"Kleine Mantelmeeuw",-1.79217018307289,0.146656403839729,1.93882658691262,TRUE
+"fg_v1_korte_trek","Korteafstandstrekkers","gewogen","robuust",108,"Zilvermeeuw",-1.79217018307289,-0.530775962772589,1.2613942203003,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","gewogen","robuust",148,"Boomleeuwerik",-1.79217018307289,-2.57087467737498,-0.778704494302085,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","gewogen","robuust",162,"Witte Kwikstaart",-1.79217018307289,-2.16496055666694,-0.372790373594045,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","gewogen","robuust",169,"Zwarte Roodstaart",-1.79217018307289,-1.52038152311953,0.271788659953365,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","gewogen","robuust",175,"Merel",-1.79217018307289,-1.9750375036009,-0.182867320528002,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","gewogen","robuust",195,"Zwartkop",-1.79217018307289,-2.67945573511107,-0.887285552038175,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","gewogen","robuust",198,"Tjiftjaf",-1.79217018307289,-3.01244253823775,-1.22027235516485,FALSE
+"fg_v1_korte_trek","Korteafstandstrekkers","gewogen","robuust",239,"Kneu",-1.79217018307289,-1.85013242688091,-0.0579622438080185,FALSE
+"fg_v1_stand","Standvogels","gewogen","robuust",27,"Nijlgans",-0.616737262331368,-0.663012202585156,-0.0462749402537876,FALSE
+"fg_v1_stand","Standvogels","gewogen","robuust",77,"Waterhoen",-0.616737262331368,-0.562183427698193,0.0545538346331753,FALSE
+"fg_v1_stand","Standvogels","gewogen","robuust",122,"Holenduif",-0.616737262331368,-0.447680287369179,0.16905697496219,FALSE
+"fg_v1_stand","Standvogels","gewogen","robuust",124,"Turkse Tortel",-0.616737262331368,-0.675254736267994,-0.0585174739366257,FALSE
+"fg_v1_stand","Standvogels","gewogen","robuust",131,"Bosuil",-0.616737262331368,-0.558414813587693,0.0583224487436751,FALSE
+"fg_v1_stand","Standvogels","gewogen","robuust",132,"Ransuil",-0.616737262331368,-0.457957677259779,0.158779585071589,FALSE
+"fg_v1_stand","Standvogels","gewogen","robuust",142,"Groene Specht",-0.616737262331368,-0.668122844033414,-0.0513855817020459,FALSE
+"fg_v1_stand","Standvogels","gewogen","robuust",144,"Grote Bonte Specht",-0.616737262331368,-0.800927649450534,-0.184190387119165,FALSE
+"fg_v1_stand","Standvogels","gewogen","robuust",146,"Kleine Bonte Specht",-0.616737262331368,-0.771515247151178,-0.154777984819809,FALSE
+"fg_v1_stand","Standvogels","gewogen","robuust",164,"Winterkoning",-0.616737262331368,-0.671791203378103,-0.0550539410467343,FALSE
+"fg_v1_stand","Standvogels","gewogen","robuust",166,"Roodborst",-0.616737262331368,-0.662675788165523,-0.0459385258341549,FALSE
+"fg_v1_stand","Standvogels","gewogen","robuust",175,"Merel",-0.616737262331368,-0.64936450990285,-0.0326272475714817,FALSE
+"fg_v1_stand","Standvogels","gewogen","robuust",207,"Staartmees",-0.616737262331368,-0.791204645317523,-0.174467382986154,FALSE
+"fg_v1_stand","Standvogels","gewogen","robuust",208,"Glanskop",-0.616737262331368,-0.687051051645138,-0.0703137893137695,FALSE
+"fg_v1_stand","Standvogels","gewogen","robuust",209,"Matkop",-0.616737262331368,-0.400885953329044,0.215851309002324,FALSE
+"fg_v1_stand","Standvogels","gewogen","robuust",210,"Kuifmees",-0.616737262331368,-0.482848238793976,0.133889023537392,FALSE
+"fg_v1_stand","Standvogels","gewogen","robuust",212,"Zwarte Mees",-0.616737262331368,-0.630375844457487,-0.0136385821261187,FALSE
+"fg_v1_stand","Standvogels","gewogen","robuust",213,"Pimpelmees",-0.616737262331368,-0.819896788011143,-0.203159525679775,FALSE
+"fg_v1_stand","Standvogels","gewogen","robuust",214,"Koolmees",-0.616737262331368,-0.711709385158499,-0.0949721228271305,FALSE
+"fg_v1_stand","Standvogels","gewogen","robuust",215,"Boomklever",-0.616737262331368,0.0858326579763036,0.702569920307672,TRUE
+"fg_v1_stand","Standvogels","gewogen","robuust",217,"Boomkruiper",-0.616737262331368,-0.87278360416555,-0.256046341834182,FALSE
+"fg_v1_stand","Standvogels","gewogen","robuust",222,"Gaai",-0.616737262331368,-0.760840933023987,-0.144103670692619,FALSE
+"fg_v1_stand","Standvogels","gewogen","robuust",223,"Ekster",-0.616737262331368,-0.58009395805988,0.0366433042714887,FALSE
+"fg_v1_stand","Standvogels","gewogen","robuust",224,"Kauw",-0.616737262331368,-0.650146146128217,-0.0334088837968483,FALSE
+"fg_v1_stand","Standvogels","gewogen","robuust",226,"Zwarte Kraai",-0.616737262331368,-0.71051094751855,-0.0937736851871818,FALSE
+"fg_v1_stand","Standvogels","gewogen","robuust",231,"Huismus",-0.616737262331368,-0.583584410315907,0.0331528520154611,FALSE
+"fg_v1_stand","Standvogels","gewogen","robuust",232,"Ringmus",-0.616737262331368,-0.141111566979213,0.475625695352155,FALSE
+"fg_v1_stand","Standvogels","gewogen","robuust",233,"Vink",-0.616737262331368,-0.903420088978624,-0.286682826647255,FALSE
+"fg_v1_stand","Standvogels","gewogen","robuust",246,"Goudvink",-0.616737262331368,-0.648742136553748,-0.03200487422238,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","gewogen","robuust",165,"Heggenmus",2.02650268871749,2.10719105512507,0.0806883664075775,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","gewogen","robuust",166,"Roodborst",2.02650268871749,2.03878235804544,0.0122796693279525,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","gewogen","robuust",175,"Merel",2.02650268871749,2.08731951472527,0.0608168260077813,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","gewogen","robuust",177,"Zanglijster",2.02650268871749,1.84665561426021,-0.179847074457284,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","gewogen","robuust",190,"Spotvogel",2.02650268871749,2.31083933200187,0.284336643284377,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","gewogen","robuust",192,"Braamsluiper",2.02650268871749,1.96221838795014,-0.0642843007673477,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","gewogen","robuust",193,"Grasmus",2.02650268871749,2.1237989119312,0.0972962232137053,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","gewogen","robuust",194,"Tuinfluiter",2.02650268871749,1.77434390851727,-0.252158780200218,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","gewogen","robuust",195,"Zwartkop",2.02650268871749,1.76233593819455,-0.264166750522943,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","gewogen","robuust",207,"Staartmees",2.02650268871749,1.87986362326997,-0.146639065447518,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","gewogen","robuust",219,"Grauwe Klauwier",2.02650268871749,2.23469359090447,0.208190902186978,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","gewogen","robuust",233,"Vink",2.02650268871749,1.84014358419209,-0.186359104525402,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","gewogen","robuust",236,"Groenling",2.02650268871749,2.00638607352157,-0.0201166151959198,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","gewogen","robuust",237,"Putter",2.02650268871749,2.0065092089868,-0.0199934797306955,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","gewogen","robuust",239,"Kneu",2.02650268871749,2.28865795856064,0.262155269843145,FALSE
+"fg_v1_struweelbroed","Struweelbroeders","gewogen","robuust",246,"Goudvink",2.02650268871749,2.16413459706568,0.13763190834819,FALSE
+"fg_v1_vis","Viseters","gewogen","robuust",2,"Fuut",-8.88247895059276,-15.8707859114438,-6.98830696085105,FALSE
+"fg_v1_vis","Viseters","gewogen","robuust",106,"Stormmeeuw",-8.88247895059276,-8.44681131778892,0.435667632803849,FALSE
+"fg_v1_vis","Viseters","gewogen","robuust",107,"Kleine Mantelmeeuw",-8.88247895059276,-7.11530696934882,1.76717198124394,FALSE
+"fg_v1_vis","Viseters","gewogen","robuust",108,"Zilvermeeuw",-8.88247895059276,-5.54134395297312,3.34113499761964,FALSE
