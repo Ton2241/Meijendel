@@ -6,6 +6,21 @@ De lokale technische vervolgcontrole is afgerond. Websitekoppelingen zijn in een
 
 ## Nu open
 
+### BMP 2026 — invoer en hercontrole
+
+- [ ] **19 november 2026:** voer de vogelresultaten van 50 getelde kavels in
+  de levende database `Meijendel` in. Besluit van Ton op 18 november:
+  behandel M4-5 en M105 Hertenkamp bij de invoer voorlopig als goedgekeurd.
+  Avimap toont voor M4-5 *in behandeling* en voor M105 *ingediend*. Ton
+  vermoedt een administratieve oorzaak. Leg Tons besluit en de werkelijke
+  Sovon-status afzonderlijk vast. Beide kavels leveren samen 192 territoria
+  en 159 expliciete nullen. Voor M78/79 gaan de vier bezoeken en DAZ-BMP wel
+  mee. De formeel afgekeurde vogelterritoria blijven buiten `territoria`.
+- [ ] **Begin januari 2027:** controleer de Sovon-jaarstatus 2026 van M4-5
+  en M105 Hertenkamp opnieuw in Avimap. Leg de uitkomst per kavel vast en
+  beoordeel bij afkeuring of gewijzigde bronwaarden welke 2026-regels in
+  `territoria` en welke afgeleide resultaten moeten worden herzien.
+
 ### SOVON-BMP jaar-voor-jaarvergelijking
 
 - 1984 is vergeleken met de levende kerntabellen. Alle 230 bezoeken en 562
