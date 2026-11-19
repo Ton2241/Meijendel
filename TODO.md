@@ -1103,7 +1103,8 @@ in iCloud **Agenda**.
   der Hagen verwees het besluit over verstrekking naar Maarten. De
   Thunderbird-controle op 16 november vond geen antwoord van Maarten op de
   aanvraag en geen levering. Controleer op maandag 23 november om 09.00 uur
-  opnieuw de correspondentie en eventuele levering (Thunderbird, Calendar).
+  opnieuw de correspondentie in Thunderbird en eventuele levering. De
+  herinnering staat in iCloud **Agenda**.
   Bepaal bij uitblijven van een reactie met Ton of een rappel passend is.
 - [ ] **Provincie Zuid-Holland — originele luchtfoto’s van Meijendel.** Wacht
   op antwoord op Tons e-mail aan Team Geo-informatie van 15 november 2026
@@ -1123,6 +1124,9 @@ in iCloud **Agenda**.
 - Wacht de door Provincie Zuid-Holland en CBS gecontroleerde versie van het
   vegetatiemeetnet af. Ingrid de Vries verwachtte de nieuwe levering met
   niet meer actieve PQ's rond eind 2026; dit is geen bevestigde leverdatum.
+  Ton controleert op **4 januari 2027 om 09.00 uur** of Ingrid heeft gereageerd
+  of geleverd, samen met de habitatkaart T1. De herinnering staat in iCloud
+  **Agenda**.
   Vergelijk haar na ontvangst met de huidige provinciale reeks van 254 PQ's,
   2.007 opnamen en 53.122 taxonregels uit 1981–2025, vooral op PQ-identiteit,
   opnamejaren, coördinaten, soortnamen en bedekking. Pas daarna besluiten over
@@ -1130,8 +1134,9 @@ in iCloud **Agenda**.
 - Ontvang de gevalideerde habitatkaart T1 voor Meijendel zodra de provincie
   haar kan delen. Ingrid acht december 2026 mogelijk; de kaart is nog niet
   geleverd. Controleer dan eerst versie, begrenzing en aansluiting op T0.
-  Herinner Ingrid alleen kort als na december geen bericht of levering is
-  ontvangen.
+  Ton controleert dit op **4 januari 2027 om 09.00 uur**, samen met het
+  vegetatiemeetnet (iCloud **Agenda**). Beoordeel dan met Ton of een korte
+  herinnering passend is als na december geen bericht of levering is ontvangen.
 - Georeferenceer de 18 EIS-bijenproefvlakken pas wanneer een betrouwbare
   digitale begrenzing of voldoende controlepunten beschikbaar zijn; importeer
   daarna de gecontroleerde soortenmatrices uit 2019, 2021 en 2023.
