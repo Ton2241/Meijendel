@@ -832,3 +832,30 @@ de lock vast. Beoordeel dan het integrale journaal, de actieve release en beide
 statusbestanden via de afzonderlijke noodtoegang. Een afgebroken SSH-sessie
 geeft geen toestemming om opnieuw toe te passen. Bij actief beleid stopt
 de klassieke schrijfroute en vraagt afzonderlijk herstel om de beheerroute.
+
+
+### Lichte presentatie-uitrol
+
+Gebruik de lichte route als de gevalideerde MySQL-export, Shiny-cache,
+CMS-migraties, browserdata en runtimeafhankelijkheden dezelfde hashes hebben
+als de actieve integrale release. De kandidaat bevat het volledige manifest.
+Het transportarchief bevat de gewijzigde bestanden en de hash van het
+actieve basismanifest. De gateway weigert verschillen buiten de toegestane
+presentatiepaden.
+
+Lees het actieve manifest alleen-lezen via de bestaande VPS-toegang. Gebruik
+de goedgekeurde kandidaatuitvoer en de schone hoofdtakken met:
+
+```bash
+python3 deploy/integral_gateway_client.py --stage prepare-presentation \
+  --prepared GEVALIDEERDE_KANDIDAAT/prepared.json --base-manifest ACTIEF_RELEASE_JSON \
+  --output NIEUWE_T7_MAP --project-root /Users/ton/Documents/GitHub/VWG_Project
+```
+
+De bestaande preflight en apply verwerken het kleine pakket. De preflight
+controleert de basisrelease, de exacte gewijzigde bestanden en het volledige
+samengestelde manifest. De gateway koppelt ongewijzigde bestanden op dezelfde
+VPS-schijf. Website en Shiny krijgen de nieuwe releasebinding en het dashboard
+volgt de huidige release. De gateway controleert de drie afnemers en publieke
+routes vóór registratie van de commits. Een mislukte wissel herstelt de
+vorige release. Bij onbevestigd herstel blijft het productieslot bezet.

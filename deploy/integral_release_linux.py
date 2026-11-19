@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 """Fixed Linux hooks for the hash-bound VWG gateway; no arbitrary commands/paths."""
 from __future__ import annotations
-import argparse,contextlib,hashlib,ipaddress,socket,http.server,importlib.util,json,os,re,shutil,signal,stat,subprocess,sys,tempfile,time,urllib.parse,urllib.request
+import argparse,contextlib,hashlib,ipaddress,socket,http.server,tarfile,importlib.util,json,os,re,shutil,signal,stat,subprocess,sys,tempfile,time,urllib.parse,urllib.request
+from html.parser import HTMLParser
 from pathlib import Path
 BASE=Path('/srv/vwgm');STATE=BASE/'deploy-state';CONTROL=Path('/var/lib/vwgm-integral');INSTALL=Path(__file__).resolve().parent
 spec=importlib.util.spec_from_file_location('integral_release',INSTALL/'integral_release.py');core=importlib.util.module_from_spec(spec);spec.loader.exec_module(core)
@@ -493,6 +494,110 @@ def safe_extract(archive,destination):
     with tar.extractfile(item) as source,path.open('xb') as target:shutil.copyfileobj(source,target)
     os.chmod(path,0o644);os.utime(path,(item.mtime,item.mtime))
 
+PRESENTATION_SCHEMA = 'meijendel-presentation-delta-v1'
+PRESENTATION_LIMIT = 32 * 1024**2
+PRESENTATION_METADATA = {'release_id','files','bootstrap','group_index','source_commits','gateway_package_sha256'}
+
+
+def presentation_path(name):
+ relative=Path(name)
+ if not re.fullmatch(r'[A-Za-z0-9_. /-]+',name) or relative.is_absolute() or relative.as_posix()!=name:
+  return False
+ if any(part.startswith('.') or part in {'__pycache__','app_cache'} for part in relative.parts):
+  return False
+ if name in {'website/app/data','website/app/static/uploads'} or name.startswith(('website/app/data/','website/app/static/uploads/')):
+  return False
+ return (name.startswith(('website/app/','website/docs/handleidingen/','shiny/R/',
+                          'shiny/shiny_meijendel/','www/groepen_grafieken/',
+                          'www/outputs/aantalsindex-preview/','www/outputs/bootstrap-presentatie-2026/'))
+         or name in {'website/scripts/update_trim_manual_contract.py','www/release-config.json'}
+         or (relative.parent==Path('www') and relative.suffix in {'.html','.css','.js'}))
+
+
+def presentation_changes(old,new):
+ if any(old.get(key)!=new.get(key) for key in (old.keys()|new.keys())-PRESENTATION_METADATA):
+  raise ValueError('Presentatiepakket verandert de gegevens- of runtimebinding')
+ original=old['files'];candidate=new['files']
+ changes={name:candidate.get(name) for name in original.keys()|candidate.keys()
+          if original.get(name)!=candidate.get(name)}
+ if not changes or any(not presentation_path(name) for name in changes):
+  raise ValueError('Presentatiepakket bevat wijzigingen buiten de web- of Shiny-presentatie')
+ return changes
+
+
+def is_presentation_archive(path):
+ if path.stat().st_size>PRESENTATION_LIMIT:return False
+ with tarfile.open(path,'r:gz') as bundle:
+  first=bundle.next()
+  return first is not None and first.name=='presentation.json'
+
+
+def assemble_presentation(archive,base,commit):
+ root=CONTROL/'production'
+ active=core.current(root)
+ if active is None or active.parent!=root/'releases':
+  raise ValueError('Geen beheerde actieve basisrelease')
+ old=jsonfile(active/'release.json')
+ with tarfile.open(archive,'r:gz') as bundle:
+  members={};total=0
+  for item in bundle:
+   total+=item.size
+   if not item.isfile() or item.size<0 or total>PRESENTATION_LIMIT or len(members)>=256 or item.name in members:
+    raise ValueError('Ongeldig presentatiearchief')
+   members[item.name]=item
+  meta=json.load(bundle.extractfile(members['presentation.json']))
+  if meta.get('schema')!=PRESENTATION_SCHEMA or meta.get('base_release')!=active.name:
+   raise ValueError('Presentatiepakket hoort bij een andere actieve release')
+  if meta.get('base_manifest_sha256')!=core.sha(active/'release.json'):
+   raise ValueError('Actief releasemanifest is gewijzigd')
+  base_commits={name:old['source_commits'][name] for name in ('Meijendel','VWG_M')}
+  if meta.get('base_commits')!=base_commits or any(
+      (STATE/(name+'.commit')).read_text().strip()!=value for name,value in base_commits.items()):
+   raise ValueError('Actieve productiecommits wijken af van de basisrelease')
+  new=meta['release'];receipt=meta['receipt']
+  if {'source_commits','gateway_package_sha256'} & new.keys():
+   raise ValueError('Presentatiepakket mag geen actieve releasestatus opnemen')
+  verify_production_intent(receipt,new);guard_payload(new)
+  if new['release_id']==active.name or receipt.get('commits',{}).get('Meijendel')!=commit:
+   raise ValueError('Presentatiepakket heeft geen passende nieuwe release-identiteit')
+  if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]{0,99}',new['release_id']):
+   raise ValueError('Ongeldige release-identiteit')
+  changes=presentation_changes(old,new)
+  if changes!=meta.get('changed_files') or set(members)!={'presentation.json'}|{'delta/'+name for name,value in changes.items() if value is not None}:
+   raise ValueError('Archief en manifest noemen verschillende wijzigingen')
+  if shutil.disk_usage(base.parent).free<total+GIB:
+   raise ValueError('Onvoldoende ruimte voor presentatiebestanden en 1 GiB reserve')
+  payload=base/'payload'
+  for name,value in new['files'].items():
+   target=core.safe_path(payload,name)
+   target.parent.mkdir(parents=True,exist_ok=True)
+   if name in changes:
+    with bundle.extractfile(members['delta/'+name]) as source,target.open('xb') as destination:
+     shutil.copyfileobj(source,destination)
+    target.chmod(0o644)
+    if core.sha(target)!=value:raise ValueError('Presentatiebestand wijkt af: '+name)
+   else:
+    os.link(core.safe_path(active,name),target)
+ secret_json(base/'presentation.json',{key:meta[key] for key in ('schema','base_release','base_manifest_sha256','base_commits')})
+ core.atomic_json(payload/'release.json',new)
+ core.atomic_json(base/'receipt.json',receipt)
+ verify_release(base,commit)
+
+
+def unpack_release(archive,base,commit):
+ with tempfile.TemporaryDirectory(prefix='.release-',dir=base.parent) as scratch:
+  candidate=Path(scratch)/'verified'
+  if is_presentation_archive(archive):
+   assemble_presentation(archive,candidate,commit)
+  else:
+   if shutil.disk_usage(BASE).free<28*GIB:
+    raise RuntimeError('Minder dan 28GiB vrij; volledige release niet gestart')
+   safe_extract(archive,candidate)
+   if (candidate/'presentation.json').exists():
+    raise ValueError('Ongeldig formaat voor een presentatiepakket')
+  candidate.rename(base)
+
+
 def freeze(commit,digest,*,allow_inbox=True):
  if not re.fullmatch('[0-9a-f]{64}',digest):raise ValueError('Exacte pakkethash vereist')
  source=STATE/'integral-inbox'/(commit+'.tar.gz');base=CONTROL/'packages'/digest
@@ -504,13 +609,18 @@ def freeze(commit,digest,*,allow_inbox=True):
   if not allow_inbox:raise ValueError('Pakket ontbreekt in de afgeschermde ontvangst')
   source_stat=source.lstat()
   if not stat.S_ISREG(source_stat.st_mode) or source.is_symlink():raise ValueError('Geen regulier pakket')
-  if shutil.disk_usage(BASE).free<28*1024**3:raise RuntimeError('Minder dan 28GiB vrij; proef niet gestart')
+  if source_stat.st_size>PRESENTATION_LIMIT and shutil.disk_usage(BASE).free<28*GIB:
+   raise RuntimeError('Minder dan 28GiB vrij; volledige release niet gestart')
   archive=CONTROL/'packages'/(digest+'.tar.gz');root_directory(archive.parent,0o700)
   fd=os.open(source,os.O_RDONLY|os.O_NOFOLLOW)
   with os.fdopen(fd,'rb') as src,archive.open('xb') as out:shutil.copyfileobj(src,out,1024*1024)
   os.chmod(archive,0o600)
   if core.sha(archive)!=digest:raise ValueError('Pakkethash wijkt af')
-  safe_extract(archive,base);secret_json(base/'sealed.json',dict(commit=commit,sha256=digest));archive.unlink()
+  try:
+   unpack_release(archive,base,commit)
+   secret_json(base/'sealed.json',dict(commit=commit,sha256=digest))
+  finally:
+   archive.unlink()
  receipt,m=verify_release(base,commit)
  return base,receipt,m
 
@@ -565,13 +675,15 @@ def receive_release(commit,digest,size,source):
   queue_check('check',digest)
   return response
  # Keep the existing low-space guard for the integral release, plus an upload budget.
- if shutil.disk_usage(package_root).free<max(28*GIB,size+8*GIB):
+ upload_reserve=GIB if size<=PRESENTATION_LIMIT else max(28*GIB,size+8*GIB)
+ if shutil.disk_usage(package_root).free<upload_reserve:
   raise RuntimeError('Onvoldoende vrije ruimte om het pakket te ontvangen')
  with tempfile.TemporaryDirectory(prefix='.receive-',dir=package_root) as scratch:
   scratch=Path(scratch);archive=scratch/'archive';base=scratch/'verified'
   receive_archive(archive,size,digest,source)
-  safe_extract(archive,base)
-  if {item.name for item in base.iterdir()}!={'payload','receipt.json'}:
+  unpack_release(archive,base,commit)
+  allowed={'payload','receipt.json','presentation.json'} if (base/'presentation.json').is_file() else {'payload','receipt.json'}
+  if {item.name for item in base.iterdir()}!=allowed:
    raise ValueError('Onbekend bestand op hoofdniveau van het pakket')
   receipt,manifest=verify_release(base,commit)
   verify_production_intent(receipt,manifest)
@@ -592,9 +704,9 @@ def global_lock():
  path=STATE/'production.lock'
  path.mkdir(mode=0o700)
  mutation_started=False
- def start_mutation():
+ def start_mutation(active=True):
   nonlocal mutation_started
-  mutation_started=True
+  mutation_started=active
  try:
   yield start_mutation
  except BaseException:
@@ -795,6 +907,134 @@ def check_production_release(stage,base,receipt,m):
  for name,expected in expected_commits.items():
   if (STATE/(name+'.commit')).read_text().strip()!=expected:raise ValueError('Productiecommit past niet bij deze fase')
 
+WEBSITE_BINDING=Path('/etc/systemd/system/vwg-m-linux-app.service.d/50-integral.conf')
+
+
+def rebind_presentation_file(path,previous,current):
+ secure_file(path)
+ data=path.read_bytes()
+ before=re.compile(re.escape(os.fsencode(previous))+rb'(?=[/\"\s]|$)')
+ after=re.compile(re.escape(os.fsencode(current))+rb'(?=[/\"\s]|$)')
+ updated,count=before.subn(lambda _:os.fsencode(current),data)
+ if count==0 and not after.search(data):
+  raise ValueError('Onbekende websitebinding: '+str(path))
+ if updated==data:return
+ with tempfile.NamedTemporaryFile(dir=path.parent,prefix='.'+path.name+'-',delete=False) as handle:
+  replacement=Path(handle.name)
+  try:
+   os.fchmod(handle.fileno(),stat.S_IMODE(path.stat().st_mode))
+   handle.write(updated);handle.flush();os.fsync(handle.fileno())
+   replacement.replace(path)
+  finally:
+   replacement.unlink(missing_ok=True)
+
+
+def switch_presentation_consumers(h,previous,current):
+ # PostgreSQL, MySQL, Caddy and the redirecting dashboard service keep running.
+ binding=current/'website/app/data'
+ data=Path(h.s['website_data']).resolve()
+ if binding.is_symlink():
+  if binding.resolve()!=data:raise ValueError('Verkeerde gedeelde app/data-binding')
+ else:
+  binding.symlink_to(data,target_is_directory=True)
+ rebind_presentation_file(WEBSITE_BINDING,previous,current)
+ rebind_presentation_file(h.private/'website.env',previous,current)
+ h.logged(['systemctl','daemon-reload'])
+ h.logged(['systemctl','restart','vwg-m-linux-app'])
+ probe=subprocess.run(['docker','inspect','--format','{{.State.Running}}',h.s['shiny']],capture_output=True,text=True)
+ if probe.returncode==0 and probe.stdout.strip()=='true':h.logged(['docker','stop',h.s['shiny']])
+ h.s['commit']=jsonfile(current/'release.json')['source_commits']['Meijendel']
+ manifest=jsonfile(current/'release.json')
+ h.start_shiny(current,manifest)
+ h.health(current)
+ shiny_body,_,_=h.get(urllib.parse.urljoin(h.shiny_url(),'shiny_meijendel/'))
+ if 'group_index' in manifest:
+  frames=[]
+  class Frames(HTMLParser):
+   def handle_starttag(self,tag,attrs):
+    values=dict(attrs)
+    if tag=='iframe' and values.get('title')=='Aantalsindex ecologische groepen':
+     frames.append(values.get('srcdoc','').encode())
+  Frames().feed(shiny_body.decode())
+  expected=manifest['group_index']['html_sha256']
+  if len(frames)!=1 or expected not in {hashlib.sha256(frames[0]+suffix).hexdigest() for suffix in (b'',b'\n')}:
+   raise RuntimeError('Shiny toont een andere aantalsindex')
+ for url in ('https://www.vwg-m.nl/welkom/index.asp','https://app.vwg-m.nl/bmp_meijendel_index.html',
+             'https://www.vwg-m.nl/shiny_meijendel/'):
+  try:
+   _,status,_=h.get(url)
+  except urllib.error.HTTPError as error:
+   status=error.code
+  if status not in ({200} if 'welkom' in url else {401,403}):
+   raise RuntimeError('Publieke rooktest mislukt: '+url+' '+str(status))
+
+
+def activate_presentation(root,old,new,h,latch,record=None):
+ journal=dict(kind='presentation',previous=old.name,attempted=new.name,phase='presentation_switch')
+ core.atomic_json(root/'journal.json',journal)
+ latch()
+ try:
+  core.set_current(root,new)
+  switch_presentation_consumers(h,old,new)
+  if record:record(new)
+ except BaseException:
+  try:
+   core.set_current(root,old)
+   switch_presentation_consumers(h,new,old)
+   if record:record(old)
+  except BaseException:
+   core.atomic_json(root/'journal.json',journal|dict(phase='recovery_failed'))
+   raise
+  core.atomic_json(root/'journal.json',journal|dict(phase='restored'))
+  latch(False)
+  raise
+ core.atomic_json(root/'journal.json',journal|dict(phase='active'))
+
+
+def record_production_commits(package):
+ commits=jsonfile(package/'release.json')['source_commits']
+ for name in ('Meijendel','VWG_M'):
+  path=STATE/(name+'.commit');temp=path.with_name(path.name+'.next')
+  temp.write_text(commits[name]+'\n');temp.replace(path)
+
+
+def production_presentation(stage,base,receipt,m,latch):
+ check_production_release(stage,base,receipt,m)
+ root=CONTROL/'production'
+ marker=jsonfile(base/'presentation.json')
+ baseline=core.safe_path(root/'releases',marker['base_release'])
+ if marker['base_manifest_sha256']!=core.sha(baseline/'release.json'):
+  raise ValueError('Basisrelease wijkt af van het presentatiepakket')
+ package=core.safe_path(root/'releases',m['release_id'])
+ before,after=(baseline,package) if stage=='apply' else (package,baseline)
+ if core.current(root)!=before:raise ValueError('Actieve release past niet bij deze fase')
+ h=LinuxHooks(jsonfile(root/'private/settings.json'))
+ active_shiny=inspect_container(h.s['shiny'])
+ if not active_shiny['State']['Running'] or not re.fullmatch(r'sha256:[0-9a-f]{64}',active_shiny.get('Image','')):
+  raise ValueError('Geen actief vastgelegd Shiny-profiel')
+ h.s.update(original_shiny=active_shiny,shiny_image=active_shiny['Image'])
+ h.health(before)
+ if stage=='apply':
+  digest=jsonfile(base/'sealed.json')['sha256']
+  if package.exists():
+   stored=core.verify(package)
+   if stored.get('gateway_package_sha256')!=digest or stored.get('source_commits')!=receipt['commits']:
+    raise ValueError('Release-ID bestaat al met een andere identiteit')
+  else:
+   with tempfile.TemporaryDirectory(prefix='.presentation-',dir=package.parent) as scratch:
+    candidate=Path(scratch)/'release'
+    copy_payload(base/'payload',candidate)
+    metadata=jsonfile(candidate/'release.json')
+    metadata.update(source_commits=receipt['commits'],gateway_package_sha256=digest)
+    core.atomic_json(candidate/'release.json',metadata)
+    for folder,_,_ in os.walk(candidate):Path(folder).chmod(0o755)
+    for name in ('release.json','www/release-config.json'):(candidate/name).chmod(0o644)
+    candidate.rename(package)
+ else:
+  core.verify(baseline)
+ activate_presentation(root,before,after,h,latch,record_production_commits)
+
+
 def production_action(stage,commit,base,receipt,m):
  check_production_release(stage,base,receipt,m)
  root=CONTROL/'production';config=root/'private/settings.json'
@@ -933,6 +1173,10 @@ def main():
    check_production_release(a.stage,base,receipt,m)
    queue_check('authorize',a.sha256)
    queue_check('require-active',a.sha256)
-   start_mutation()
-  production_action(a.stage,a.commit,base,receipt,m);print('INTEGRAL_'+a.stage.upper()+'_OK')
+   if not (base/'presentation.json').is_file():start_mutation()
+  if (base/'presentation.json').is_file():
+   production_presentation(a.stage,base,receipt,m,start_mutation)
+  else:
+   production_action(a.stage,a.commit,base,receipt,m)
+  print('INTEGRAL_'+a.stage.upper()+'_OK')
 if __name__=='__main__':main()

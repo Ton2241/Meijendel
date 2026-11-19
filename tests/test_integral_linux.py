@@ -222,4 +222,49 @@ class QueueLockContract(unittest.TestCase):
     self.assertEqual(linux.queue_stage('apply-queued'),('apply',True))
     secure.assert_called_once_with(marker)
 
-if __name__=='__main__':unittest.main()
+
+
+class PresentationReleaseContract(unittest.TestCase):
+ def test_only_presentation_changes_are_admitted(self):
+  old=dict(release_id='A',source_hash='a'*64,group_index={'html_sha256':'old'},
+           files={'data/meijendel.sql':'a'*64,'www/pagina.html':'b'*64})
+  new=old|dict(release_id='B',group_index={'html_sha256':'new'},
+               files=old['files']|{'www/pagina.html':'c'*64})
+  self.assertEqual(linux.presentation_changes(old,new),{'www/pagina.html':'c'*64})
+  for patch in ({'source_hash':'b'*64},
+                {'files':new['files']|{'data/meijendel.sql':'d'*64}},
+                {'files':new['files']|{'website/sql/099_patch.sql':'e'*64}},
+                {'files':new['files']|{'website/app/../secrets.py':'e'*64}}):
+   with self.subTest(patch=patch), self.assertRaises(ValueError):
+    linux.presentation_changes(old,new|patch)
+
+ def test_switch_failure_restores_previous_release_and_releases_lock(self):
+  from unittest.mock import Mock, patch
+  with tempfile.TemporaryDirectory() as directory:
+   root=Path(directory); (root/'releases').mkdir()
+   old=root/'releases/A';new=root/'releases/B';old.mkdir();new.mkdir()
+   linux.core.set_current(root,old)
+   switch=Mock(side_effect=[RuntimeError('kandidaat onbereikbaar'),None])
+   latch=Mock()
+   with patch.object(linux,'switch_presentation_consumers',switch):
+    with self.assertRaisesRegex(RuntimeError,'kandidaat onbereikbaar'):
+     linux.activate_presentation(root,old,new,Mock(),latch)
+   self.assertEqual(linux.core.current(root),old)
+   self.assertEqual([call.args[1:3] for call in switch.call_args_list],[(old,new),(new,old)])
+   self.assertEqual([call.args for call in latch.call_args_list],[(),(False,)])
+
+ def test_systemd_binding_updates_release_argument_and_working_directory(self):
+  from unittest.mock import patch
+  with tempfile.TemporaryDirectory() as directory:
+   root=Path(directory);old=root/'old';new=root/'new';path=root/'unit.conf'
+   path.write_text(f'WorkingDirectory={old}/website\nExecStart=python helper _website {old}\n')
+   with patch.object(linux,'secure_file'):
+    linux.rebind_presentation_file(path,old,new)
+    self.assertEqual(path.read_text(),f'WorkingDirectory={new}/website\nExecStart=python helper _website {new}\n')
+    linux.rebind_presentation_file(path,old,new)
+    linux.rebind_presentation_file(path,new,old)
+   self.assertEqual(path.read_text(),f'WorkingDirectory={old}/website\nExecStart=python helper _website {old}\n')
+
+
+if __name__ == '__main__':
+ unittest.main()

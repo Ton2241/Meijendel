@@ -4,7 +4,7 @@
 No model fits. Preparation is local; the isolated Linux rehearsal is explicit.
 Installing gateway code requires the visible standard macOS Terminal window.
 """
-import argparse,importlib.util,json,os,re,secrets,shlex,subprocess,sys,tarfile
+import argparse,gzip,importlib.util,io,json,os,re,secrets,shlex,subprocess,sys,tarfile
 from pathlib import Path
 sys.path.insert(0,str(Path.home()/'Documents/GitHub/VWG_Project/scripts'))
 from trial_storage import checked_tree
@@ -39,6 +39,56 @@ def prepare(recipe_file,baseline,output,project):
  core.atomic_json(output/'prepared.json',prepared)
  print('PREPARED='+str(output/'prepared.json'),flush=True)
  return output/'prepared.json'
+
+def prepare_presentation(previous_file,base_file,output,project):
+ previous=json.loads(previous_file.read_text())
+ output=checked_tree(output)
+ receiptdir=previous_file.parent
+ recipe=previous['recipe']
+ analysis=Path(recipe['analysis_root']);website=Path(recipe['website_root'])
+ roots={'Meijendel':analysis,'VWG_M':website,'VWG_Project':project}
+ commits={name:check_checkout(root) for name,root in roots.items()}
+ # The validated input may precede a change to deployment tooling only.
+ tooling={'deploy/integral_gateway_client.py','deploy/integral_release_linux.py',
+          'tests/test_integral_linux.py','tests/test_integral_gateway_client.py','deploy/README_DEPLOY.md'}
+ for name,root in roots.items():
+  before=previous['commits'][name]
+  run(['git','-C',root,'merge-base','--is-ancestor',before,commits[name]])
+  paths=set(git(root,'diff','--name-only',before,commits[name]).splitlines())
+  if name=='VWG_M' and paths or name=='Meijendel' and paths-tooling:
+   raise ValueError('Kandidaatbestanden komen niet overeen met main: '+name)
+ spec=importlib.util.spec_from_file_location('linux',analysis/'deploy/integral_release_linux.py')
+ linux=importlib.util.module_from_spec(spec);spec.loader.exec_module(linux)
+ payload=receiptdir/'payload'
+ release=core.verify(payload)
+ base_bytes=base_file.read_bytes();base=json.loads(base_bytes)
+ base_commits={name:base['source_commits'][name] for name in ('Meijendel','VWG_M')}
+ for name,start in base_commits.items():run(['git','-C',roots[name],'merge-base','--is-ancestor',start,commits[name]])
+ changes=linux.presentation_changes(base,release)
+ receipt=json.loads((receiptdir/'receipt.json').read_text())
+ if receipt['commits']!=previous['commits']:raise ValueError('Kandidaatbewijs en broncommits wijken af')
+ receipt=receipt|{'commits':commits}
+ linux.verify_production_intent(receipt,release)
+ meta=dict(schema=linux.PRESENTATION_SCHEMA,base_release=base['release_id'],
+           base_manifest_sha256=core.sha(base_file),base_commits=base_commits,
+           changed_files=changes,receipt=receipt,release=release)
+ content=(json.dumps(meta,sort_keys=True)+'\n').encode()
+ changed_paths=[core.safe_path(payload,name) for name,digest in sorted(changes.items()) if digest is not None]
+ if len(changed_paths)>=256 or len(content)+sum(path.stat().st_size for path in changed_paths)>linux.PRESENTATION_LIMIT:
+  raise ValueError('Presentatiepakket overschrijdt de gatewaygrens')
+ output.mkdir(mode=0o700)
+ archive=output/'payload.tar.gz'
+ with archive.open('xb') as handle,gzip.GzipFile(fileobj=handle,mode='wb',filename='',mtime=0) as gzip_stream:
+  with tarfile.open(fileobj=gzip_stream,mode='w') as tar:
+   member=tarfile.TarInfo('presentation.json');member.size=len(content);tar.addfile(member,io.BytesIO(content))
+   for name,digest in sorted(changes.items()):
+    if digest is not None:tar.add(core.safe_path(payload,name),arcname='delta/'+name,recursive=False)
+ if archive.stat().st_size>linux.PRESENTATION_LIMIT:raise ValueError('Gecomprimeerd pakket overschrijdt de gatewaygrens')
+ prepared=dict(schema='meijendel-integral-prepared-v1',commits=commits,recipe=recipe,project_root=str(project),
+               archive=str(archive),sha256=core.sha(archive),intent='production',presentation_base=base_commits)
+ core.atomic_json(output/'prepared.json',prepared)
+ print(f"Presentatiepakket: {len(changes)} wijzigingen, {archive.stat().st_size} bytes, SHA-256 {prepared['sha256']}")
+
 
 def check_preflight_commits(response,prepared,repos):
  if response.get('stage')!='preflight' or response.get('commits')!=prepared['commits']:
@@ -128,8 +178,11 @@ def execute(prepared_file,stage,install=False,yes=False):
 
 
 def main():
- a=argparse.ArgumentParser(description=__doc__);a.add_argument('--recipe',type=Path);a.add_argument('--baseline-bootstrap',type=Path);a.add_argument('--output',type=Path);a.add_argument('--project-root',type=Path);a.add_argument('--prepared',type=Path);a.add_argument('--stage',choices=['prepare','receive','preflight','rehearse','apply','rollback','cleanup'],default='prepare');a.add_argument('--install-gateway',action='store_true');a.add_argument('--yes',action='store_true');args=a.parse_args()
- if args.stage=='prepare':
+ a=argparse.ArgumentParser(description=__doc__);a.add_argument('--recipe',type=Path);a.add_argument('--baseline-bootstrap',type=Path);a.add_argument('--output',type=Path);a.add_argument('--project-root',type=Path);a.add_argument('--prepared',type=Path);a.add_argument('--stage',choices=['prepare','prepare-presentation','receive','preflight','rehearse','apply','rollback','cleanup'],default='prepare');a.add_argument('--base-manifest',type=Path);a.add_argument('--install-gateway',action='store_true');a.add_argument('--yes',action='store_true');args=a.parse_args()
+ if args.stage=='prepare-presentation':
+  if not all([args.prepared,args.base_manifest,args.output,args.project_root]):a.error('prepare-presentation vraagt prepared, base-manifest, output en project-root')
+  prepare_presentation(args.prepared,args.base_manifest,args.output,args.project_root)
+ elif args.stage=='prepare':
   if not all([args.recipe,args.output,args.project_root]):a.error('prepare vraagt recipe, output en project-root')
   prepare(args.recipe,args.baseline_bootstrap,args.output,args.project_root)
  else:
