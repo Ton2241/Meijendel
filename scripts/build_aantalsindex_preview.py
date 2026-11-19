@@ -5,7 +5,7 @@ import csv
 import hashlib
 import html
 import json
-from collections import Counter
+from collections import Counter, defaultdict
 from pathlib import Path
 
 PERIODS = {"pre": "1958–1983", "post": "1984–2026"}
@@ -50,7 +50,51 @@ def percentage(value):
     return f"{float(value):+.1f}%".replace(".", ",").replace("-", "−")
 
 
-def make_preview(source, output):
+def species_panel(source, groups, species, members, curves_path):
+    curve_input = json.loads(curves_path.read_text())
+    omission_file = source / "weglating-per-soort.csv"
+    if (curve_input["candidate_sha256"] != sha(source / "kandidaatmanifest.json") or
+            curve_input["omission_sha256"] != sha(omission_file)):
+        raise ValueError("Soorttrends en soortweglatingen passen niet bij het kandidaatmanifest")
+    changes = {(r["groep"], r["periode"]): float(r["netto_pct"]) for r in groups}
+    names = {r["soort_id"]: r["soort_naam"] for r in species}
+    omission = {
+        (r["groep"], r["periode"], r["soort_id"]): r for r in read_rows(omission_file)
+    }
+    curves = curve_input["curves"]
+    data = defaultdict(dict)
+    seen = set()
+    for member in members:
+        group, period, bird = (member[k] for k in ("groep", "periode", "soort_id"))
+        key = (group, period, bird)
+        informative = member["informatief"] == "TRUE"
+        test = omission.get(key)
+        if key in seen or informative != (test is not None):
+            raise ValueError(f"Soortweglating wijkt af van het groeplidmaatschap: {key}")
+        seen.add(key)
+        without = difference = None
+        if test and test["volledig_aantal"] == "TRUE":
+            without = float(test["netto_aantal"])
+            difference = float(test["verschil_aantal"])
+            if (abs(without - changes[group, period] - difference) >= 1e-7 or
+                    (test["omslag_aantal"] == "TRUE") != (without * changes[group, period] < 0)):
+                raise ValueError(f"Soortweglating wijkt af van de groepsverandering: {key}")
+        values = curves[period][bird]["years"]
+        if len(values) != (26 if period == "pre" else 43):
+            raise ValueError(f"Ongeldige jaarreeks: {key}")
+        data[f"{group}-{period}"][bird] = {
+            "name": names[bird], "years": values,
+            "without": without, "difference": difference, "informative": informative,
+            "reversal": bool(test and test["omslag_aantal"] == "TRUE"),
+        }
+    if not set(omission) <= seen or len(data) != 18:
+        raise ValueError("Onvolledige soorttrends")
+    template = Path(__file__).with_name("aantalsindex_species_panel.html").read_text(encoding="utf-8")
+    embedded = json.dumps(data, ensure_ascii=False, allow_nan=False, separators=(",", ":")).replace("<", "\\u003c")
+    return template.replace("@DATA@", embedded)
+
+
+def make_preview(source, output, curves_path=None):
     candidate_file = source / "kandidaatmanifest.json"
     candidate = json.loads(candidate_file.read_text())
     source_hash = candidate["bron_sha256"]
@@ -222,6 +266,9 @@ document.getElementById("search").addEventListener("input",event=>{{
         "CHANGES": json.dumps(changes, allow_nan=False, separators=(",", ":")),
     }.items():
         template = template.replace(f"@{token}@", value)
+    if curves_path:
+        panel = species_panel(source, groups, species, members, curves_path)
+        template = template.replace("</body>", panel + "</body>")
     dashboard = output / "dashboard.html"
     dashboard.write_text(template, encoding="utf-8")
     meta["dashboard_html_sha256"] = sha(dashboard)
@@ -232,5 +279,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("candidate", type=Path)
     parser.add_argument("output", type=Path)
+    parser.add_argument("--species-curves", type=Path)
     args = parser.parse_args()
-    make_preview(args.candidate, args.output)
+    make_preview(args.candidate, args.output, args.species_curves)

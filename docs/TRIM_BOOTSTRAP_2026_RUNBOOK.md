@@ -544,6 +544,26 @@ lokale previewtoets is uitgevoerd. Formele intervalvrijgave en productie
 staan open. Zie [Lokale aansluiting bootstrap](TRIM_RELEASE_2026_AANSLUITING.md).
 
 
+### Soorttrends bij de aantalsindex in het Dashboard
+
+De dashboardweergave gebruikt dezelfde 53 kavels, telcellen, perioden en
+conditionele Poisson-schatter als de groepsindex. Elke soortindex gebruikt
+per periode het gemiddelde van de eerste vijf jaar als 100. Onschatbare
+waarden blijven leeg. Het effect van weglaten is het verschil in
+procentpunten tussen de geschatte groepsverandering zonder de soort en
+die met alle informatieve soorten. Een soort kan een berekend weglatingseffect
+hebben zonder een eigen reeks op dezelfde basis.
+
+Genereer de soortindices met `scripts/build_aantalsindex_species_curves.R`.
+Geef achtereenvolgens de geregistreerde groepsproef, het bevroren
+`context.rds` uit de bronproef, het nieuwe JSON-pad op T7 en de gecontroleerde
+SHA-256 van `weglating-per-soort.csv` op. Voor de groepsproef
+`trim-bmp-2026-aantalsindex-2000-20261119` is dit
+`f02c906076beddafc83be41e557498ebdc205fc8d11f7617f75a413a77a4a183`.
+Gebruik daarna `scripts/build_aantalsindex_preview.py KANDIDAAT UITVOER
+--species-curves SOORTINDICES_JSON`. Controleer de drie bestaande
+presentatiebestanden en neem de uitvoermappen op in het releasebewijs.
+
 ### Formele beoordeling van de groepsintervallen
 
 De intervaltoets gebruikt dezelfde 2.000 kaveltrekkingen en de 36.000

@@ -1,0 +1,172 @@
+<style>
+#species-trends {margin:1rem 0;padding:.8rem;border:1px solid #dbe4e6;border-radius:8px}
+#species-trends summary {font-weight:600}
+#species-trends p {margin:.65rem 0;font-size:.9rem}
+#species-trends input[type=checkbox] {display:inline;margin:0 .5rem 0 0;accent-color:currentColor}
+#species-trends label {margin:0;white-space:nowrap}
+#species-trends td:nth-child(2), #species-trends td:nth-child(3) {font-variant-numeric:tabular-nums;white-space:nowrap}
+#species-trends td small {display:block;color:#4b5563}
+#species-legend {display:flex;flex-wrap:wrap;gap:.4rem 1.1rem;font-size:.85rem;list-style:none;padding:0}
+#species-legend span {display:inline-block;width:1.5rem;border-top:3px solid;margin-right:.3rem;vertical-align:middle}
+#species-trends .table-scroll {max-height:24rem}
+#species-trends thead {position:sticky;top:0}
+</style>
+<details id="species-trends">
+<summary>Soorttrends</summary>
+<p>Vink maximaal vier soorten aan. Elke lijn begint met gemiddeld 100 over de eerste vijf jaar van de gekozen periode. Een ontbrekende schatting geeft een onderbreking in de lijn.</p>
+<canvas id="species-chart" width="820" height="260" role="img" aria-label="Aantalsindex van de groep en aangevinkte soorten. De waarden staan ook in de tabel onder de grafiek."></canvas>
+<ul id="species-legend"></ul>
+<details id="species-year-details" hidden><summary>Jaarwaarden van de getoonde lijnen</summary><div id="species-years" class="table-scroll"></div></details>
+<p>De tabel vergelijkt de groepsverandering mét alle soorten met die zonder één soort. Het verschil staat in procentpunten. Een plus betekent dat de groep sterker stijgt of minder sterk daalt als je die soort weglaat.</p>
+<div class="table-scroll">
+<table aria-label="Effect per soort op de geschatte groepsverandering">
+<thead><tr><th scope="col">Soort</th><th scope="col">Groepsverandering zonder soort</th><th scope="col">Verschil</th></tr></thead>
+<tbody id="species-effects"></tbody>
+</table>
+</div>
+</details>
+<script type="application/json" id="species-data">@DATA@</script>
+<script>
+{
+  const panel = document.getElementById("species-trends");
+  document.getElementById("chart-start").after(panel);
+  const records = JSON.parse(document.getElementById("species-data").textContent);
+  const effects = document.getElementById("species-effects");
+  const chart = document.getElementById("species-chart");
+  const legend = document.getElementById("species-legend");
+  const chartContext = chart.getContext("2d");
+  const yearsPanel = document.getElementById("species-year-details");
+  const colors = ["#1565a2", "#a14908", "#7b3d90", "#9f243e"];
+  const selected = new Map();
+  const percentage = value => signedPercent.format(value / 100);
+  const points = new Intl.NumberFormat("nl-NL", {signDisplay:"exceptZero", minimumFractionDigits:1, maximumFractionDigits:1});
+  const currentKey = () => group.value + "-" + period.value;
+
+  function drawSpecies() {
+    const annual = series[currentKey()];
+    const start = period.value === "post" ? 1 : 0;
+    const lines = [
+      {name:"Groep", color:"#12674f", width:3, values:annual.map(([, value]) => value)},
+      ...Array.from(selected.values(), ({item, color}) =>
+        ({name:item.name, color, width:2, values:item.years}))
+    ];
+    const max = Math.max(100, ...lines.flatMap(line => line.values.slice(start))) * 1.1;
+    const x = index => 63 + (index - start) * (chart.width - 82) / (annual.length - 1 - start);
+    const y = value => 216 - value * 185 / max;
+    chartContext.clearRect(0, 0, chart.width, chart.height);
+    chartContext.font = "15px system-ui";
+    for (const value of [0, 100, max]) {
+      chartContext.fillStyle = "#405660";
+      chartContext.fillText(number.format(value), 4, y(value) + 5);
+      chartContext.strokeStyle = "#c5d2d6";
+      chartContext.lineWidth = 1;
+      chartContext.beginPath();
+      chartContext.moveTo(x(start), y(value));
+      chartContext.lineTo(x(annual.length - 1), y(value));
+      chartContext.stroke();
+    }
+    legend.replaceChildren();
+    for (const line of lines) {
+      const key = document.createElement("li");
+      const swatch = document.createElement("span");
+      swatch.style.borderColor = line.color;
+      key.append(swatch, line.name);
+      legend.append(key);
+      chartContext.strokeStyle = line.color;
+      chartContext.lineWidth = line.width;
+      chartContext.beginPath();
+      let previous = false;
+      for (let i = start; i < annual.length; i++) {
+        const value = line.values[i];
+        if (value === null) { previous = false; continue; }
+        if (previous) chartContext.lineTo(x(i), y(value));
+        else chartContext.moveTo(x(i), y(value));
+        previous = true;
+      }
+      chartContext.stroke();
+    }
+    chartContext.fillText(annual[start][0], x(start), 242);
+    chartContext.fillText(annual.at(-1)[0], x(annual.length - 1) - 35, 242);
+
+    yearsPanel.hidden = selected.size === 0;
+    const table = document.createElement("table");
+    const header = table.createTHead().insertRow();
+    for (const title of ["Jaar", ...lines.map(line => line.name)]) {
+      const cell = document.createElement("th");
+      cell.scope = "col";
+      cell.textContent = title;
+      header.append(cell);
+    }
+    const body = table.createTBody();
+    annual.forEach(([year], index) => {
+      const row = body.insertRow();
+      row.insertCell().textContent = year;
+      for (const line of lines) {
+        const value = line.values[index];
+        row.insertCell().textContent = value === null ? "—" : number.format(value);
+      }
+    });
+    document.getElementById("species-years").replaceChildren(table);
+  }
+
+  function updateChoices() {
+    for (const input of effects.querySelectorAll("input")) {
+      input.disabled = selected.size === colors.length && !input.checked;
+    }
+  }
+
+  function drawEffects() {
+    selected.clear();
+    effects.replaceChildren();
+    const items = Object.values(records[currentKey()]).sort((a, b) =>
+      (b.difference === null ? -1 : Math.abs(b.difference)) -
+      (a.difference === null ? -1 : Math.abs(a.difference)) ||
+      a.name.localeCompare(b.name, "nl")
+    );
+    for (const item of items) {
+      const row = effects.insertRow();
+      const nameCell = row.insertCell();
+      if (item.years.filter(value => value !== null).length >= 2) {
+        const label = document.createElement("label");
+        const input = document.createElement("input");
+        input.type = "checkbox";
+        label.append(input, item.name);
+        input.addEventListener("change", () => {
+          if (input.checked) {
+            const used = new Set(Array.from(selected.values(), entry => entry.color));
+            const color = colors.find(candidate => !used.has(candidate));
+            selected.set(item.name, {item, color});
+            label.style.color = color;
+          } else {
+            selected.delete(item.name);
+            label.style.color = "";
+          }
+          updateChoices();
+          drawSpecies();
+        });
+        nameCell.append(label);
+      } else {
+        nameCell.textContent = item.name;
+        const note = document.createElement("small");
+        note.textContent = "Geen soortindex op deze periodebasis";
+        nameCell.append(note);
+      }
+      row.insertCell().textContent = item.without === null ?
+        (item.informative ? "Niet berekenbaar" : "Geen bijdrage aan de groepsschatting") :
+        percentage(item.without);
+      const diff = row.insertCell();
+      diff.textContent = item.difference === null ? "—" : points.format(item.difference) + " pp";
+      if (item.reversal) {
+        const note = document.createElement("small");
+        note.textContent = "Richting keert om";
+        diff.append(note);
+      }
+    }
+    drawSpecies();
+  }
+
+  group.addEventListener("change", drawEffects);
+  period.addEventListener("change", drawEffects);
+  drawEffects();
+}
+</script>
