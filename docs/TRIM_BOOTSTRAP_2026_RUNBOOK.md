@@ -329,3 +329,22 @@ TDWG-toets op 18 november 2026. In [Darwin Core](https://dwc.tdwg.org/terms/#loc
 ## Sovon-herlevering BMP 2024 en 2025 voor vier kavels
 
 De levende bron voor M71, M72, M16s en M15 bevat de op 18 november 2026 hergeleverde waarden. Neem bij de integrale actualisering de 34 bronbezoeken met code `sovon_bmp_grenscorrectie_kopie` en hun gecorrigeerde punten mee. Shiny en Vandaag in Meijendel weren die broncode uit de zelfstandige bezoekfrequentie, inspanning en detectie. Controleer bij de geplande export-, proefimport- en cachebouw dat de 79 oorspronkelijke veldbezoeken voor de vier kavels in 2024–2025 meetellen en de 34 kopieën beschikbaar zijn als bronspoor. De vier kavels tellen 552 territoria in 2024 en 497 in 2025. Vergelijk ook per soort en kavel met de geaccepteerde herlevering. Verwerk de gewijzigde aantallen in de website-, dashboard- en Shiny-keten met behoud van soortstatus en intervalpoorten. De achttien overige verschillen en de 2026-tellingen hebben hun eigen beoordelingspoort.
+
+## Lokale BMP-bronstand 19 november 2026
+
+De lokale MySQL-invoer bevat 4.570 territoriumregels voor 50 kavels: 8.874
+territoria en 2.800 expliciete nullen. De officiële status van M4-5 en M105
+Hertenkamp blijft naast Tons voorlopige toelating zichtbaar. Hercontroleer die
+status begin januari 2027. M78/79 levert nul territoriumregels. Zijn vier
+bezoeken en DAZ blijven beschikbaar.
+
+Controleer bij een afzonderlijk goedgekeurde dump/cachebouw ook de 524
+bezoek-ID’s, de 17 bezoekkopieën, de 40.073 vogelstippen en de 811
+niet-vogelpunten. De zes gelijktijdige bezoekparen met verschillende tracks
+en zonder gedeelde stippen blijven kavelbezoeken. Gebruik voor 2026 de
+geaccepteerde DAZ-uitkomsten in de vijf soortgroeptabellen. De voorlopige
+Sovon-laag levert geen extra uitkomsten. De gekopieerde bezoeken horen
+beschikbaar te blijven als bronspoor en tellen niet zelfstandig mee voor
+veldinspanning. Gebruik voor de standaardtrends de Natura 2000-scope, inclusief
+uitsluiting van M66 en M91. Broncontrole, formele intervalvrijgave en
+publicatie blijven afzonderlijke stappen.

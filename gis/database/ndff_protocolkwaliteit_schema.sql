@@ -3132,8 +3132,8 @@ CREATE TABLE IF NOT EXISTS Meijendel.sovon_bmp_jaarlevering (
   bronmap VARCHAR(1000) NOT NULL,
   matrix_bestand VARCHAR(1000) NOT NULL,
   matrix_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
-  bezoektotalen_bestand VARCHAR(1000) NOT NULL,
-  bezoektotalen_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
+  bezoektotalen_bestand VARCHAR(1000) NULL,
+  bezoektotalen_sha256 CHAR(64) CHARACTER SET ascii NULL,
   standaardresultaten_bestand VARCHAR(1000) NULL,
   standaardresultaten_sha256 CHAR(64) CHARACTER SET ascii NULL,
   standaardbezoeken_bestand VARCHAR(1000) NULL,
@@ -3157,7 +3157,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.sovon_bmp_jaarlevering (
     (jaar,matrix_sha256,bezoektotalen_sha256),
   UNIQUE KEY uq_sovon_bmp_actief_jaar (actief_jaar),
   UNIQUE KEY uq_sovon_bmp_levering_jaar (levering_id,jaar),
-  CHECK (jaar BETWEEN 1984 AND 2025),
+  CHECK (jaar BETWEEN 1984 AND 2026),
   CHECK (actueel IN (0,1)),
   CHECK (matrix_rijen > 0),
   CHECK (REGEXP_LIKE(matrix_sha256,'^[0-9a-f]{64}$','c')),
@@ -3167,7 +3167,11 @@ CREATE TABLE IF NOT EXISTS Meijendel.sovon_bmp_jaarlevering (
   CHECK (standaardbezoeken_sha256 IS NULL OR
     REGEXP_LIKE(standaardbezoeken_sha256,'^[0-9a-f]{64}$','c')),
   CHECK (REGEXP_LIKE(bezoekstippen_manifest_sha256,'^[0-9a-f]{64}$','c')),
-  CHECK (REGEXP_LIKE(territoriumpunten_manifest_sha256,'^[0-9a-f]{64}$','c'))
+  CHECK (REGEXP_LIKE(territoriumpunten_manifest_sha256,'^[0-9a-f]{64}$','c')),
+  CONSTRAINT chk_sovon_bmp_bezoektotalen_paar CHECK (
+    (bezoektotalen_bestand IS NOT NULL AND bezoektotalen_sha256 IS NOT NULL)
+    OR (jaar=2026 AND bezoektotalen_bestand IS NULL AND bezoektotalen_sha256 IS NULL)
+  )
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS Meijendel.sovon_bmp_soortenlijstversie (
@@ -3253,7 +3257,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.sovon_bmp_plotjaar (
     REFERENCES Meijendel.plots (plot_id),
   CONSTRAINT fk_sovon_bmp_plotjaar_lijst FOREIGN KEY (soortenlijstversie_id)
     REFERENCES Meijendel.sovon_bmp_soortenlijstversie (soortenlijstversie_id),
-  CHECK (jaar BETWEEN 1984 AND 2025),
+  CHECK (jaar BETWEEN 1984 AND 2026),
   CHECK ((controle_status='te_beoordelen' AND beoordeeld_op IS NULL)
     OR (controle_status='beoordeeld' AND controlebesluit IS NOT NULL
       AND beoordeeld_op IS NOT NULL))
