@@ -416,3 +416,41 @@ validatie. De 500-validatie van de lange trends en vaste groepen blijft
 afhankelijk van het eerder vastgelegde methodische besluit.
 De 24 perioderegels en de volledige soorteninventaris staan in de
 geregistreerde T7-proef `trim-bmp-2026-perioden-12-soorten-20261119`.
+
+## Groepsproef met echte nullen voor 1958–2026
+
+De negen bestaande ecologische hoofdgroepen zijn met dezelfde leden
+afzonderlijk getoetst voor 1958–1983 en 1984–2026. De kandidaat is een
+Poisson-telindex met een eigen uitgangsniveau per soort-kavelcombinatie,
+kaveloppervlakte als offset en één gemeenschappelijke jaarfactor per groep.
+Een letterlijke of volgens de bestaande bronregel toegelaten nul blijft nul.
+Een ontbrekende soort-kavel-jaarcel levert geen blootstelling aan het model.
+De vaste groepsindeling blijft intact. Een soort-kavelreeks zonder positieve
+telling of zonder tweede meetjaar levert geen informatie over verandering.
+Het soortenoverzicht bevat alle 156 categorieën, waaronder de negen zonder
+bestaande EVG-hoofdgroepkoppeling.
+
+De proef bevat 18 groepsperiodes en 621 jaarwaarden. Alle 18 zijn in 50 van
+50 gezamenlijke trekkingen volledig berekenbaar. Bij de test op vijf
+afzonderlijk achtergehouden kavelsets voorspelt de jaarfactor in vier of vijf
+sets beter dan een vlakke jaarfactor voor 12 van de 18 periodes. Bij elf
+blijft ook de richting van de vijfjaarsverandering gelijk wanneer de invloed
+per soort wordt gelijkgetrokken of de meest getelde soort voor de
+gevoeligheidscontrole wegvalt. De richting wisselt bij vogels van
+pionierbegroeiingen en open heide in 1958–1983 en bij bosrandvogels en
+bosvogels in 1984–2026. De hoofduitkomst blijft gevoelig voor soorten met
+veel territoria. De proef ondersteunt deze index als diagnostische
+aantalsindicator naast het soortenoverzicht.
+
+In de bron tot en met 2026 zijn er geen groepsjaren waarin de geschatte index
+nul is. Een gecontroleerde proef met een volledig nuljaar en een ontbrekend
+jaar bevestigt afzonderlijk dat de rekenroute exact nul en ontbrekend kan
+onderscheiden. Een tweede proef reproduceert de jaarfactoren van een
+Poisson-GLM. Volledige tabel, kavelvalidatie, gewichtsgevoeligheid, 50
+trekkingen en 156 soorten staan in de geregistreerde T7-proef
+`trim-bmp-2026-groepsindex-nullen-20261119`.
+
+De eerdere 2.000 trekkingen betroffen de diagnostische soortanalyses tot en
+met 2025. Voor een nieuwe formele groepsindicator staat eerst de keuze open
+of de index het aantal territoria of verandering met gelijke invloed per
+soort moet weerspiegelen. Meer trekking verandert die keuze niet.

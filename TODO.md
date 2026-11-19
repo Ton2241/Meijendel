@@ -8,11 +8,14 @@ De lokale technische vervolgcontrole is afgerond. Websitekoppelingen zijn in een
 
 ### BMP 2026 — invoer en hercontrole
 
-- [ ] Kies vóór een vervolgproef een methode voor de groepsindex met behoud
-  van de ecologische indeling en voor de twaalf uitvallende lange
-  soorttrends. De afzonderlijke periodevalidatie voor die twaalf soorten
-  is afgerond: 11 van 24 halen de lokale geldigheidsdrempel. Alle 156
-  soorten blijven zichtbaar. Zie het [draaiboek](docs/TRIM_BOOTSTRAP_2026_RUNBOOK.md).
+- [ ] Kies vóór verdere groepsvalidatie welk gewicht soorten krijgen in
+  de index. De nulvriendelijke 2026-proef behoudt alle negen ecologische
+  groepen en 156 soorten. Van de 18 groepsperiodes zijn er 11 met voldoende
+  steun op achtergehouden kavels en dezelfde richting in beide
+  gevoeligheidscontroles. De keuze voor de twaalf uitvallende lange
+  soorttrends staat afzonderlijk open. Hun eigen periodevalidatie is
+  afgerond met 11 van 24 boven de geldigheidsdrempel.
+  Zie het [draaiboek](docs/TRIM_BOOTSTRAP_2026_RUNBOOK.md).
 - [ ] **Begin januari 2027:** controleer de Sovon-jaarstatus 2026 van M4-5
   en M105 Hertenkamp opnieuw in Avimap. Leg de uitkomst per kavel vast en
   beoordeel bij afkeuring of gewijzigde bronwaarden welke 2026-regels in
