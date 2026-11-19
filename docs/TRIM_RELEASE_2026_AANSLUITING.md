@@ -321,5 +321,12 @@ vergelijkt alle 2.967 jaarwaarden cijfer voor cijfer met de bestaande
 dashboardberekening op de 2026-browserbron. Het resultaat staat in
 `outputs/dichtheid-verificatie.json`. De R-releasecontrole verwacht
 het doeljaar uit `MEIJENDEL_ANALYSIS_END_YEAR` voor alle reeksen.
-Gebruik het nieuwe `group_index` en de nieuwe dichtheids- en
-soorten-CSV's bij de gezamenlijke website-, dashboard- en Shiny-release.
+Release 2026-11-19.2 publiceerde deze weergave op website, dashboard en
+Shiny via de lichte gateway. Het archief bevatte 17 gewijzigde bestanden
+en was 581.821 bytes groot. De VPS hergebruikte 1.219 bestanden, waaronder
+de bestaande SQL-export en Shiny-cache. Op productie zijn alle 43
+dichtheidsgrafieken met 69 jaarpunten over 1958–2026 gecontroleerd.
+In Chrome openden de negen ecologische groepspagina’s met 1984–2026
+als standaard. De grafiek werd getekend en de uitklapbediening werkte.
+Het bewijs staat in `outputs/presentatie-via-gateway` van dezelfde
+T7-proef.

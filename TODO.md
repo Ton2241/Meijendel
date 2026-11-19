@@ -25,10 +25,6 @@ De lokale technische vervolgcontrole is afgerond. Websitekoppelingen zijn in een
 - [x] Aantalsindex in de gewone websitegroepspagina’s, Dashboard en
   Shiny aangesloten en lokaal in één pakket getoetst. De negen
   groepen, alle 156 soorten en de zes toetsredenen zijn zichtbaar.
-- [ ] **Vogelgroeppresentatie:** Codex verwerkt de gecontroleerde
-  weergave van 19 november 2026 in de volgende gezamenlijke release via de
-  beheerde integrale gateway. Inzetdatum volgt na akkoord van Ton.
-  Zie de [aansluitnotitie](docs/TRIM_RELEASE_2026_AANSLUITING.md).
 - [ ] **Begin januari 2027:** controleer de Sovon-jaarstatus 2026 van M4-5
   en M105 Hertenkamp opnieuw in Avimap. Leg de uitkomst per kavel vast en
   beoordeel bij afkeuring of gewijzigde bronwaarden welke 2026-regels in
