@@ -1005,7 +1005,7 @@ en leveringen. Werk bij een vervolgbericht de bestaande taak en herinnering
 bij. Verwijder afgeronde opvolging uit deze lijst. Ton beslist over verzending
 van rappels.
 
-Stand 16 november 2026. Alle data hieronder vallen in 2026. De opvolging staat
+Stand 19 november 2026. Alle data hieronder vallen in 2026. De opvolging staat
 in iCloud **Agenda**.
 
 | Persoon of organisatie | Laatste uitgaande mail | Open opvolging |
@@ -1018,7 +1018,7 @@ in iCloud **Agenda**.
 | Staatsbosbeheer / Alex Zuijdervliet | 12 november | **10 december.** Controleer of de collega die in december naar de oorspronkelijke florakartering uit 2002–2008 kijkt, al heeft gereageerd. |
 | NIOZ / Eva Lansu | 13 november | **11 december.** Controleer de reactie over het getrainde classificatiemodel uit *Squeezed Sands*. |
 | Haags Gemeentearchief / Michael Mellema | 13 november | **11 december.** Controleer of de stukken uit collectie 0395-01 beschikbaar zijn. Op het rappel over de aanvraag van 13 oktober kwam een automatische ontvangstbevestiging. |
-| Sovon / Lara Marx | 14 november | **12 december.** Lara reageerde 13 november met een kaart en vragen. Controleer of de op 14 november bevestigde keuze voor kavels 71 en 72 is verwerkt. |
+| Sovon / Lara Marx | 18 november | **1 december om 09.00 uur.** Ton controleert of de watervogelkavelgrenzen zijn aangepast overeenkomstig de gecorrigeerde BMP-grenzen en of de download van watervogeltellingen voor seizoen 2025/2026 beschikbaar is. Lara gaf de grenscorrecties op 18 november door aan de beheerder van de watervogeldatabase; uitvoering is nog niet bevestigd. De eerdere BMP-grenscontrole is afgerond. Deze opvolging staat in iCloud **Agenda** en vervangt de controle van 12 december. |
 
 ## Externe ecologiebronnen na fase 1 en 2
 
