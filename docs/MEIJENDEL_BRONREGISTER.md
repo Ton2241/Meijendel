@@ -963,6 +963,8 @@ Een openbare GBIF-dataset met mondiale bodemorganismen gaf 1.995 ruimtelijke tre
 
 Algemene verzamelbronnen zoals Observation.org, iNaturalist en eBird worden ook niet opnieuw als zelfstandige Meijendelbron ingevoerd zolang niet is aangetoond dat zij waarnemingen bevatten die ontbreken in NDFF of in de primaire VWG/SOVON-reeksen. Anders zou dezelfde waarneming vooral nogmaals worden opgeslagen.
 
+Stichting ANEMOON — opvolging beëindigd op 19 november 2026. Ton meldt dat op het informatieverzoek over weekdiergegevens van 21 oktober ook na een rappel geen reactie is ontvangen. De verwachte meerwaarde is voor hem onvoldoende om hier verder tijd aan te besteden. Er worden geen nieuwe rappels of vervolgverzoeken gepland; de open taak en de bijbehorende iCloud-herinnering zijn verwijderd. Dit besluit beëindigt alleen de verwerving van aanvullende gegevens. De al aanwezige NDFF/HabSlak-bronregels, handleidingen en hun bestaande analysebeperkingen blijven behouden; er zijn geen gegevens uit Meijendel of Meijendel_bronnen verwijderd en er is geen nieuwe levering of analysetoelating vastgesteld.
+
 ## 6. Gebruik van dit register
 
 Dit document is het beslisoverzicht. Een bron gaat pas naar `Meijendel` wanneer per waarneming vaststaat dat zij in Meijendel is gedaan en de locatie bekend of betrouwbaar herleidbaar is. Is dat niet zo, dan blijft zij kandidaat of context in Meijendel_bronnen.

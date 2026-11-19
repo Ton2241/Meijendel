@@ -644,10 +644,10 @@ De lokale technische vervolgcontrole is afgerond. Websitekoppelingen zijn in een
   gecontroleerd en in Zotero onder `Meetnetten - Stichting ANEMOON`
   (`BPU2U3KE`) vastgelegd. Gebruik `ndff-habslak-v2`: positieve
   datum-geometrieclusters blijven bruikbaar, maar alle 66 hok-jaren zijn qua
-  bemonsteringsvolledigheid niet beoordeelbaar en leveren geen nullen op. Vraag
-  pas bij een concrete trendanalyse om de oorspronkelijke monitoringslocaties,
-  monster- of sublocatieresultaten en negatieve locaties; deze validatie
-  blokkeert positieve verspreidingsanalyse niet.
+  bemonsteringsvolledigheid niet beoordeelbaar en leveren geen nullen op. Positieve verspreidingsanalyse blijft mogelijk. Ton heeft op 19 november
+  2026 besloten het informatieverzoek aan ANEMOON na een onbeantwoord rappel
+  niet langer op te volgen; er staat geen nieuwe uitvraag open. Zie het
+  [bronregister](docs/MEIJENDEL_BRONREGISTER.md), sectie 5.
 - De officiële BLWG-handleidingen zijn in Zotero onder parentitem
   `Meetnetten - BLWG` (`8E3TCBHW`) opgeslagen.
 - `02.202` bevat onder `ndff-korstmos-v2` twaalf proefvlakken en 32 bezoeken.
@@ -1011,7 +1011,6 @@ in iCloud **Agenda**.
 | Persoon of organisatie | Laatste uitgaande mail | Open opvolging |
 | --- | --- | --- |
 | Zodion Zoogdieronderzoek Nederland / Petra Verburg | 16 november | Petra stuurde op 16 november een automatisch afwezigheidsbericht met contactroutes voor urgente vragen. Het verzoek om meetgegevens van zoogdieren en vleermuizen is voorlopig niet urgent. **30 november om 09.30 uur.** Ton belt het secretariaat (024-7410500) om te vragen of Petra weer bereikbaar is. **14 december om 09.00 uur.** Ton controleert eerst of Petra inmiddels inhoudelijk heeft gereageerd. |
-| Stichting ANEMOON | 21 oktober | **18 november.** Controleer antwoord of levering over de meetgegevens van weekdieren. |
 | De Vlinderstichting / Gerdien Bos | 28 oktober | **25 november.** Controleer antwoord over de bronstructuur van het verspreidingsonderzoek naar libellen. |
 | NDFF / Marie Bekker | 6 november | **4 december.** Controleer ticket 59072 op antwoord op de aanvullende gegevensvraag. |
 | RAVON / Rolf van Leeningen | 7 oktober | **7 december.** Rolf zoekt uit welke meetgegevens beschikbaar zijn. Controleer de stand en beoordeel het rappel. |
