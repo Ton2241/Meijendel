@@ -106,20 +106,21 @@ def make_preview(source, output):
         chart.setdefault(f"{g}-{p}", []).append([int(row["jaar"]), float(row["index_aantal"])])
     embedded = json.dumps(chart, allow_nan=False, separators=(",", ":"))
     options = "".join(f'<option value="{g}">{html.escape(name)}</option>' for g, name in group_names.items())
-    period_options = "".join(f'<option value="{p}">{label}</option>' for p, label in PERIODS.items())
+    period_options = "".join(f'<option value="{p}">{PERIODS[p]}</option>' for p in ("post", "pre"))
     document = f"""<!doctype html>
 <html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Aantalsindex broedvogels Meijendel</title>
+<title>Aantalsindex</title>
 <style>
 :root{{font:16px system-ui,sans-serif;color:#25343b;background:#fff}}body{{margin:0;padding:clamp(12px,3vw,28px)}}h1{{margin:0;font-size:1.55rem}}h2{{font-size:1.12rem;margin-top:1.5rem}}p{{line-height:1.5}}label{{display:inline-block;margin:0 1rem .5rem 0}}select,input{{display:block;font:inherit;padding:.35rem;max-width:100%}}canvas{{display:block;width:100%;height:auto;max-width:850px}}.table-scroll{{overflow:auto}}table{{border-collapse:collapse;width:100%;font-size:.92rem}}th,td{{padding:.55rem;text-align:left;border-bottom:1px solid #dbe4e6;vertical-align:top}}th{{background:#edf4f2}}tr[data-supported=false] td:last-child{{background:#fff6e7}}tr[hidden]{{display:none}}summary{{cursor:pointer}}
 </style></head><body>
-<h1>Aantalsindex broedvogels Meijendel</h1>
-<p>Lokale beoordeling op basis van 2.000 kaveltrekkingen. Per periode is de gemiddelde index over de eerste vijf jaar 100. De verandering vergelijkt dit begin met het gemiddelde van de laatste vijf jaar.</p>
+<h1>Aantalsindex</h1>
+<p>Op basis van 2.000 kaveltrekkingen. Per periode is de gemiddelde index over de eerste vijf jaar 100. De verandering vergelijkt dit begin met het gemiddelde van de laatste vijf jaar.</p>
 <label>Ecologische groep<select id="group">{options}</select></label>
 <label>Periode<select id="period">{period_options}</select></label>
 <canvas id="series" width="820" height="245" role="img" aria-label="Aantalsindex per jaar. De exacte waarden staan in de tabel Jaarwaarden."></canvas>
+<p id="chart-start">De grafiek begint in 1985. De waarde voor 1984 staat bij Jaarwaarden en telt mee in de referentie over 1984–1988.</p>
 <details><summary>Jaarwaarden voor de gekozen groep</summary><div id="years"></div></details>
-<h2>Richting per groep en periode</h2>{overview}
+<details><summary>Richting per periode</summary>{overview}</details>
 <h2>Alle 156 soorten</h2>
 <label>Zoek een soort<input id="search" type="search" autocomplete="off"></label>
 <p id="visible-species" aria-live="polite">156 soorten</p>{roster}
@@ -139,7 +140,10 @@ if(codes.every(code=>available.has(code))){{
 const canvas=document.getElementById("series"),ctx=canvas.getContext("2d");
 const number=new Intl.NumberFormat("nl-NL",{{maximumFractionDigits:2}});
 function draw(){{
-  const rows=series[group.value+"-"+period.value];
+  const annualRows=series[group.value+"-"+period.value];
+  const isPost=period.value==="post";
+  const rows=isPost?annualRows.filter(([year])=>year>=1985):annualRows;
+  document.getElementById("chart-start").hidden=!isPost;
   const max=Math.max(100,...rows.map(r=>r[1]))*1.1;
   const x=i=>63+i*(canvas.width-82)/(rows.length-1), y=v=>208-v*180/max;
   ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -154,7 +158,7 @@ function draw(){{
   const table=document.createElement("table");
   table.innerHTML="<thead><tr><th scope='col'>Jaar</th><th scope='col'>Aantalsindex</th></tr></thead>";
   const body=table.createTBody();
-  for(const [year,index] of rows){{const row=body.insertRow();row.insertCell().textContent=year;row.insertCell().textContent=number.format(index);}}
+  for(const [year,index] of annualRows){{const row=body.insertRow();row.insertCell().textContent=year;row.insertCell().textContent=number.format(index);}}
   document.getElementById("years").replaceChildren(table);
 }}
 group.addEventListener("change",draw);period.addEventListener("change",draw);draw();

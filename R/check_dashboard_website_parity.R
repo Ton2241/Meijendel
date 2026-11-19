@@ -122,9 +122,19 @@ names(density_years)[2] <- "n_years"
 too_short <- density_years$chart_id[density_years$n_years < 10]
 if (length(too_short)) fail("Te weinig jaren in groep_dichtheid.csv voor: ", paste(too_short, collapse = ", "))
 
-if (!all(required_chart_ids %in% unique(density$chart_id[density$jaar == 2025]))) {
-  missing_2025 <- setdiff(required_chart_ids, unique(density$chart_id[density$jaar == 2025]))
-  fail("Geen 2025-dichtheidsrij voor: ", paste(missing_2025, collapse = ", "))
+end_year <- Sys.getenv("MEIJENDEL_ANALYSIS_END_YEAR")
+if (nzchar(end_year)) {
+  if (!grepl("^[12][0-9]{3}$", end_year)) fail("Ongeldig eindjaar voor de dichtheidsgrafieken.")
+  last_years <- tapply(density$jaar, density$chart_id, max)
+  mismatched_end_years <- required_chart_ids[last_years[required_chart_ids] != as.integer(end_year)]
+  if (length(mismatched_end_years)) {
+    fail("Dichtheidsreeksen eindigen niet in ", end_year, ": ", paste(mismatched_end_years, collapse = ", "))
+  }
+} else {
+  missing_2025 <- setdiff(required_chart_ids, density$chart_id[density$jaar == 2025])
+  if (length(missing_2025)) {
+    fail("Geen 2025-dichtheidsrij voor: ", paste(missing_2025, collapse = ", "))
+  }
 }
 
 series_by_chart <- aggregate(serie ~ chart_id, chart, function(x) paste(sort(unique(x)), collapse = ","))

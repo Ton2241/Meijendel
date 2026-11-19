@@ -2,7 +2,7 @@
 
 ## Bootstrapkandidaat voor de release 2026
 
-De lokale technische vervolgcontrole is afgerond. Websitekoppelingen zijn in een afzonderlijke proefdatabase beschikbaar, de gewone PyMySQL-connector werkt, de drie meeuwenfoto’s zijn teruggezet en de volledige dashboardroute is bekeken. De Shiny/dashboard-pariteit op de bewaarde bron 1958–2025 is groen. Alle 156 soorten blijven ook zonder trend kiesbaar. De actuele acht websiteobjecten en foto’s zijn uitsluitend op de VPS gelezen. De lokale BMP-invoer 2026, SQL-export en Shiny-cache zijn gereed. De Sovon-hercontrole van twee kavels, formele intervalvrijgave en publicatie staan open. Zie [de volledige aansluitnotitie](docs/TRIM_RELEASE_2026_AANSLUITING.md).
+De lokale technische vervolgcontrole is afgerond. Websitekoppelingen zijn in een afzonderlijke proefdatabase beschikbaar, de gewone PyMySQL-connector werkt, de drie meeuwenfoto’s zijn teruggezet en de volledige dashboardroute is bekeken. De Shiny/dashboard-pariteit op de bewaarde bron 1958–2025 is groen. Alle 156 soorten blijven ook zonder trend kiesbaar. De actuele acht websiteobjecten en foto’s zijn uitsluitend op de VPS gelezen. De lokale BMP-invoer 2026, SQL-export en Shiny-cache zijn gereed. De aantalsindex staat sinds release 2026-11-19.1 op productie. De Sovon-hercontrole van twee kavels en formele intervalvrijgave staan open. Zie [de volledige aansluitnotitie](docs/TRIM_RELEASE_2026_AANSLUITING.md).
 
 ## Nu open
 
@@ -25,8 +25,10 @@ De lokale technische vervolgcontrole is afgerond. Websitekoppelingen zijn in een
 - [x] Aantalsindex in de gewone websitegroepspagina’s, Dashboard en
   Shiny aangesloten en lokaal in één pakket getoetst. De negen
   groepen, alle 156 soorten en de zes toetsredenen zijn zichtbaar.
-- [ ] Productiedeploy via de beheerde integrale gateway zodra Ton de
-  inzet opdraagt. Zie de [aansluitnotitie](docs/TRIM_RELEASE_2026_AANSLUITING.md).
+- [ ] **Vogelgroeppresentatie:** Codex verwerkt de gecontroleerde
+  weergave van 19 november 2026 in de volgende gezamenlijke release via de
+  beheerde integrale gateway. Inzetdatum volgt na akkoord van Ton.
+  Zie de [aansluitnotitie](docs/TRIM_RELEASE_2026_AANSLUITING.md).
 - [ ] **Begin januari 2027:** controleer de Sovon-jaarstatus 2026 van M4-5
   en M105 Hertenkamp opnieuw in Avimap. Leg de uitkomst per kavel vast en
   beoordeel bij afkeuring of gewijzigde bronwaarden welke 2026-regels in

@@ -30,7 +30,7 @@ class SqlNames(unittest.TestCase):
  def test_linux_accepts_lowercase_and_preserved_legacy_packages(self):
   for name in ['meijendel.sql','Meijendel.sql']:
    source='data/'+name
-   m=dict(components=['website','dashboard','shiny','mysql','cms'],mysql=dict(source=source,website_objects='data/website_objects.sql',database='Meijendel'),cache=dict(root='data/cache/a.rds'),bootstrap=dict(root='www/outputs/bootstrap-presentatie-2026'),files={x:'a'*64 for x in [source,source+'.manifest','data/cache/a.rds','data/cache/a.manifest','website/app/main.py','shiny/shiny_meijendel/app.R','www/bmp_meijendel_index.html']})
+   m=dict(components=['website','dashboard','shiny','mysql','cms'],mysql=dict(source=source,website_objects='data/website_objects.sql',database='Meijendel'),cache=dict(root='data/cache/a.rds'),bootstrap=dict(root='www/outputs/bootstrap-presentatie-2026'),files={x:'a'*64 for x in [source,source+'.manifest','data/cache/a.rds','data/cache/a.manifest','website/app/main.py','shiny/shiny_meijendel/app.R','www/bmp_meijendel_index.html','www/bmp_meijendel_data.json','www/bmp_meijendel_data.json.manifest']})
    with self.subTest(name=name):linux.guard_payload(m)
    other='data/Meijendel.sql' if name=='meijendel.sql' else 'data/meijendel.sql'
    m['files'][other]='b'*64

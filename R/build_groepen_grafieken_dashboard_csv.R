@@ -12,9 +12,7 @@ trim_msi_dir <- file.path(repo_dir, "trim_msi_evg")
 trim_soorten_dir <- file.path(repo_dir, "trim", "soorten")
 dashboard_msi_path <- file.path(trim_msi_dir, "msi_per_groep_per_jaar.csv")
 dashboard_landelijk_gam_path <- file.path(trim_msi_dir, "gam_voorspellingen_landelijk_msi_groepen.csv")
-dashboard_composition_path <- file.path(trim_msi_dir, "groepssamenstelling_100tal.csv")
 functional_msi_path <- file.path(trim_msi_dir, "functionele_msi_per_groep_per_jaar.csv")
-functional_composition_path <- file.path(trim_msi_dir, "functionele_groepssamenstelling.csv")
 trim_index_base_path <- file.path(trim_soorten_dir, "soortindices_bruikbare_tijdreeks.csv")
 trim_index_post_path <- file.path(trim_soorten_dir, "soortindices_per_jaar.csv")
 out_path <- file.path(out_dir, "gam_dashboard_groepen.csv")
@@ -33,11 +31,7 @@ if (!file.exists(dashboard_msi_path)) {
 if (!file.exists(dashboard_landelijk_gam_path)) {
   stop("Dashboardbestand ontbreekt: ", dashboard_landelijk_gam_path)
 }
-if (!file.exists(dashboard_composition_path)) {
-  stop("Dashboardbestand ontbreekt: ", dashboard_composition_path)
-}
 if (!file.exists(functional_msi_path)) stop("Dashboardbestand ontbreekt: ", functional_msi_path)
-if (!file.exists(functional_composition_path)) stop("Dashboardbestand ontbreekt: ", functional_composition_path)
 if (!file.exists(trim_index_base_path)) {
   stop("Dashboardbestand ontbreekt: ", trim_index_base_path)
 }
@@ -525,27 +519,22 @@ soorten_habitattypen <- read_insert_table(
 
 group_msi <- read.csv(dashboard_msi_path, stringsAsFactors = FALSE)
 group_msi <- group_msi[group_msi$msi_variant == "volledig", , drop = FALSE]
-group_composition <- read.csv(dashboard_composition_path, stringsAsFactors = FALSE)
-group_composition <- group_composition[group_composition$msi_variant == "volledig", , drop = FALSE]
+ecological_members <- tbls$evg_vogel_landschapgroep
+ecological_codes <- floor(as.integer(ecological_members$groepsnummer) / 100) * 100
 for (groep in sort(unique(group_msi$groep_100))) {
   part <- group_msi[group_msi$groep_100 == groep, , drop = FALSE]
   title <- unique(part$groep_titel)[[1]]
   add_meijendel_curve(as.character(groep), title, part)
-  species_part <- group_composition[group_composition$groep_100 == groep, , drop = FALSE]
-  add_species_rows(as.character(groep), title, species_part$soort_naam)
-  add_density_rows(as.character(groep), title, tbls, species_part$soort_id)
+  species_ids <- ecological_members$vogel_id[which(ecological_codes == groep)]
+  add_species_rows(as.character(groep), title, species_names_from_ids(tbls, species_ids))
+  add_density_rows(as.character(groep), title, tbls, species_ids)
 }
 
 functional_metadata <- functional_group_metadata(functional_config)
 functional_slugs <- stats::setNames(functional_metadata$chart, functional_metadata$group_code)
 functional_mapping <- build_functional_group_mapping(tbls)
-new_functional_codes <- unlist(lapply(functional_config, function(cluster) {
-  vapply(Filter(function(group) !is.null(group$primary), cluster$groups), function(group) group$code, "")
-}))
 functional_msi <- read.csv(functional_msi_path, stringsAsFactors = FALSE)
 functional_msi <- functional_msi[functional_msi$msi_variant == "volledig", , drop = FALSE]
-functional_composition <- read.csv(functional_composition_path, stringsAsFactors = FALSE)
-functional_composition <- functional_composition[functional_composition$msi_variant == "volledig", , drop = FALSE]
 for (group_code in names(functional_slugs)) {
   for (analysis_mode in c("binair", "gewogen")) {
     part <- functional_msi[
@@ -557,18 +546,11 @@ for (group_code in names(functional_slugs)) {
     title <- paste(unique(part$groep_titel)[[1]], if (analysis_mode == "binair") "— binair" else "— gewogen")
     chart_id <- paste(functional_slugs[[group_code]], analysis_mode, sep = "-")
     add_meijendel_curve(chart_id, title, part)
-    species_part <- functional_composition[
-      functional_composition$group_code == group_code & functional_composition$analysis_mode == analysis_mode,
-      ,
+    species_part <- functional_mapping[
+      functional_mapping$group_code == group_code, c("soort_id", "membership_weight"),
       drop = FALSE
     ]
-    if (group_code %in% new_functional_codes) {
-      species_part <- functional_mapping[functional_mapping$group_code == group_code, ]
-      species_part$soort_naam <- tbls$soorten$soort_naam[match(species_part$soort_id, tbls$soorten$id)]
-      if (anyNA(species_part$soort_naam)) stop("Onbekende soort-ID in ", group_code)
-    }
-    species_part <- unique(species_part[, c("soort_id", "soort_naam", "membership_weight")])
-    add_species_rows(chart_id, title, species_part$soort_naam)
+    add_species_rows(chart_id, title, species_names_from_ids(tbls, species_part$soort_id))
     if (analysis_mode == "gewogen") {
       add_weighted_density_rows(chart_id, title, tbls, species_part)
     } else {

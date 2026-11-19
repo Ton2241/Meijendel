@@ -109,7 +109,7 @@ Rscript "$REPO_DIR/R/check_wintertelling_output.R" \
   "$REPO_DIR/wintertellingen"
 
 log "Controleer dashboard/website parity voor Groepen-grafieken"
-Rscript "$REPO_DIR/R/check_dashboard_website_parity.R" \
+MEIJENDEL_ANALYSIS_END_YEAR="$ANALYSIS_END_YEAR" Rscript "$REPO_DIR/R/check_dashboard_website_parity.R" \
   "$REPO_DIR" \
   "$REPO_DIR/groepen_grafieken"
 

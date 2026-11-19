@@ -670,7 +670,7 @@ function buildActualGroupDensity(groep100,yearRange){
     .sort((a,b)=>a-b)
     .map(jaar=>{
       const km2=getAreaForYear(S.areaMeta,jaar,[]);
-      const dichtheid=km2?totals[jaar]/km2:null;
+      const dichtheid=km2?(totals[jaar]??0)/km2:null;
       return {jaar,dichtheid:Number.isFinite(dichtheid)?+dichtheid.toFixed(3):null};
     });
 }

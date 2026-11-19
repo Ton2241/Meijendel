@@ -288,3 +288,38 @@ via schone hoofdtakken en de bestaande beheerde gateway, met de
 gecontroleerde runtime die `group_index` in het manifest herkent.
 De Sovon-hercontrole voor M4-5 en M105 blijft op de afgesproken
 januarilijst. Er worden geen formele groepsintervallen geactiveerd.
+
+
+### Presentatie van vogelgroepen — 19 november 2026
+
+Het gedeelde HTML-bestand opent op 1984–2026. Bij Watervogels staat de
+hoge beginwaarde in de gevalideerde kandidaat op 1984 (269,54). De grafiek
+van 1984–2026 toont daarom bij alle negen ecologische groepen 1985–2026.
+De jaarwaardentabel en de eerste vijf referentiejaren behouden 1984. De
+grafiek over 1958–1983 loopt door tot en met 1983. Beide uitklapblokken
+openen gesloten. De website toont Dichtheid per km² bij iedere
+groepspagina met dichtheidsgrafieken.
+
+De aantalsindex gebruikt 621 jaarwaarden uit 1958–2026 en 18 beoordelingen
+uit de kandidaat met 2.000 kaveltrekkingen. De dichtheids-CSV uit release
+2026-11-19.1 bevat 2.924 jaarwaarden voor 43 reeksen over 1958–2025.
+De vernieuwde dichtheids-CSV bevat 2.967 jaarwaarden over 1958–2026.
+Alle 43 reeksen omvatten elk 69 jaar. De website en het dashboard
+gebruiken de 2026-bron en dezelfde groepslidmaatschappen voor dichtheid.
+Daarmee tellen bij ecologische en functionele dichtheidsgrafieken ook
+groepsleden mee waarvoor geen afzonderlijke TRIM-reeks beschikbaar is.
+Het dashboard volgt bij geregistreerde teloppervlakte de bestaande
+dichtheidsberekening met nul als de groep geen territoriumregels heeft.
+De soortenlijst onder de dichtheidsgrafiek volgt dezelfde selectie.
+De afzonderlijke TRIM/GAM-uitvoer behoudt de oorspronkelijke jaardekking.
+Een aantalsindex voor habitat-, functionele en lijstgroepen vraagt
+berekening en toetsing met de eigen groepsindeling.
+
+De lokale kandidaat en de Chrome-controle staan in de T7-proef
+`vogelgroeppresentatie-20261119`. Het script `runtime/controle-dichtheid.cjs`
+vergelijkt alle 2.967 jaarwaarden cijfer voor cijfer met de bestaande
+dashboardberekening op de 2026-browserbron. Het resultaat staat in
+`outputs/dichtheid-verificatie.json`. De R-releasecontrole verwacht
+het doeljaar uit `MEIJENDEL_ANALYSIS_END_YEAR` voor alle reeksen.
+Gebruik het nieuwe `group_index` en de nieuwe dichtheids- en
+soorten-CSV's bij de gezamenlijke website-, dashboard- en Shiny-release.
