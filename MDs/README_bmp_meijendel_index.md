@@ -66,7 +66,14 @@ Voor soorten die al in `soortindices_bruikbare_tijdreeks.csv` staan, blijft die 
 
 ## Tab Groepen
 
-In `Groepen` zijn er twee keuzes.
+Klik op `Groepen` om de groepskeuzes te openen. Na je keuze klapt het
+menu dicht en opent `Dichtheid per km²`. De gekozen groep staat boven
+de weergaven. Klik opnieuw op `Groepen` om een andere groep te kiezen.
+
+Bij één ecologische vogelgroep verschijnt ook `Aantalsindex`. De
+grafiek en de soortenlijst volgen die groepskeuze. Onder de grafiek
+staan de verandering tussen de eerste en laatste vijf jaar van de
+gekozen periode en het middelste bereik van 95% uit 2.000 kaveltrekkingen.
 
 ### 1. Dichtheid per km2
 
@@ -98,7 +105,7 @@ Bron:
 - eventueel ook `gam_voorspellingen_msi_groepen.csv`
 - eventueel ook `gam_interpretatie_msi_groepen.csv`
 
-Bij beide keuzes gebruikt het groepsmenu vier hoofdkeuzes: `Alles`, `Lijsten`, `Habitattypen` en `Ecologische Vogelgroepen`.
+In het groepsmenu staan onder meer `Alles`, `Lijsten`, `Habitattypen` en `Ecologische Vogelgroepen`.
 `Alles` gebruikt alle soorten.
 Onder `Lijsten` staan `Rode Lijst`, `Oranje Lijst`, `Rode en Oranjelijst` en `Vogelrichtlijn`.
 De `Oranje Lijst` wordt afgeleid uit `soort_richtlijn` met `richtlijn_id = 6`.

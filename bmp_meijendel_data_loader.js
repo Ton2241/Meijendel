@@ -91,7 +91,13 @@
       const page=await checkedResponse(fetchImpl,root+'/bootstrap.html');
       if(spec.root!==root||await hash(groupRaw)!==spec.manifest_sha256||await hash(await page.text())!==spec.html_sha256||
          g.html_sha256!==spec.html_sha256||g.source_hash!==c.source_hash||g.year_from!==c.year_from||g.year_to!==c.year_to||
-         g.presentation_kind!=='ecologische_aantalsindex'||g.publication_status!=='diagnostisch')delete c.group_index;
+         g.presentation_kind!=='ecologische_aantalsindex'||g.publication_status!=='diagnostisch')throw new Error('Aantalsindexmanifest wijkt af');
+      if(g.dashboard_html_sha256!==undefined){
+        if(!/^[0-9a-f]{64}$/.test(g.dashboard_html_sha256))throw new Error('Ongeldige dashboardhash');
+        const dashboard=await checkedResponse(fetchImpl,root+'/dashboard.html?v='+g.dashboard_html_sha256);
+        if(await hash(await dashboard.text())!==g.dashboard_html_sha256)throw new Error('Dashboardweergave van Aantalsindex wijkt af');
+        spec.dashboard_html_sha256=g.dashboard_html_sha256;
+      }
     } catch(_error){delete c.group_index;}
     if(!c.bootstrap&&!c.group_index)throw new Error('Release heeft geen geldige presentatie.');
     return c;

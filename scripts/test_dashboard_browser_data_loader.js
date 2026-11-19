@@ -55,6 +55,34 @@ async function main() {
     }),
     /SQL-hash/
   );
+  const hash = value => require("node:crypto").createHash("sha256").update(value).digest("hex");
+  const root = "outputs/aantalsindex-preview";
+  const shared = "<h1>Aantalsindex</h1>";
+  const dashboard = "<h1>Aantalsindex voor dashboard</h1>";
+  const groupManifest = JSON.stringify({
+    presentation_kind: "ecologische_aantalsindex", publication_status: "diagnostisch",
+    source_hash: sqlHash, year_from: 1958, year_to: 2026,
+    html_sha256: hash(shared), dashboard_html_sha256: hash(dashboard)
+  });
+  const config = JSON.stringify({
+    schema: "meijendel-integral-release-v1", mode: "production",
+    presentation_approved: true, official_data_validated: true,
+    source_hash: sqlHash, year_from: 1958, year_to: 2026,
+    group_index: {root, manifest_sha256: hash(groupManifest), html_sha256: hash(shared)}
+  });
+  const serve = dashboardHtml => async url => response({
+    "release-config.json": config,
+    [root + "/manifest.json"]: groupManifest,
+    [root + "/bootstrap.html"]: shared,
+    [root + "/dashboard.html?v=" + hash(dashboard)]: dashboardHtml
+  }[url]);
+  const releaseOptions = {sha256: hash, sourceManifest: {sql_sha256: sqlHash}};
+  const release = await loader.loadReleaseConfig({...releaseOptions, fetchImpl: serve(dashboard)});
+  assert.equal(release.group_index.dashboard_html_sha256, hash(dashboard));
+  await assert.rejects(
+    () => loader.loadReleaseConfig({...releaseOptions, fetchImpl: serve("onjuist")}),
+    /geen geldige presentatie/
+  );
   console.log("Dashboard-browserloadercontract: groen.");
 }
 

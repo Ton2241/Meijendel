@@ -203,6 +203,28 @@ document.getElementById("search").addEventListener("input",event=>{{
         "species_count": len(species),
         "checks": dict(Counter(status.values())),
     }
+    dashboard_roster = table("birds", ("Soort", "Ecologische indeling"), [
+        f'<tr data-species="{int(row["soort_id"])}" data-groups="{row["evg_hoofdcodes"].replace(" | ", " ")}">'
+        + td(row["soort_naam"]) + td(row["ecologische_groepen"] or "Geen ecologische groep toegewezen") + "</tr>"
+        for row in species
+    ])
+    changes = {
+        f"{group}-{period}": [float(row[field]) for field in ("netto_pct", "p025", "p975")]
+        for (group, period), row in group_rows.items()
+    }
+    template = Path(__file__).with_name("aantalsindex_dashboard.html").read_text(encoding="utf-8")
+    for token, value in {
+        "GROUP_OPTIONS": options,
+        "PERIOD_OPTIONS": period_options,
+        "GROUP_TABLE": overview,
+        "SPECIES_TABLE": dashboard_roster,
+        "SERIES": embedded,
+        "CHANGES": json.dumps(changes, allow_nan=False, separators=(",", ":")),
+    }.items():
+        template = template.replace(f"@{token}@", value)
+    dashboard = output / "dashboard.html"
+    dashboard.write_text(template, encoding="utf-8")
+    meta["dashboard_html_sha256"] = sha(dashboard)
     (output / "manifest.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 

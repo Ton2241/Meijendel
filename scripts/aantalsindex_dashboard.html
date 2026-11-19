@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Aantalsindex</title>
+<style>
+:root{font:16px system-ui,sans-serif;color:#25343b;background:#fff}body{margin:0;padding:clamp(12px,3vw,28px)}h1{margin:0;font-size:1.55rem}h2{font-size:1.12rem;margin-top:1.5rem}p{line-height:1.5}label{display:inline-block;margin:0 1rem .5rem 0}select,input{display:block;font:inherit;padding:.35rem;max-width:100%}canvas{display:block;width:100%;height:auto;max-width:850px}.table-scroll{overflow:auto}table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{padding:.55rem;text-align:left;border-bottom:1px solid #dbe4e6;vertical-align:top}th{background:#edf4f2}tr[data-supported=false] td:last-child{background:#fff6e7}tr[hidden]{display:none}summary{cursor:pointer}
+[hidden]{display:none!important}
+.dashboard-index{padding:0;color:#374151}
+.dashboard-index .index-header{margin:0 0 16px}
+.dashboard-index .index-header h1{font-size:14px;font-weight:600;margin:0 0 4px}
+.dashboard-index .index-header p{font-size:13px;line-height:1.5;margin:0 0 12px}
+.dashboard-index .index-period{display:block;margin:0;padding:12px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px}
+.dashboard-index .index-period span{display:block;font-size:12px;font-weight:500;margin-bottom:8px}
+.dashboard-index .index-period select{border:1px solid #d1d5db;border-radius:6px;padding:4px 8px;font-size:14px;background:#fff;color:inherit}
+.index-change{border:1px solid #e5e7eb;border-radius:8px;background:#f9fafb;padding:10px 12px;margin:12px 0;color:#374151}
+.index-change p{margin:0}
+.index-change p+p{margin-top:3px}
+.index-change .comparison-years{font-size:.85em;color:#6b7280}
+</style></head><body>
+<header class="index-header">
+<h1>Aantalsindex</h1>
+<p>De lijn is berekend uit de kaveltellingen. Het gemiddelde van de eerste vijf jaar is per periode 100.</p>
+<label>Ecologische groep<select id="group">@GROUP_OPTIONS@</select></label>
+<label class="index-period"><span>Periode</span><select id="period">@PERIOD_OPTIONS@</select></label>
+</header>
+<canvas id="series" width="820" height="245" role="img" aria-label="Aantalsindex per jaar. De exacte waarden staan in de tabel Jaarwaarden."></canvas>
+<div class="index-change" aria-live="polite">
+<p><strong id="index-change-value"></strong></p>
+<p id="index-change-range"></p>
+<p id="index-change-years" class="comparison-years"></p>
+</div>
+<p id="chart-start">De grafiek begint in 1985. De waarde voor 1984 staat bij Jaarwaarden en telt mee in de referentie over 1984–1988.</p>
+<details><summary>Jaarwaarden voor de gekozen groep</summary><div id="years"></div></details>
+<details><summary>Richting per periode</summary>@GROUP_TABLE@</details>
+<h2 id="species-heading">Alle 156 soorten</h2>
+<p id="visible-species" aria-live="polite">156 soorten</p>@SPECIES_TABLE@
+<script>
+const series=@SERIES@;
+const changeByGroupPeriod=@CHANGES@;
+const group=document.getElementById("group"),period=document.getElementById("period");
+const codes=(new URLSearchParams(location.search).get("groepen")||"").split(",");
+const available=new Set(Array.from(group.options,option=>option.value));
+if(codes.every(code=>available.has(code))){
+  for(const option of Array.from(group.options))if(!codes.includes(option.value))option.remove();
+  group.value=codes[0];
+  if(group.options.length===1){
+    group.parentElement.hidden=true;
+    document.body.classList.add("dashboard-index");
+  }
+  for(const row of document.querySelectorAll("#groups tr[data-group]")){
+    if(!codes.includes(row.dataset.group))row.hidden=true;
+  }
+}
+const canvas=document.getElementById("series"),ctx=canvas.getContext("2d");
+const number=new Intl.NumberFormat("nl-NL",{maximumFractionDigits:2});
+const signedPercent=new Intl.NumberFormat("nl-NL",{
+  style:"percent",signDisplay:"exceptZero",minimumFractionDigits:1,maximumFractionDigits:1
+});
+function draw(){
+  const key=group.value+"-"+period.value;
+  const annualRows=series[key];
+  const [change,lower,upper]=changeByGroupPeriod[key];
+  const formatPercent=value=>signedPercent.format(value/100);
+  document.getElementById("index-change-value").textContent=`Verandering ${formatPercent(change)}`;
+  document.getElementById("index-change-range").textContent=
+    `Middelste 95% van 2.000 kaveltrekkingen: ${formatPercent(lower)} tot ${formatPercent(upper)}`;
+  document.getElementById("index-change-years").textContent=
+    `${annualRows[0][0]}–${annualRows[4][0]} vergeleken met ${annualRows.at(-5)[0]}–${annualRows.at(-1)[0]}`;
+  const isPost=period.value==="post";
+  const rows=isPost?annualRows.filter(([year])=>year>=1985):annualRows;
+  document.getElementById("chart-start").hidden=!isPost;
+  const max=Math.max(100,...rows.map(r=>r[1]))*1.1;
+  const x=i=>63+i*(canvas.width-82)/(rows.length-1), y=v=>208-v*180/max;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.font="15px system-ui";
+  for(const value of [0,100,max]){
+    ctx.fillStyle="#405660";ctx.fillText(number.format(value),4,y(value)+5);
+    ctx.strokeStyle="#c5d2d6";ctx.beginPath();ctx.moveTo(x(0),y(value));ctx.lineTo(x(rows.length-1),y(value));ctx.stroke();
+  }
+  ctx.strokeStyle="#12674f";ctx.lineWidth=2.5;ctx.beginPath();
+  rows.forEach((row,i)=>i?ctx.lineTo(x(i),y(row[1])):ctx.moveTo(x(i),y(row[1])));ctx.stroke();ctx.lineWidth=1;
+  ctx.fillStyle="#405660";ctx.fillText(rows[0][0],x(0),232);ctx.fillText(rows.at(-1)[0],x(rows.length-1)-35,232);
+  const table=document.createElement("table");
+  table.innerHTML="<thead><tr><th scope='col'>Jaar</th><th scope='col'>Aantalsindex</th></tr></thead>";
+  const body=table.createTBody();
+  for(const [year,index] of annualRows){const row=body.insertRow();row.insertCell().textContent=year;row.insertCell().textContent=number.format(index);}
+  document.getElementById("years").replaceChildren(table);
+}
+group.addEventListener("change",draw);period.addEventListener("change",draw);draw();
+const birds=Array.from(document.querySelectorAll("#birds tbody tr"));
+const selectedGroup=group.options.length===1?group.value:null;
+if(selectedGroup){
+  document.getElementById("species-heading").textContent="Soorten in "+group.selectedOptions[0].textContent;
+}
+let visible=0;
+for(const row of birds){
+  row.hidden=Boolean(selectedGroup&&!row.dataset.groups.split(" ").includes(selectedGroup));
+  if(!row.hidden)visible++;
+}
+document.getElementById("visible-species").textContent=visible===1?"1 soort":visible+" soorten";
+</script></body></html>
