@@ -76,12 +76,24 @@
     if(c.schema!=='meijendel-integral-release-v1'||c.presentation_approved!==true ||
        (c.mode==='local_rehearsal'?!['127.0.0.1','localhost','::1'].includes(host):c.mode!=='production'||c.official_data_validated!==true))throw new Error('Release niet vrijgegeven voor deze weergave');
     if(c.source_hash!==options.sourceManifest.sql_sha256)throw new Error('Bootstrap en dashboard hebben een verschillende bron');
-    const metaResponse=await checkedResponse(fetchImpl,'outputs/bootstrap-presentatie-2026/manifest.json');
-    const raw=await metaResponse.text(),b=JSON.parse(raw);
     const hash=options.sha256 || (async text=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text)))).map(x=>x.toString(16).padStart(2,'0')).join(''));
-    if(await hash(raw)!==c.bootstrap.manifest_sha256 || b.source_hash!==c.source_hash ||
+    if(c.bootstrap){
+      const metaResponse=await checkedResponse(fetchImpl,'outputs/bootstrap-presentatie-2026/manifest.json');
+      const raw=await metaResponse.text(),b=JSON.parse(raw);
+      if(await hash(raw)!==c.bootstrap.manifest_sha256 || b.source_hash!==c.source_hash ||
        b.year_from!==c.year_from || b.year_to!==c.year_to || b.html_sha256!==c.bootstrap.html_sha256 ||
        b.schema!=='trim-bootstrap-presentation-v1'||b.publication_status!=='diagnostisch')throw new Error('Bootstrapmanifest past niet bij de actieve release');
+    }
+    if(c.group_index)try{
+      const root='outputs/aantalsindex-preview';
+      const groupMeta=await checkedResponse(fetchImpl,root+'/manifest.json');
+      const groupRaw=await groupMeta.text(),g=JSON.parse(groupRaw),spec=c.group_index;
+      const page=await checkedResponse(fetchImpl,root+'/bootstrap.html');
+      if(spec.root!==root||await hash(groupRaw)!==spec.manifest_sha256||await hash(await page.text())!==spec.html_sha256||
+         g.html_sha256!==spec.html_sha256||g.source_hash!==c.source_hash||g.year_from!==c.year_from||g.year_to!==c.year_to||
+         g.presentation_kind!=='ecologische_aantalsindex'||g.publication_status!=='diagnostisch')delete c.group_index;
+    } catch(_error){delete c.group_index;}
+    if(!c.bootstrap&&!c.group_index)throw new Error('Release heeft geen geldige presentatie.');
     return c;
   }
 

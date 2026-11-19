@@ -126,6 +126,16 @@ def make_preview(source, output):
 <script>
 const series={embedded};
 const group=document.getElementById("group"),period=document.getElementById("period");
+const codes=(new URLSearchParams(location.search).get("groepen")||"").split(",");
+const available=new Set(Array.from(group.options,option=>option.value));
+if(codes.every(code=>available.has(code))){{
+  for(const option of Array.from(group.options))if(!codes.includes(option.value))option.remove();
+  group.value=codes[0];
+  if(group.options.length===1)group.parentElement.hidden=true;
+  for(const row of document.querySelectorAll("#groups tr[data-group]")){{
+    if(!codes.includes(row.dataset.group))row.hidden=true;
+  }}
+}}
 const canvas=document.getElementById("series"),ctx=canvas.getContext("2d");
 const number=new Intl.NumberFormat("nl-NL",{{maximumFractionDigits:2}});
 function draw(){{

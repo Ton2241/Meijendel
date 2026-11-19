@@ -199,8 +199,9 @@ if (identical(Sys.getenv("MEIJENDEL_BOOTSTRAP_RELEASE"),"1") && file.exists(Sys.
 # The standalone group candidate is an explicit local preview.
 local_group_preview_tab <- function() {
   root <- Sys.getenv("MEIJENDEL_AANTALSINDEX_PRESENTATION")
-  if (!nzchar(root) || !identical(Sys.getenv("MEIJENDEL_BIND_HOST"), "127.0.0.1")) return(NULL)
-  preview <- load_trim_bootstrap_preview(root)
+  active_release <- identical(Sys.getenv("MEIJENDEL_BOOTSTRAP_RELEASE"), "1")
+  if (!active_release && (!nzchar(root) || !identical(Sys.getenv("MEIJENDEL_BIND_HOST"), "127.0.0.1"))) return(NULL)
+  preview <- load_trim_bootstrap_preview(root, component = "group_index")
   if (is.null(preview) || !identical(preview$manifest$presentation_kind, "ecologische_aantalsindex")) return(NULL)
   if (!file.exists(default_sql_manifest_path(default_sql))) return(NULL)
   identity <- meijendel_cache_identity_for_sql(default_sql)

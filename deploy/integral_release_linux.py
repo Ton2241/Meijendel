@@ -28,7 +28,10 @@ def guard_payload(m):
  if {core.SQL_SOURCE,core.LEGACY_SQL_SOURCE}.issubset(m.get("files",{})):raise ValueError("Twee SQL-naamsvarianten in pakket")
  if m.get('mysql')!={'source':source,'website_objects':'data/website_objects.sql','database':'Meijendel'}:raise ValueError('Onbekende SQL-binding')
  if not re.fullmatch(r'data/cache/[A-Za-z0-9_.-]+\.rds',m.get('cache',{}).get('root','')):raise ValueError('Onbekende cachebinding')
- if m.get('bootstrap',{}).get('root')!='www/outputs/bootstrap-presentatie-2026':raise ValueError('Onbekende bootstrapbinding')
+ presentations={'bootstrap':'www/outputs/bootstrap-presentatie-2026','group_index':'www/outputs/aantalsindex-preview'}
+ if not any(name in m for name in presentations):raise ValueError('Geen presentatieonderdeel')
+ for name,path in presentations.items():
+  if name in m and m[name].get('root')!=path:raise ValueError('Onbekende presentatiebinding: '+name)
  required=[source,source+'.manifest',m['cache']['root'],str(Path(m['cache']['root']).with_suffix('.manifest')),'website/app/main.py','shiny/shiny_meijendel/app.R','www/bmp_meijendel_index.html',
            'www/bmp_meijendel_data.json','www/bmp_meijendel_data.json.manifest']
  if any(p not in m['files'] for p in required):raise ValueError('Niet gecontroleerde component')
@@ -77,7 +80,7 @@ def caddy_config(source,trial=True,shiny_upstream=None):
  original='root * /srv/vwgm/www\n\t\tfile_server'
  if original not in snippet and '@integral_assets' not in snippet:raise ValueError('Onbekende dashboardbinding; geen automatische configuratiewijziging')
  snippet=snippet.replace(original,'reverse_proxy 127.0.0.1:18196')
- extra='''\n\t@integral_assets path /releases/* /release-config.json /bmp_meijendel_data_loader.js /groepen_grafieken/*
+ extra='''\n\t@integral_assets path /releases/* /release-config.json /bmp_meijendel_data_loader.js /groepen_grafieken/* /outputs/aantalsindex-preview/*
 \thandle @integral_assets {
 \t\tforward_auth 127.0.0.1:8091 {
 			uri /auth/analysis-output
@@ -376,13 +379,24 @@ class LinuxHooks:
   self.wait_services()
   body,_,url=self.get(f'http://127.0.0.1:{self.p["dashboard"]}/release-config.json')
   if json.loads(body)['release_id']!=m['release_id'] or '/releases/'+m['release_id']+'/www/' not in url:raise RuntimeError('Verkeerde dashboardversie')
-  for port,path in [(self.p['dashboard'],'/outputs/bootstrap-presentatie-2026/bootstrap.html'),(self.p['website'],'/soorten/bootstrap.asp')]:
-   body,_,_=self.get('http://127.0.0.1:'+str(port)+path)
-   if hashlib.sha256(body).hexdigest()!=m['bootstrap']['html_sha256']:raise RuntimeError('Bootstrapbytes wijken af')
-  for sid in (3,23,117,199):
-   body,_,_=self.get(f'http://127.0.0.1:{self.p["website"]}/soorten/vogel.asp?id={sid}')
-   if b'/soorten/bootstrap.asp?view=simple' not in body:raise RuntimeError('Geen actieve bootstrap op soortpagina')
-  self.logged(['docker','exec','--user','shiny',self.s['shiny'],'Rscript','-e',"setwd('/srv/shiny-server/shiny_meijendel');source('helpers.R');source('../R/trim_bootstrap_preview.R');x<-load_meijendel_tables_cached(resolve_meijendel_sql_path());stopifnot(isTRUE(x$from_cache),max(x$data$territoria$jaar)=="+str(m['year_to'])+",!is.null(load_trim_bootstrap_preview()));cat('LINUX_SHINY_DATA_BOOTSTRAP_OK\\n')"])
+  if 'bootstrap' in m:
+   for port,path in [(self.p['dashboard'],'/outputs/bootstrap-presentatie-2026/bootstrap.html'),(self.p['website'],'/soorten/bootstrap.asp')]:
+    body,_,_=self.get('http://127.0.0.1:'+str(port)+path)
+    if hashlib.sha256(body).hexdigest()!=m['bootstrap']['html_sha256']:raise RuntimeError('Bootstrapbytes wijken af')
+   for sid in (3,23,117,199):
+    body,_,_=self.get(f'http://127.0.0.1:{self.p["website"]}/soorten/vogel.asp?id={sid}')
+    if b'/soorten/bootstrap.asp?view=simple' not in body:raise RuntimeError('Geen actieve bootstrap op soortpagina')
+  if 'group_index' in m:
+   for port,path in [(self.p['dashboard'],'/outputs/aantalsindex-preview/bootstrap.html'),(self.p['website'],'/groepen/aantalsindex.asp')]:
+    body,_,_=self.get('http://127.0.0.1:'+str(port)+path)
+    if hashlib.sha256(body).hexdigest()!=m['group_index']['html_sha256']:raise RuntimeError('Aantalsindexbytes wijken af')
+   body,_,_=self.get(f'http://127.0.0.1:{self.p["website"]}/groepen/bebouwing.asp')
+   if b'/groepen/aantalsindex.asp?groepen=900' not in body:raise RuntimeError('Aantalsindex ontbreekt op gewone groepspagina')
+  self.logged(['docker','exec','--user','shiny',self.s['shiny'],'Rscript','-e',"setwd('/srv/shiny-server/shiny_meijendel');source('helpers.R');source('../R/trim_bootstrap_preview.R');x<-load_meijendel_tables_cached(resolve_meijendel_sql_path());stopifnot(isTRUE(x$from_cache),max(x$data$territoria$jaar)=="+str(m['year_to'])+",TRUE);cat('LINUX_SHINY_DATA_OK\\n')"])
+  for component in ('bootstrap','group_index'):
+   if component in m:
+    self.logged(['docker','exec','--user','shiny',self.s['shiny'],'Rscript','-e',
+                 "setwd('/srv/shiny-server/shiny_meijendel');source('../R/trim_bootstrap_preview.R');stopifnot(!is.null(load_trim_bootstrap_preview(component='"+component+"')))"])
   if self.s['trial']:
    if (Path(self.s['website_data'])/'_integral_release_probe').read_text().strip()!=m['release_id']:raise RuntimeError('Verkeerde bestandversie')
    if self.sql('SELECT value FROM Meijendel._release_probe;')!=m['release_id'] or self.pgsql('SELECT value FROM app._release_probe;')!=m['release_id']:raise RuntimeError('Verkeerde databaseversie')
@@ -392,7 +406,7 @@ class LinuxHooks:
      if e.code not in (401,403):raise
     else:raise RuntimeError('Caddy beschermt de proefroute niet: '+path)
   if getattr(self,'fail_health',False):self.fail_health=False;raise RuntimeError('Opzettelijke Linux-healthfout')
-  core.atomic_json(self.root/'health.json',dict(release_id=m['release_id'],year_to=m['year_to'],three_services=True,shared_bootstrap_sha256=m['bootstrap']['html_sha256'],shiny_cache_and_bootstrap=True,caddy_auth=self.s['trial']))
+  core.atomic_json(self.root/'health.json',dict(release_id=m['release_id'],year_to=m['year_to'],three_services=True,shared_bootstrap_sha256=m.get('bootstrap',{}).get('html_sha256'),group_index_sha256=m.get('group_index',{}).get('html_sha256'),shiny_cache_and_bootstrap=True,caddy_auth=self.s['trial']))
  def snapshot_production_files(self,path,m):
   m['host_files']={};m['active_timers']=getattr(self,'timers',[])
   m['dashboard_enabled']=subprocess.run(['systemctl','is-enabled','--quiet',self.s['units']['dashboard']],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL).returncode==0
@@ -628,7 +642,9 @@ def set_package_id(package,rid,bootstrap=None):
   shutil.rmtree(target);shutil.copytree(bootstrap,target)
   b=jsonfile(target/'manifest.json');m['bootstrap'].update(html_sha256=b['html_sha256'],manifest_sha256=core.sha(target/'manifest.json'))
  m['release_id']=rid
- public={k:m[k] for k in ('schema','release_id','mode','year_from','year_to','source_hash','presentation_approved','official_data_validated')};public['bootstrap']=m['bootstrap']|dict(root='outputs/bootstrap-presentatie-2026')
+ public={k:m[k] for k in ('schema','release_id','mode','year_from','year_to','source_hash','presentation_approved','official_data_validated')}
+ for name in ('bootstrap','group_index'):
+  if name in m:public[name]=m[name]|dict(root=m[name]['root'].removeprefix('www/'))
  core.atomic_json(package/'www/release-config.json',public)
  m['files']={str(p.relative_to(package)):core.sha(p) for p in sorted(package.rglob('*')) if p.is_file() and p!=package/'release.json'}
  core.atomic_json(package/'release.json',m);make_readable(package);core.verify(package)

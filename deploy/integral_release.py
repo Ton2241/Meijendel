@@ -59,6 +59,17 @@ def verify(package):
         if any(b.get(k)!=m[k] for k in ('year_from','year_to','source_hash')):raise ValueError('Bootstrapbron/jaargrens wijkt af')
         if sha(root/'manifest.json')!=m['bootstrap']['manifest_sha256']:raise ValueError('Bootstrapmanifest wijkt af')
         if b['html_sha256']!=m['bootstrap']['html_sha256'] or sha(root/'bootstrap.html')!=b['html_sha256']:raise ValueError('Bootstrapinhoud wijkt af')
+    if 'group_index' in m:
+        spec=m['group_index'];root=safe_path(package,spec['root'])
+        manifest=root/'manifest.json';view=root/'bootstrap.html'
+        b=json.loads(manifest.read_text())
+        if (b.get('presentation_kind')!='ecologische_aantalsindex' or b.get('publication_status')!='diagnostisch' or
+            any(b.get(k)!=m[k] for k in ('year_from','year_to','source_hash')) or
+            sha(manifest)!=spec['manifest_sha256'] or sha(view)!=spec['html_sha256'] or
+            b.get('html_sha256')!=spec['html_sha256'] or
+            any(m['files'].get(str(path.relative_to(package)))!=digest for path,digest in
+                ((manifest,spec['manifest_sha256']),(view,spec['html_sha256'])))):
+            raise ValueError('Aantalsindex wijkt af van de gedeelde release')
     return m
 
 @contextlib.contextmanager
@@ -166,7 +177,9 @@ def build_package(recipe,target):
         from trial_storage import checked_tree
         target=checked_tree(target)
     repo=Path(recipe['analysis_root']);website=Path(recipe['website_root'])/'website/vwg-m-linux-app'
-    initial=json.loads((Path(recipe['bootstrap_root'])/'manifest.json').read_text())
+    presentation=recipe.get('bootstrap_root') or recipe.get('group_index_root')
+    if not presentation:raise ValueError('Geen presentatieonderdeel in release')
+    initial=json.loads((Path(presentation)/'manifest.json').read_text())
     if (initial['year_from'],initial['year_to'])!=(recipe['year_from'],recipe['year_to']):raise ValueError('Bootstrapjaargrenzen wijken af')
     if recipe['mode']=='production' and recipe.get('historical_cache_rehearsal'):raise ValueError('Historische proefcache is geen productiecache')
     if target.exists():raise ValueError('Gebruik een nieuw releasepad')
@@ -189,9 +202,12 @@ def build_package(recipe,target):
         copy(repo/name,'www/'+name)
     frozen=Path(recipe['browser_root'])
     for name in ('bmp_meijendel_data.json','bmp_meijendel_data.json.manifest'):copy(frozen/name,'www/'+name)
-    copy(recipe['bootstrap_root'],'www/outputs/bootstrap-presentatie-2026')
+    if recipe.get('bootstrap_root'):
+        copy(recipe['bootstrap_root'],'www/outputs/bootstrap-presentatie-2026')
     copy(repo/'shiny_meijendel','shiny/shiny_meijendel');copy(repo/'R','shiny/R')
     copy(website/'app','website/app');copy(website/'sql','website/sql');copy(website/'scripts','website/scripts')
+    if recipe.get('group_index_root'):
+        copy(website/'docs/handleidingen','website/docs/handleidingen')
     for name in ('requirements.txt','requirements.lock','requirements-bootstrap.lock'):copy(website/name,'website/'+name)
     copy(recipe['sql'],SQL_SOURCE);copy(recipe['sql_manifest'],SQL_SOURCE+'.manifest')
     cache=Path(recipe['cache']);copy(cache,'data/cache/'+cache.name);copy(recipe['cache_manifest'],'data/cache/'+Path(recipe['cache_manifest']).name)
@@ -200,21 +216,34 @@ def build_package(recipe,target):
         if recipe['mode']!='local_rehearsal':raise ValueError('Proefmigratie uitsluitend lokaal')
         probe=target/'website/sql/999_local_release_probe.sql'
         probe.write_text("CREATE TABLE IF NOT EXISTS app._release_probe(id integer primary key,value text); INSERT INTO app._release_probe VALUES(1,'"+recipe['release_id']+"') ON CONFLICT(id) DO UPDATE SET value=excluded.value;\n")
-    boot=target/'www/outputs/bootstrap-presentatie-2026';b=json.loads((boot/'manifest.json').read_text())
+    boot=target/'www/outputs/bootstrap-presentatie-2026'
+    if recipe.get('group_index_root'):
+        copy(recipe['group_index_root'],'www/outputs/aantalsindex-preview')
+    selected=boot if recipe.get('bootstrap_root') else target/'www/outputs/aantalsindex-preview'
+    b=json.loads((selected/'manifest.json').read_text())
     if sha(target/SQL_SOURCE)!=b['source_hash']:raise ValueError('SQL en bootstrap hebben een andere bron')
     if (b['year_from'],b['year_to'])!=(recipe['year_from'],recipe['year_to']):raise ValueError('Bootstrapjaargrenzen wijken af')
     public=dict(schema='meijendel-integral-release-v1',release_id=recipe['release_id'],mode=recipe['mode'],
         year_from=b['year_from'],year_to=b['year_to'],source_hash=b['source_hash'],presentation_approved=True,
-        official_data_validated=recipe.get('official_data_validated',False),
-        bootstrap=dict(root='outputs/bootstrap-presentatie-2026',html_sha256=b['html_sha256'],manifest_sha256=sha(boot/'manifest.json')))
+        official_data_validated=recipe.get('official_data_validated',False))
+    if recipe.get('bootstrap_root'):
+        public['bootstrap']=dict(root='outputs/bootstrap-presentatie-2026',html_sha256=b['html_sha256'],
+                                 manifest_sha256=sha(boot/'manifest.json'))
+    if recipe.get('group_index_root'):
+        root='outputs/aantalsindex-preview'
+        group_manifest=target/'www'/root/'manifest.json'
+        group_html=group_manifest.with_name('bootstrap.html')
+        public['group_index']=dict(root=root,manifest_sha256=sha(group_manifest),html_sha256=sha(group_html))
     atomic_json(target/'www/release-config.json',public)
     m=public|dict(components=['website','dashboard','shiny','mysql','cms'],
-        bootstrap=public['bootstrap']|dict(root='www/outputs/bootstrap-presentatie-2026'),
         cache=dict(root='data/cache/'+cache.name,sha256=sha(target/'data/cache'/cache.name)),
         mysql=dict(source=SQL_SOURCE,website_objects='data/website_objects.sql',database='Meijendel'),
         cms=dict(strategy='versioned_migrations',migrations=recipe.get('cms_migrations',[])),
         historical_cache_rehearsal=recipe.get('historical_cache_rehearsal',False),
         formal_intervals_released=False)
+    for component in ('bootstrap','group_index'):
+        if component in public:
+            m[component]=public[component]|dict(root='www/'+public[component]['root'])
     m['files']={str(p.relative_to(target)):sha(p) for p in sorted(target.rglob('*')) if p.is_file()}
     atomic_json(target/'release.json',m);verify(target);return m
 

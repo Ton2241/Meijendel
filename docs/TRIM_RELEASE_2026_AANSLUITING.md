@@ -257,3 +257,34 @@ De vrijgavevelden voor formele eind- en jaarintervallen blijven leeg.
 De kernselectie, groepsindeling, alle 156 zichtbare soorten en de
 verklaring bij zes groepsperioden blijven gelijk in de gedeelde
 2026-weergave. Zie het [draaiboek](TRIM_BOOTSTRAP_2026_RUNBOOK.md).
+
+
+### Websiteactualisering tot aan deploy
+
+De aantalsindex is opgenomen in de echte gewone ecologische groepsroutes
+van VWG_M. De website toont de gezamenlijke bron boven de bestaande
+CMS-tekst en grafieken. Het Dashboard opent die bron bij **Groepen**,
+Shiny via **Aantalsindex**. De hashgebonden `group_index` in het bestaande
+integrale manifest verbindt de drie applicaties. De reguliere
+soortenoverzichten blijven beschikbaar. Een afzonderlijk diagnostisch
+soortbootstrapbestand is optioneel bij deze groepsactualisering.
+
+Chrome heeft de negen website-URL’s getoetst. Ze tonen samen 18
+groepsperioden en 621 jaarwaarden, met de volledige doorzoekbare lijst
+van 156 soorten op elke pagina. De zes toetsredenen zijn vergeleken
+met de voorgaande validatie. De actieve lokale release-ingangen van
+website, Dashboard en Shiny leveren bytegelijk hetzelfde groepsbestand.
+Leden en externe gebruikers hebben dezelfde uitleg in de Word-,
+HTML- en PDF-versie van hun handleiding, inclusief de PDF die als
+e-mailbijlage dient. Neem de PDF’s op in de release.
+
+De geregistreerde proef `trim-bmp-2026-website-actualisering-20261119`
+bevat het lokale pakket en de gecontroleerde bronverwijzingen. Het pakket
+gebruikt de bestaande 2026-export, cache en opnieuw uit die cache
+afgeleide browserdata. Bij productie behoudt de gateway de op dat moment
+actieve websiteobjecten uit zijn eigen herstelkopie. De lokale kandidaten
+staan in modus `local_rehearsal`. De productieovergang loopt na akkoord
+via schone hoofdtakken en de bestaande beheerde gateway, met de
+gecontroleerde runtime die `group_index` in het manifest herkent.
+De Sovon-hercontrole voor M4-5 en M105 blijft op de afgesproken
+januarilijst. Er worden geen formele groepsintervallen geactiveerd.

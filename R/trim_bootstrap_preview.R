@@ -1,5 +1,6 @@
 # Shared HTML preview, kept separate from formal uncertainty loading.
-load_trim_bootstrap_preview <- function(root = Sys.getenv("MEIJENDEL_BOOTSTRAP_PRESENTATION", unset = "")) {
+load_trim_bootstrap_preview <- function(root = Sys.getenv("MEIJENDEL_BOOTSTRAP_PRESENTATION", unset = ""),
+                                        component = "bootstrap") {
   active_release <- identical(Sys.getenv("MEIJENDEL_BOOTSTRAP_RELEASE"), "1")
   if (!active_release && (!identical(Sys.getenv("MEIJENDEL_BOOTSTRAP_PREVIEW"), "1") || !nzchar(root))) return(NULL)
   tryCatch({
@@ -11,7 +12,9 @@ load_trim_bootstrap_preview <- function(root = Sys.getenv("MEIJENDEL_BOOTSTRAP_P
       if (identical(release$mode,"local_rehearsal")) {
         if (!identical(Sys.getenv("MEIJENDEL_BIND_HOST"),"127.0.0.1")) return(NULL)
       } else if (!identical(release$mode,"production") || !isTRUE(release$official_data_validated)) return(NULL)
-      relative <- release$bootstrap$root
+      spec <- release[[component]]
+      if (is.null(spec)) return(NULL)
+      relative <- spec$root
       if (grepl("^/|(^|/)\\.\\.(/|$)",relative)) return(NULL)
       root <- normalizePath(file.path(dirname(control),relative),mustWork=TRUE)
       if (!startsWith(paste0(root,"/"),paste0(dirname(control),"/"))) return(NULL)
@@ -23,8 +26,8 @@ load_trim_bootstrap_preview <- function(root = Sys.getenv("MEIJENDEL_BOOTSTRAP_P
         !identical(digest::digest(file = path, algo = "sha256"), manifest$html_sha256)) return(NULL)
     if (!is.null(release) && (!identical(manifest$source_hash,release$source_hash) ||
       manifest$year_from!=release$year_from || manifest$year_to!=release$year_to ||
-      !identical(manifest$html_sha256,release$bootstrap$html_sha256) ||
-      !identical(digest::digest(file=file.path(root,"manifest.json"),algo="sha256"),release$bootstrap$manifest_sha256))) return(NULL)
+      !identical(manifest$html_sha256,spec$html_sha256) ||
+      !identical(digest::digest(file=file.path(root,"manifest.json"),algo="sha256"),spec$manifest_sha256))) return(NULL)
     list(manifest = manifest, path = path)
   }, error = function(e) NULL)
 }

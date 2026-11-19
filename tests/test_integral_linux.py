@@ -1,4 +1,4 @@
-import importlib.util,unittest,tempfile,json
+import importlib.util,unittest,tempfile,json,os
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 spec=importlib.util.spec_from_file_location('linux',ROOT/'deploy/integral_release_linux.py');linux=importlib.util.module_from_spec(spec);spec.loader.exec_module(linux)
@@ -16,11 +16,13 @@ class LinuxContract(unittest.TestCase):
   for value in ['../etc','a'*39,'main','a'*40+';id']:
    with self.assertRaises(ValueError):linux.layout(value,trial=True)
  def test_caddy_binding_preserves_auth_and_replaces_only_asset_roots(self):
-  source=(ROOT.parent/'VWG_M/website/vwg-m-linux-app/deploy/caddy/Caddyfile.production').read_text()
+  website=Path(os.environ.get('VWG_M_ROOT',ROOT.parent/'VWG_M'))
+  source=(website/'website/vwg-m-linux-app/deploy/caddy/Caddyfile.production').read_text()
   config=linux.caddy_config(source,trial=True)
   self.assertIn('forward_auth 127.0.0.1:18197',config)
   self.assertIn('/auth/analysis-dashboard',config)
   self.assertIn('/auth/analysis-shiny',config)
+  self.assertIn('/outputs/aantalsindex-preview/*',config)
   self.assertIn('reverse_proxy 127.0.0.1:18196',config)
   self.assertIn('http://127.0.0.1:18199',config)
   self.assertNotIn('/var/log/caddy',config)

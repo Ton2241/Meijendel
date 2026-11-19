@@ -18,13 +18,15 @@ De lokale technische vervolgcontrole is afgerond. Websitekoppelingen zijn in een
 - [x] Gewone ecologische groepspagina’s lokaal getoetst met hun bestaande
   CMS-tekst en grafieken. Negen URL’s tonen 18 groepsperioden en houden
   het overzicht met alle 156 soorten zichtbaar.
-- [x] Dekking van de 95%-percentielintervallen getoetst voor de twaalf
-  groepsperioden met ondersteunde richting. Alleen vogels van
-  bebouwing/overige in 1984–2026 haalt de gekozen dekkingsdrempel voor
-  het eindinterval in alle drie scenario’s. Geen groepsperiode haalt
-  die drempel in alle jaren. Formele groepsintervallen blijven geblokkeerd.
-  De 156 soorten en zes eerdere toetsredenen blijven zichtbaar.
-  Zie het [draaiboek](docs/TRIM_BOOTSTRAP_2026_RUNBOOK.md).
+- [x] Ruimtelijke en deelnamegevoeligheid van het eindinterval voor
+  vogels van bebouwing/overige (1984–2026) getoetst. De 73,7–81,0%
+  dekking haalt de gekozen drempel in geen scenario. Formele
+  groepsintervallen blijven uit.
+- [x] Aantalsindex in de gewone websitegroepspagina’s, Dashboard en
+  Shiny aangesloten en lokaal in één pakket getoetst. De negen
+  groepen, alle 156 soorten en de zes toetsredenen zijn zichtbaar.
+- [ ] Productiedeploy via de beheerde integrale gateway zodra Ton de
+  inzet opdraagt. Zie de [aansluitnotitie](docs/TRIM_RELEASE_2026_AANSLUITING.md).
 - [ ] **Begin januari 2027:** controleer de Sovon-jaarstatus 2026 van M4-5
   en M105 Hertenkamp opnieuw in Avimap. Leg de uitkomst per kavel vast en
   beoordeel bij afkeuring of gewijzigde bronwaarden welke 2026-regels in

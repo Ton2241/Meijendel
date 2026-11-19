@@ -343,7 +343,7 @@ async function autoLoadFromSameFolder(){
       dataUrl:AUTOLOAD_PATHS.dashboardData
     });
     processTables(loaded.tables);
-    try {S.trimBootstrapRelease=await MeijendelDashboardData.loadReleaseConfig({sourceManifest:loaded.manifest});}
+    try {setState({trimBootstrapRelease:await MeijendelDashboardData.loadReleaseConfig({sourceManifest:loaded.manifest})});}
     catch(error){S.trimBootstrapReleaseError=error.message;}
     dashboardLoaded=true;
   }catch(err){
@@ -1949,7 +1949,7 @@ function renderFormalBootstrapRows(grid,rows,addCell){
 }
 function renderBootstrapPreview(){
   if(!S.selected.length)return null;
-  if(new URLSearchParams(location.search).get("bootstrapPreview")!=="1"&&!S.trimBootstrapRelease){
+  if(new URLSearchParams(location.search).get("bootstrapPreview")!=="1"&&!S.trimBootstrapRelease?.bootstrap){
     return S.trimBootstrapReleaseError?el("p",{},"Bootstrap niet geladen: "+S.trimBootstrapReleaseError):null;
   }
   const box=el("div",{style:{marginTop:"16px"}});
@@ -2025,7 +2025,12 @@ function render(){
       else if(S.activeTab==="kenmerken"&&S.status==="ok")main.appendChild(renderKenmerkenPanel());
       else if(S.activeTab==="plotSpecies"&&S.status==="ok")main.appendChild(renderPlotSpeciesPanel());
       else if(S.activeTab==="plot"&&S.status==="ok")main.appendChild(renderPlotPanel());
-      else if(S.activeTab==="msi")main.appendChild(renderMsiPanel());
+      else if(S.activeTab==="msi"){
+        if(S.trimBootstrapRelease?.group_index){
+          main.appendChild(el("iframe",{title:"Aantalsindex ecologische groepen",src:"outputs/aantalsindex-preview/bootstrap.html",style:{width:"100%",height:"900px",border:"0"}}));
+        }
+        main.appendChild(renderMsiPanel());
+      }
       if(S.status==="ok")main.appendChild(renderSchema());
     }
   }catch(err){

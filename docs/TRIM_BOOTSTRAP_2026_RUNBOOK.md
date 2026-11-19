@@ -629,3 +629,32 @@ zijn bytegelijk overgenomen.
 De geregistreerde T7-proef `trim-bmp-2026-intervaldekking-12-20261119`
 bevat de grenswaarden, alle ruwe resultaten en het hashgebonden
 intervalbesluit voor website, dashboard en Shiny.
+
+
+### Ruimtelijke afhankelijkheid en kaveldeelname bij bebouwing en overige situaties
+
+Voor groepscode 900 in 1984–2026 zijn de 52 informatieve kavels gekoppeld
+aan RD-centra uit dezelfde SQL-afspiegeling. De oorspronkelijke
+2.000 eindwaarden zijn exact gereproduceerd. In drie scenario’s zijn per
+scenario 300 telreeksen opgebouwd. De Poissonintensiteit varieert daarbij
+tussen nabije kavels volgens een exponentiële correlatie over 1 of 2 km en
+tussen opeenvolgende jaren met AR(1) van 0,60. De logstandaardafwijking is
+0,25. De deelname wisselt in de laatste twee scenario’s bovenop de
+historische telmaskers. Bij het laatste scenario valt een kaveljaar met
+lagere latente aantallen vaker uit. Uitval wordt als ontbrekend behandeld.
+De parameters beschrijven een gevoeligheidstoets op werkelijke
+kavellocaties. Ze zijn niet geschat als deelnameproces.
+
+| Scenario | Dekking | Eenzijdige 95%-ondergrens | Gemiddelde extra uitval |
+| --- | ---: | ---: | ---: |
+| Afstandsschaal 1 km, vast telmasker | 80,0% | 75,8% | 0% |
+| Afstandsschaal 1 km, wisselende deelname | 81,0% | 76,9% | 25,4% |
+| Afstandsschaal 2 km, selectieve deelname | 73,7% | 69,2% | 25,1% |
+
+Elke telreeks is getoetst met dezelfde 2.000 kaveltrekkingen. Eén
+onvoldoende bruikbaar interval telt mee als misser. Geen scenario haalt
+de vooraf vastgelegde ondergrens van 90%. Het eindinterval voor code 900
+krijgt geen formele vrijgave. De aantalsindex en de eerder ondersteunde
+richting worden als beschrijvende gegevens opgenomen in de
+websiteactualisering. De bestaande negen groepen, 156 soorten en zes
+toetsredenen blijven zichtbaar.
