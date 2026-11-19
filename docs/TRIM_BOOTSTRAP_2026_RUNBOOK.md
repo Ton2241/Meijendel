@@ -451,6 +451,55 @@ trekkingen en 156 soorten staan in de geregistreerde T7-proef
 `trim-bmp-2026-groepsindex-nullen-20261119`.
 
 De eerdere 2.000 trekkingen betroffen de diagnostische soortanalyses tot en
-met 2025. Voor een nieuwe formele groepsindicator staat eerst de keuze open
-of de index het aantal territoria of verandering met gelijke invloed per
-soort moet weerspiegelen. Meer trekking verandert die keuze niet.
+met 2025.
+
+### Vergelijking met gelijke invloed per soort
+
+Op dezelfde bron van 1958–2026 zijn de negen bestaande ecologische groepen
+per periode vergeleken. Beide indexen delen één jaarfactor per groep, met
+een afzonderlijk niveau per soort en kavel. Voor de gelijkgewogen index
+telt elke informatieve soort in de schatting even zwaar. Een soort-kavelreeks
+draagt bij vanaf twee getelde jaren en minstens één positieve telling.
+De normalisering wordt bij iedere kaveltrekking en toets opnieuw berekend.
+Getelde nullen blijven in die reeksen staan. Het gemiddelde van de eerste
+vijf jaar per periode is 100. De tabel vergelijkt het gemiddelde van de
+laatste vijf jaar met dat begin.
+
+| Ecologische groep | Periode | Aantalsindex | Gelijke soortweging |
+| --- | --- | ---: | ---: |
+| Vogels van pionierbegroeiingen | 1958–1983 | +1.818% | −51% |
+| Bosrandvogels | 1984–2026 | −21% | +24% |
+| Bosvogels | 1984–2026 | +22% | −20% |
+
+Alle 18 groepsperioden zijn voor beide indexen berekenbaar in alle 50
+gepaarde kaveltrekkingen. Op achtergehouden kavels wint de aantalsindex
+van een vlakke lijn in minimaal vier van vijf toetsen voor 12 van de 18
+groepsperioden, gemeten per territorium. De gelijkgewogen index haalt
+die drempel voor 5 van de 18, gemeten per soort. Bij een rechtstreekse
+vergelijking per soort wint de gelijkgewogen index in minimaal vier
+van vijf toetsen bij 5 groepsperioden, de aantalsindex bij 6. Per
+territorium wint de aantalsindex bij 16 van de 18 groepsperioden.
+
+Voor de gelijkgewogen index combineren vijf groepsperioden winst op
+achtergehouden kavels, dezelfde richting in minimaal 48 van 50 trekkingen
+en dezelfde richting bij iedere afzonderlijke soortweglating. Het gaat om
+watervogels en struweelvogels in 1958–1983 en om vogels van
+pionierbegroeiingen, weidevogels en struweelvogels in 1984–2026.
+De richting voor rietvogels in 1984–2026 blijft in 33 van 50 trekkingen
+gelijk en wisselt als Porseleinhoen, Snor of Grote Karekiet afzonderlijk
+wordt weggelaten.
+
+Alle 156 soorten staan met hun bestaande indeling en trendstatus in het
+soortenbestand. Negen hebben geen toewijzing aan deze ecologische groepen.
+Van de 147 toegewezen soorten dragen er 114 in 1958–1983 en 146 in
+1984–2026 bij aan minstens één groepsschatting. Dit staat los van de
+validatie van hun afzonderlijke soorttrend.
+
+De aantalsindex blijft kandidaat voor ontwikkelingen in territoria.
+Gelijke soortweging is als aanvullende ecologische vergelijking getest.
+Voor formele opname in de gedeelde uitvoer voor website, dashboard en
+Shiny staan selectie en schattergebonden intervalvrijgave open. De 50
+trekkingen zijn diagnostisch. Jaarwaarden, vijf kaveltoetsen per
+groepsperiode, 376 soortweglatingen, beide indexen en het soortenoverzicht
+staan in de geregistreerde T7-proef
+`trim-bmp-2026-groepsindex-gelijke-invloed-20261119`.
