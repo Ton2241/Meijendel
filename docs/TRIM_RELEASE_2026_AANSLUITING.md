@@ -180,3 +180,39 @@ staan als diagnostische waarden in het proefproduct. Voor bestaande
 formele intervalvelden blijft afzonderlijke vrijgave van deze
 groepsschatter nodig. De consumententoets en uitvoer naar productie
 volgen binnen de gezamenlijke releaseprocedure.
+
+
+### Gezamenlijke lokale consumententoets aantalsindex — 19 november 2026
+
+De geregistreerde T7-proef `trim-bmp-2026-aantalsindex-consumententoets-20261119`
+bevat het gedeelde HTML-bestand, het manifest en de Chrome-toets.
+`scripts/build_aantalsindex_preview.py` controleert de vier bestandshashes
+in het aantalsindexmanifest en gebruikt de bestaande groep- en soorten-ID’s.
+
+- De website serveert het bestand via de bestaande
+  `/soorten/bootstrap-preview.asp` met de previewvlag en lokale toegang.
+- Het dashboard opent dezelfde weergave op 127.0.0.1 via
+  `bmp_meijendel_index.html?aantalsindexPreview=1`. De HTML wordt onder
+  `outputs/aantalsindex-preview/bootstrap.html` aangeboden.
+- Shiny toont het tabblad **Aantalsindex** met
+  `MEIJENDEL_AANTALSINDEX_PRESENTATION` op de gedeelde uitvoermap,
+  `MEIJENDEL_BOOTSTRAP_PREVIEW=1` en
+  `MEIJENDEL_BIND_HOST=127.0.0.1`. De SQL-manifesthash moet gelijk zijn aan
+  de bronhash van de groepsproef. De lokale soortpreview gebruikt zijn
+  eigen instelling.
+
+In Chrome zijn de 621 jaarwaarden, alle 18 groepsperioden en alle 156
+soortregels vergeleken. Alle negen groepen hebben beide perioden.
+Bijeneter blijft vindbaar, ook zonder betrouwbare trend. Bij de zes
+onvoldoende ondersteunde groepsperioden staan per periode de uitkomst van
+de vijf kaveltoetsen en, waar van toepassing, het bootstrapbereik dat nul
+bevat of de omslag bij het weglaten van één soort. De site en het dashboard
+leveren dezelfde HTML-bytes. Shiny toont dezelfde inhoud via het tabblad.
+De bestaande dashboardcontracttest is ook geslaagd. De Shiny-observer
+voor de laadstatus start voortaan op een element dat in de documentkop
+al beschikbaar is. Daarmee verdween de JavaScript-fout bij het openen.
+
+De website is getoetst via de lokale previewroute zonder databasepool.
+De gewone publieke groepspagina’s en formele intervalvelden horen bij de
+latere gezamenlijke releaseproef. De lokale previewtoets geeft bewijs voor
+deze bron en weergave.

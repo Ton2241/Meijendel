@@ -12,11 +12,13 @@ De lokale technische vervolgcontrole is afgerond. Websitekoppelingen zijn in een
   groepen gekozen en gevalideerd met 2.000 kaveltrekkingen. Alle 36.000
   groepsperiodetrekkingen zijn volledig. Bij 12 van de 18 groepsperioden
   is de richting ondersteund. Alle 156 soorten blijven zichtbaar.
-- [ ] Toets bij de gezamenlijke 2026-actualisering het kandidaatmanifest voor
-  website, dashboard en Shiny en leg de vrijgave van groepsintervallen vast.
-  De eigen periodevalidatie van de twaalf uitvallende soorten blijft staan
-  op 11 van 24 boven de geldigheidsdrempel. Zie het
-  [draaiboek](docs/TRIM_BOOTSTRAP_2026_RUNBOOK.md).
+- [x] Dezelfde aantalsindex lokaal in website, dashboard en Shiny getoetst.
+  Alle 621 jaarwaarden en 156 soorten komen overeen. Bij de zes
+  groepsperioden zonder ondersteunde richting staan de toetsredenen.
+- [ ] Leg vóór de gezamenlijke 2026-publicatie de formele vrijgave van
+  groepsintervallen vast. De eigen periodevalidatie van de twaalf
+  uitvallende soorten blijft staan op 11 van 24 boven de geldigheidsdrempel.
+  Zie het [draaiboek](docs/TRIM_BOOTSTRAP_2026_RUNBOOK.md).
 - [ ] **Begin januari 2027:** controleer de Sovon-jaarstatus 2026 van M4-5
   en M105 Hertenkamp opnieuw in Avimap. Leg de uitkomst per kavel vast en
   beoordeel bij afkeuring of gewijzigde bronwaarden welke 2026-regels in

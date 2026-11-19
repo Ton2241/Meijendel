@@ -2000,12 +2000,21 @@ function renderTrimTrendInfo(){
 function renderTrendMethodInfo(){const box=el("details",{style:{marginTop:"16px",padding:"16px",background:"#f8fafc",border:"1px solid #dbeafe",borderRadius:"12px"}});box.appendChild(el("summary",{style:{cursor:"pointer",fontWeight:"600"}},"Uitleg bij de grafiek"));box.appendChild(el("h3",{style:{fontSize:"14px",fontWeight:"600",color:"#1f2937",marginBottom:"10px"}},"Wat betekenen deze drie keuzes?"));const list=el("div",{style:{display:"grid",gap:"10px"}});[["Territoria","Dit zijn de ruwe aantallen territoria die in een jaar zijn vastgelegd."],["Dichtheid (per km²)","Dit zijn de aantallen omgerekend naar oppervlak. Zo kun je jaren of delen van Meijendel eerlijker vergelijken als plots niet even groot zijn."],["TRIM-index","Deze trendmethode gaat om met ontbrekende tellingen en de methodebreuk rond 1984. Index 100 is het eerste analysejaar vanaf het eerste positieve jaar. Voor 1958–1983 en 1984–2025 komen schatting, standaardfout, 95%-betrouwbaarheidsinterval en p-waarde uit rtrim::overall(). De gebrugde reeks 1958–2025 blijft beschrijvend."]].forEach(([titel,tekst])=>{const item=el("div",{style:{padding:"10px 12px",background:"white",border:"1px solid #e5e7eb",borderRadius:"10px"}});item.appendChild(el("div",{style:{fontSize:"13px",fontWeight:"600",color:"#374151",marginBottom:"4px"}},titel));item.appendChild(el("div",{style:{fontSize:"12px",color:"#6b7280",lineHeight:"1.5"}},tekst));list.appendChild(item);});box.appendChild(list);return box;}
 function renderMsiMethodInfo(){const box=el("div",{style:{marginTop:"16px",padding:"16px",background:"#f8fafc",border:"1px solid #dbeafe",borderRadius:"12px"}});box.appendChild(el("h3",{style:{fontSize:"14px",fontWeight:"600",color:"#1f2937",marginBottom:"10px"}},"Wat betekenen deze twee keuzes?"));const list=el("div",{style:{display:"grid",gap:"10px"}});[["Dichtheid per km2","Dit zijn de werkelijke aantallen territoria van alle soorten in de gekozen groep, per jaar opgeteld en gedeeld door het oppervlak van Meijendel in dat jaar."],["TRIM","De volledige MSI gebruikt alle gekoppelde soorten met een bruikbare TRIM-index. De robuuste MSI gebruikt alleen soorten met een lange of anderszins bruikbare reeks. Beide groeps-MSI’s zijn beschrijvend: de onzekerheid van de onderliggende soorten is niet doorgerekend. De 95%-band rond de Meijendel-GAM beschrijft alleen de onzekerheid van de gladde lijn en is geen volledige TRIM-onzekerheid. De landelijke MSI wordt uit landelijke soortindexen berekend en als GAM weergegeven."]].forEach(([titel,tekst])=>{const item=el("div",{style:{padding:"10px 12px",background:"white",border:"1px solid #e5e7eb",borderRadius:"10px"}});item.appendChild(el("div",{style:{fontSize:"13px",fontWeight:"600",color:"#374151",marginBottom:"4px"}},titel));item.appendChild(el("div",{style:{fontSize:"12px",color:"#6b7280",lineHeight:"1.5"}},tekst));list.appendChild(item);});box.appendChild(list);return box;}
 
+function isLocalGroupPreview(){
+  return location.hostname==="127.0.0.1"&&new URLSearchParams(location.search).get("aantalsindexPreview")==="1";
+}
+
 function render(){
   const app=document.getElementById("app");
   app.innerHTML="";
   app.appendChild(renderHeader());
   const main=el("div",{className:"main"});
   try{
+    if(isLocalGroupPreview()){
+      main.appendChild(el("iframe",{title:"Aantalsindex ecologische groepen",src:"outputs/aantalsindex-preview/bootstrap.html",style:{width:"100%",height:"900px",border:"0"}}));
+      app.appendChild(main);
+      return;
+    }
     if(S.status==="idle"&&S.activeTab!=="msi")main.appendChild(renderIdle());
     else if(S.status==="loading")main.appendChild(el("div",{className:"spinner"},[el("p",{},"Bestand verwerken…")]));
     else if(S.status==="error")main.appendChild(renderError());
@@ -2842,7 +2851,7 @@ function renderSchema(){const d=el("details",{className:"schema-wrap"});d.append
 function loadFile(file){if(!file)return;setState({status:"loading",error:""});const reader=new FileReader();reader.onload=e=>processFile(e.target.result);reader.onerror=()=>setState({status:"error",error:"Bestand kon niet worden gelezen."});reader.readAsText(file,"utf-8");}
 if(location.protocol!=="file:"){
   render();
-  autoLoadFromSameFolder();
+  if(!isLocalGroupPreview())autoLoadFromSameFolder();
 }
 </script>
 </body>

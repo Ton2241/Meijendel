@@ -196,6 +196,20 @@ if (identical(Sys.getenv("MEIJENDEL_BOOTSTRAP_RELEASE"),"1") && file.exists(Sys.
     tags$meta(name="meijendel-data-end-year",content=release_info$year_to))
 }
 
+# The standalone group candidate is an explicit local preview.
+local_group_preview_tab <- function() {
+  root <- Sys.getenv("MEIJENDEL_AANTALSINDEX_PRESENTATION")
+  if (!nzchar(root) || !identical(Sys.getenv("MEIJENDEL_BIND_HOST"), "127.0.0.1")) return(NULL)
+  preview <- load_trim_bootstrap_preview(root)
+  if (is.null(preview) || !identical(preview$manifest$presentation_kind, "ecologische_aantalsindex")) return(NULL)
+  if (!file.exists(default_sql_manifest_path(default_sql))) return(NULL)
+  identity <- meijendel_cache_identity_for_sql(default_sql)
+  if (!identical(identity$sql_sha256, preview$manifest$source_hash)) return(NULL)
+  page <- paste(readLines(preview$path, warn = FALSE, encoding = "UTF-8"), collapse = "\n")
+  tabPanel("Aantalsindex", tags$iframe(title = "Aantalsindex ecologische groepen", srcdoc = page,
+    style = "width:100%;height:900px;border:0"))
+}
+
 ui <- navbarPage(
   title = "Analyses in R: A Language and Environment for Statistical Computing",
   theme = bslib::bs_theme(version = 5, bootswatch = "flatly"),
@@ -319,7 +333,7 @@ ui <- navbarPage(
           if (text.indexOf('SQL geladen') >= 0 || text.indexOf('Fout bij SQL laden') >= 0) {
             stopTimer();
           }
-        }).observe(document.body, { childList: true, subtree: true, characterData: true });
+        }).observe(document.documentElement, { childList: true, subtree: true, characterData: true });
 
         function autoLoadSql() {
           if (window.__meijendelSqlAutoLoadDone) return;
@@ -1178,7 +1192,8 @@ ui <- navbarPage(
     )
   )
   ),
-  if (ndff_local_enabled()) ndff_local_tab() else NULL
+  if (ndff_local_enabled()) ndff_local_tab() else NULL,
+  local_group_preview_tab()
 )
 
 server <- function(input, output, session) {

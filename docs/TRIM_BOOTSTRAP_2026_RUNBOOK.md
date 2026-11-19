@@ -539,6 +539,6 @@ trekkingen, het soortenoverzicht en het hashgebonden kandidaatmanifest
 voor de gezamenlijke 2026-uitvoer. De beginwaarde is per periode het
 gemiddelde over de eerste vijf jaar. De eindverandering vergelijkt daarmee
 het gemiddelde over de laatste vijf jaar. Jaarpercentielen zijn puntgewijs.
-De zes groepsperioden blijven zichtbaar met hun toetsstatus. Het formele
-intervalbesluit en de gezamenlijke consumententoets staan vóór productie
-open. Zie [Lokale aansluiting bootstrap](TRIM_RELEASE_2026_AANSLUITING.md).
+De zes groepsperioden blijven zichtbaar met hun toetsstatus. De gezamenlijke
+lokale previewtoets is uitgevoerd. Formele intervalvrijgave en productie
+staan open. Zie [Lokale aansluiting bootstrap](TRIM_RELEASE_2026_AANSLUITING.md).
