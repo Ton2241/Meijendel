@@ -542,3 +542,35 @@ het gemiddelde over de laatste vijf jaar. Jaarpercentielen zijn puntgewijs.
 De zes groepsperioden blijven zichtbaar met hun toetsstatus. De gezamenlijke
 lokale previewtoets is uitgevoerd. Formele intervalvrijgave en productie
 staan open. Zie [Lokale aansluiting bootstrap](TRIM_RELEASE_2026_AANSLUITING.md).
+
+
+### Formele beoordeling van de groepsintervallen
+
+De intervaltoets gebruikt dezelfde 2.000 kaveltrekkingen en de 36.000
+opgeslagen groepsfits. De percentielen van de begin/eindverandering zijn
+voor alle 18 groepsperioden opnieuw uit de trekkingen afgeleid. De banden
+bij alle 621 jaarwaarden zijn uit de jaarlijkse trekkingsmatrices
+nagerekend. Rond de twee geschatte percentielen is de variatie door het
+eindige aantal trekkingen bepaald met binomiale ranggrenzen 37–65 en
+1936–1964. In 15 van de 18 groepsperioden blijft nul buiten het hele zo
+verkregen bereik voor de begin/eindverandering. De 12 perioden die ook
+de eerdere toetsen doorstaan, blijven de eerste kandidaten voor verdere
+formaliseringsvalidatie. De zes bestaande richtingredenen blijven staan.
+
+Het 95%-bootstrapbereik beschrijft spreiding onder hersampling van de
+53 bestaande kavelgeschiedenissen, in de strata historische kern en
+later netwerk. De toetsen laten niet zien hoe vaak een interval van
+deze conditionele Poisson-schatter de werkelijke verandering omvat
+bij herhaalde waarneming onder een passend telproces. De beschikbare
+toetsen onderbouwen die dekking niet voor de verhouding van twee
+vijfjaarsgemiddelden en ook niet voor individuele jaarindices.
+De puntgewijze percentielen leveren evenmin een gelijktijdige band
+voor een hele reeks. Er is daarom geen formele vrijgave voor de 18
+eindintervallen of de 621 jaarintervallen. De uitslag van de richtingtoets
+blijft afzonderlijk van het intervalbesluit. Zie voor de afhankelijkheid
+van clusterbootstrap van het onderliggende model [Field en Welsh
+(2007)](https://doi.org/10.1111/j.1467-9868.2007.00593.x).
+
+De uitkomsten en de gewone groepspaginatoets staan in de geregistreerde
+T7-proef `trim-bmp-2026-groepspagina-intervaltoets-20261119`. Zie ook
+[de aansluitnotitie](TRIM_RELEASE_2026_AANSLUITING.md).

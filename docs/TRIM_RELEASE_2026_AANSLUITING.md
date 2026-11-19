@@ -216,3 +216,30 @@ De website is getoetst via de lokale previewroute zonder databasepool.
 De gewone publieke groepspagina’s en formele intervalvelden horen bij de
 latere gezamenlijke releaseproef. De lokale previewtoets geeft bewijs voor
 deze bron en weergave.
+
+
+### Gewone ecologische groepspagina’s — lokale proef
+
+De gewone FastAPI-routes en Jinja-templates van VWG_M, commit
+`43a8da28d6d3a6761b28676086ccac2a519122c9`, zijn gestart op 127.0.0.1 met
+`vwg_bootstrap_2026_candidate` in alleen-lezenmodus. Een tijdelijke
+template-uitbreiding op T7 voegt de gehashte aantalsindex toe boven de
+bestaande grafiek. De oorspronkelijke CMS-tekst, grafiek en navigatie
+blijven beschikbaar. Een host buiten loopback krijgt die uitbreiding
+niet.
+
+Chrome heeft de negen gewone ecologische groepspagina’s doorlopen.
+De bron heeft negen ecologische groepen en 18 groepsperioden.
+Bosranden, boomgroepen en bos toont code 700 en code 800 als twee
+keuzes. Bebouwing en Overige situaties delen code 900. Beide perioden
+per groep zijn geopend. De 621 jaarwaarden komen overeen met de
+gevalideerde kandidaat. Alle 156 soorten zijn op iedere getoetste
+pagina doorzoekbaar. Alle zes redenen voor onvoldoende steun komen
+woordelijk overeen met de gezamenlijke previewtoets.
+
+De proef staat in `trim-bmp-2026-groepspagina-intervaltoets-20261119`
+op T7. `groepspaginatoets.json` geeft de getoetste routes.
+`intervaltoets-18.csv` bevat het besluit per groepsperiode.
+Formele intervallen zijn op de groepspagina’s niet geactiveerd.
+De reguliere toepassing van de tijdelijke template-uitbreiding hoort
+bij de gezamenlijke 2026-release en is nog niet ingevoerd.
