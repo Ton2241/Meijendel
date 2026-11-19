@@ -836,7 +836,8 @@ de klassieke schrijfroute en vraagt afzonderlijk herstel om de beheerroute.
 
 ### Lichte presentatie-uitrol
 
-Gebruik de lichte route als de gevalideerde MySQL-export, Shiny-cache,
+De [projectstandaard voor presentatie- en codewijzigingen](../../VWG_Project/workflow.md#standaard-lichte-gatewaydeploy)
+is de lichte gatewayroute. Gebruik deze als de gevalideerde MySQL-export, Shiny-cache,
 CMS-migraties, browserdata en runtimeafhankelijkheden dezelfde hashes hebben
 als de actieve integrale release. De kandidaat bevat het volledige manifest.
 Het transportarchief bevat de gewijzigde bestanden en de hash van het

@@ -84,6 +84,11 @@ Bij codewerk:
 - voer een uitdrukkelijk opgedragen of goedgekeurde VPS-publicatie volledig
   uit binnen de toegestane reikwijdte, inclusief passende verificatie na deploy
 
+Gebruik voor presentatie- en codewijzigingen standaard de
+[lichte gatewaydeploy](../VWG_Project/workflow.md#standaard-lichte-gatewaydeploy). Leg vóór
+overdracht vast waarom een lichtere beheerroute niet volstaat als een
+volledige integrale deploy nodig is.
+
 ### VPS-wachtrij en onderhoudslock
 
 Raakt een opdracht productie op de VWG-VPS, volg dan de procedure
@@ -110,7 +115,7 @@ Bij iedere nieuwe opdrachtdraad en productiedeploy:
 - deploy uitsluitend vanaf een schone lokale `main` die exact gelijkloopt met `origin/main`; deploy nooit rechtstreeks vanaf een feature- of fixbranch
 - gebruik uitsluitend het repositoriespecifieke deployscript; geen losse rsync-, SSH-, Docker- of databasewijzigingen als vervanging van de preflight
 - de preflight moet controleren dat de op de VPS geregistreerde Meijendel-productiecommit een voorouder is van de nieuwe `main`, en moet een exclusieve VPS-deploy-lock gebruiken
-- deploy één samenhangende release of een expliciet volledig manifest van afhankelijke SQL-, R-, dashboard-, CSV- en Shiny-bestanden; overschrijf geen gedeeld kernbestand los vanuit een andere branch
+- deploy met een volledig afhankelijkheidsmanifest voor de gekozen route; de lichte gateway hergebruikt de gecontroleerde ongewijzigde bestanden op de VPS
 - wacht na herstart met begrensde retries op Shiny/dashboardgereedheid en voer daarna alle relevante rook- en inhoudscontroles uit
 - registreer de nieuwe productiecommit pas na volledig groene nacontrole
 - als het deployscript deze beveiligingen nog niet afdwingt, implementeer ze eerst en voer tot die tijd geen nieuwe productiedeploy uit
