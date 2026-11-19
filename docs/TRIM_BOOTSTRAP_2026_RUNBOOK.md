@@ -348,3 +348,37 @@ beschikbaar te blijven als bronspoor en tellen niet zelfstandig mee voor
 veldinspanning. Gebruik voor de standaardtrends de Natura 2000-scope, inclusief
 uitsluiting van M66 en M91. Broncontrole, formele intervalvrijgave en
 publicatie blijven afzonderlijke stappen.
+
+## Lokale TRIM-broncontrole en pilot van 19 november 2026
+
+De SQL-bron voor deze proef heeft SHA-256
+`3b590fa1987469e8c0d0d71ba4d0976f256ead9271e17311e81d6ec84777cedc`.
+De Natura 2000-selectie voor 2026 bevat 8.472 territoria en 2.694 formele
+Sovon-nullen in 48 kavels. Daarvan vallen 203 nullen buiten de
+156 vogelcategorieën met een geaccepteerd positief resultaat in 1958–2026.
+De soortmatrix gebruikt 2.491 bronnullen voor 2026. M78/79 levert geen
+modelwaarde. De voorlopige toelating van M4-5 en M105 blijft zichtbaar.
+In 1958–2026 zijn er 53 kavelclusters, waarvan 17 in de historische kern.
+M84s treedt in 2026 toe. De primaire brugset bevat 33 kavels, de strikte
+zesjaarsset 20.
+
+De runbundel `trim-2026-20261119-lokale-proef` gebruikt R 4.5.3,
+rtrim 2.3.1 en de bestaande jaarlijkse TRIM-brug. Trekkingen 1 en 2 zijn
+onafhankelijk herhaald en leveren exact gelijke resultaten. Alle 50
+trekkingen zijn op één iMac-worker voltooid, zonder batchfouten.
+Van de 69 soorten met een formele primaire brug in de uitgangsberekening
+halen 57 de vereiste 95% geldige trekkingen. De overige 12 vallen vooral
+uit bij jaren zonder positieve tellingen in de getrokken reeks. Geen
+van de 31 groepen met vaste soortensamenstelling haalt de drempel.
+De beste vaste groep haalt 37/50. Bij uitval ontbreekt een vereiste
+soortreeks. Alle 31 groepen met wisselende samenstelling halen 50/50
+binnen de gevoeligheidsanalyse.
+
+De gezamenlijke geldigheidspoort voor 500 sluit. Neem vóór een vervolg
+een methodisch besluit over de vaste groepssamenstelling en de
+soortschatters die onvoldoende geldige trekkingen hebben. Bewaar alle
+156 categorieën en hun uitvalstatus. Bundelmanifest, batchchecksums,
+validiteit per schatter en bron-/brugcontrole staan in de geregistreerde
+T7-proef `trim-bmp-2026-bronproef-20261119`. De 50-pilot levert geen
+formele intervalvrijgave of actieve uitvoer voor website, dashboard en
+Shiny.

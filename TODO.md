@@ -2,12 +2,16 @@
 
 ## Bootstrapkandidaat voor de release 2026
 
-De lokale technische vervolgcontrole is afgerond. Websitekoppelingen zijn in een afzonderlijke proefdatabase beschikbaar, de gewone PyMySQL-connector werkt, de drie meeuwenfoto’s zijn teruggezet en de volledige dashboardroute is bekeken. De Shiny/dashboard-pariteit op de bewaarde bron 1958–2025 is groen. Alle 156 soorten blijven ook zonder trend kiesbaar. De actuele acht websiteobjecten en foto’s zijn uitsluitend op de VPS gelezen. Officiële 2026-validatie, verse bronproducten, formele intervalvrijgave en publicatie blijven afzonderlijke stappen. Zie [de volledige aansluitnotitie](docs/TRIM_RELEASE_2026_AANSLUITING.md).
+De lokale technische vervolgcontrole is afgerond. Websitekoppelingen zijn in een afzonderlijke proefdatabase beschikbaar, de gewone PyMySQL-connector werkt, de drie meeuwenfoto’s zijn teruggezet en de volledige dashboardroute is bekeken. De Shiny/dashboard-pariteit op de bewaarde bron 1958–2025 is groen. Alle 156 soorten blijven ook zonder trend kiesbaar. De actuele acht websiteobjecten en foto’s zijn uitsluitend op de VPS gelezen. De lokale BMP-invoer 2026, SQL-export en Shiny-cache zijn gereed. De Sovon-hercontrole van twee kavels, formele intervalvrijgave en publicatie staan open. Zie [de volledige aansluitnotitie](docs/TRIM_RELEASE_2026_AANSLUITING.md).
 
 ## Nu open
 
 ### BMP 2026 — invoer en hercontrole
 
+- [ ] Beslis vóór een nieuwe TRIM-validatie over de vaste groepssamenstelling
+  en de 12 uitvallende primaire soortschatters. In de 50-pilot voor 1958–2026
+  haalden 57 van 69 soorten en nul van 31 vaste groepen de 95%-drempel.
+  Zie het [draaiboek](docs/TRIM_BOOTSTRAP_2026_RUNBOOK.md).
 - [ ] **Begin januari 2027:** controleer de Sovon-jaarstatus 2026 van M4-5
   en M105 Hertenkamp opnieuw in Avimap. Leg de uitkomst per kavel vast en
   beoordeel bij afkeuring of gewijzigde bronwaarden welke 2026-regels in
