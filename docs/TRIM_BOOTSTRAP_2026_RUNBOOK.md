@@ -382,3 +382,37 @@ validiteit per schatter en bron-/brugcontrole staan in de geregistreerde
 T7-proef `trim-bmp-2026-bronproef-20261119`. De 50-pilot levert geen
 formele intervalvrijgave of actieve uitvoer voor website, dashboard en
 Shiny.
+
+## Afzonderlijke TRIM-perioden voor twaalf soorten
+
+De op 19 november 2026 vastgelegde 1958–2026-bron is voor de twaalf
+uitvallende lange soorttrends opnieuw gebruikt. Voor 1958–1983 en
+1984–2026 zijn de modellen afzonderlijk berekend. Elke soort-periode
+behoudt haar modeljaren uit de uitgangsfit. De 500 gezamenlijke trekkingen
+gebruiken 53 kavelgeschiedenissen, dezelfde seed als de 2026-pilot en één
+iMac-worker. De eerste 50 kavelsteekproeven sluiten exact aan op de
+eerdere pilot. De uitkomsten van de eerste twee trekkingen zijn exact
+gereproduceerd. Alle 12.000 periode-uitkomsten en 50 batchchecksums zijn
+onafhankelijk gecontroleerd.
+
+Elf van de 24 afzonderlijke jaarlijkse TRIM-trends halen de lokale
+drempel van minimaal 475 van 500 geldige trekkingen. Vijf liggen in
+1958–1983 en zes in 1984–2026. Bij elf van de dertien perioden onder de
+drempel is een nuljaartotaal de voornaamste uitvalreden of blokkeert het
+de uitgangsfit. Bij de andere twee gaat het om te weinig actieve
+kavels of ongeldige jaartotalen. Bij vier van de elf perioden boven de
+drempel omvat het TRIM-interval uit de uitgangsfit nul. De jaarlijkse
+diagnostische bootstrapband is alleen voor Dodaars 1958–1983 en Vink
+1984–2026 op beide vergelijkingsstappen numeriek stabiel. Voor de aparte
+nettoverandering tussen vijfjaarsvensters geldt dat voor geen van de 24
+perioden. Er is geen formele bootstrapintervalvrijgave.
+
+De soortinventaris behoudt alle 156 vogelcategorieën, de bestaande
+ecologische groepstoewijzing, territoriumtotalen en teldekking per
+periode. De dertien getoetste perioden onder de drempel krijgen een
+expliciete status zonder trendwaarde in het soortenoverzicht. De
+overige 144 soorten blijven zichtbaar en vallen buiten deze gerichte
+validatie. De 500-validatie van de lange trends en vaste groepen blijft
+afhankelijk van het eerder vastgelegde methodische besluit.
+De 24 perioderegels en de volledige soorteninventaris staan in de
+geregistreerde T7-proef `trim-bmp-2026-perioden-12-soorten-20261119`.

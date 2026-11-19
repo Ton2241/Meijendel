@@ -8,10 +8,11 @@ De lokale technische vervolgcontrole is afgerond. Websitekoppelingen zijn in een
 
 ### BMP 2026 — invoer en hercontrole
 
-- [ ] Beslis vóór een nieuwe TRIM-validatie over de vaste groepssamenstelling
-  en de 12 uitvallende primaire soortschatters. In de 50-pilot voor 1958–2026
-  haalden 57 van 69 soorten en nul van 31 vaste groepen de 95%-drempel.
-  Zie het [draaiboek](docs/TRIM_BOOTSTRAP_2026_RUNBOOK.md).
+- [ ] Kies vóór een vervolgproef een methode voor de groepsindex met behoud
+  van de ecologische indeling en voor de twaalf uitvallende lange
+  soorttrends. De afzonderlijke periodevalidatie voor die twaalf soorten
+  is afgerond: 11 van 24 halen de lokale geldigheidsdrempel. Alle 156
+  soorten blijven zichtbaar. Zie het [draaiboek](docs/TRIM_BOOTSTRAP_2026_RUNBOOK.md).
 - [ ] **Begin januari 2027:** controleer de Sovon-jaarstatus 2026 van M4-5
   en M105 Hertenkamp opnieuw in Avimap. Leg de uitkomst per kavel vast en
   beoordeel bij afkeuring of gewijzigde bronwaarden welke 2026-regels in
