@@ -112,7 +112,9 @@ def make_preview(source, output):
 <title>Aantalsindex</title>
 <style>
 :root{{font:16px system-ui,sans-serif;color:#25343b;background:#fff}}body{{margin:0;padding:clamp(12px,3vw,28px)}}h1{{margin:0;font-size:1.55rem}}h2{{font-size:1.12rem;margin-top:1.5rem}}p{{line-height:1.5}}label{{display:inline-block;margin:0 1rem .5rem 0}}select,input{{display:block;font:inherit;padding:.35rem;max-width:100%}}canvas{{display:block;width:100%;height:auto;max-width:850px}}.table-scroll{{overflow:auto}}table{{border-collapse:collapse;width:100%;font-size:.92rem}}th,td{{padding:.55rem;text-align:left;border-bottom:1px solid #dbe4e6;vertical-align:top}}th{{background:#edf4f2}}tr[data-supported=false] td:last-child{{background:#fff6e7}}tr[hidden]{{display:none}}summary{{cursor:pointer}}
+html.group-embed{{overflow:hidden}}.group-embed body{{padding:0}}
 </style></head><body>
+<main id="index-panel">
 <h1>Aantalsindex</h1>
 <p>Op basis van 2.000 kaveltrekkingen. Per periode is de gemiddelde index over de eerste vijf jaar 100. De verandering vergelijkt dit begin met het gemiddelde van de laatste vijf jaar.</p>
 <label>Ecologische groep<select id="group">{options}</select></label>
@@ -121,9 +123,12 @@ def make_preview(source, output):
 <p id="chart-start">De grafiek begint in 1985. De waarde voor 1984 staat bij Jaarwaarden en telt mee in de referentie over 1984–1988.</p>
 <details><summary>Jaarwaarden voor de gekozen groep</summary><div id="years"></div></details>
 <details><summary>Richting per periode</summary>{overview}</details>
+</main>
+<section id="species-roster">
 <h2>Alle 156 soorten</h2>
 <label>Zoek een soort<input id="search" type="search" autocomplete="off"></label>
 <p id="visible-species" aria-live="polite">156 soorten</p>{roster}
+</section>
 <script>
 const series={embedded};
 const group=document.getElementById("group"),period=document.getElementById("period");
@@ -135,6 +140,15 @@ if(codes.every(code=>available.has(code))){{
   if(group.options.length===1)group.parentElement.hidden=true;
   for(const row of document.querySelectorAll("#groups tr[data-group]")){{
     if(!codes.includes(row.dataset.group))row.hidden=true;
+  }}
+  const frame=window.frameElement;
+  if(frame){{
+    document.getElementById("species-roster").hidden=true;
+    document.documentElement.classList.add("group-embed");
+    const panel=document.getElementById("index-panel");
+    const fitFrame=()=>{{frame.style.height=Math.ceil(panel.getBoundingClientRect().bottom)+"px";}};
+    new ResizeObserver(fitFrame).observe(panel);
+    fitFrame();
   }}
 }}
 const canvas=document.getElementById("series"),ctx=canvas.getContext("2d");
