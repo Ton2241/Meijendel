@@ -243,3 +243,17 @@ op T7. `groepspaginatoets.json` geeft de getoetste routes.
 Formele intervallen zijn op de groepspagina’s niet geactiveerd.
 De reguliere toepassing van de tijdelijke template-uitbreiding hoort
 bij de gezamenlijke 2026-release en is nog niet ingevoerd.
+
+
+### Dekkingstoets groepsintervallen
+
+Het hashgebonden `intervalbesluit.json` in de T7-proef
+`trim-bmp-2026-intervaldekking-12-20261119` bevestigt de diagnostische
+status van de aantalsindexpercentielen. Code 900 in 1984–2026 haalt
+de gekozen modelgebonden drempel voor het eindinterval in drie
+simulatiescenario’s. De overige elf getoetste groepsperioden en alle
+volledige jaarreeksen halen die gezamenlijke drempel niet.
+De vrijgavevelden voor formele eind- en jaarintervallen blijven leeg.
+De kernselectie, groepsindeling, alle 156 zichtbare soorten en de
+verklaring bij zes groepsperioden blijven gelijk in de gedeelde
+2026-weergave. Zie het [draaiboek](TRIM_BOOTSTRAP_2026_RUNBOOK.md).

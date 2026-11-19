@@ -574,3 +574,58 @@ van clusterbootstrap van het onderliggende model [Field en Welsh
 De uitkomsten en de gewone groepspaginatoets staan in de geregistreerde
 T7-proef `trim-bmp-2026-groepspagina-intervaltoets-20261119`. Zie ook
 [de aansluitnotitie](TRIM_RELEASE_2026_AANSLUITING.md).
+
+
+### Gesimuleerde intervaldekking voor twaalf groepsperioden
+
+Voor de zes groepsperioden in 1958–1983 en zes in 1984–2026 met een
+ondersteunde richting is getoetst hoe vaak het 95%-percentielinterval
+een bekende verandering of jaarindex omvat. De simulatie houdt de
+soort- en kavelindeling, oppervlakteblootstelling en
+waarnemingsmaskers uit de 2026-bron vast. De positieve rijsommen
+kalibreren de modelgemiddelden. De Poisson-scenario’s gebruiken
+achtereenvolgens de geschatte jaarfactor, een vlakke jaarfactor en
+de geschatte jaarfactor met gedeelde lognormale kaveljaarschokken
+(log-SD 0,25; opeenvolgende jaren AR(1) met rho 0,60). Deze schokken
+zijn een vastgelegde stresstest. Het model veronderstelt voor deze
+schokken onafhankelijkheid tussen kavels. Getelde nullen worden
+onderscheiden van ontbrekende cellen.
+
+Per scenario en groepsperiode zijn 200 onafhankelijke telrealisaties
+gegenereerd. Dezelfde 2.000 gestratificeerde kaveltrekkingen zijn op
+elke realisatie toegepast. Alle 14.400.000 fits waren bruikbaar.
+De snellere schatter reproduceert alle 24.000 bestaande bootstrap-
+eindwaarden en de jaarpercentielen voor de geselecteerde groepen.
+De simulatie hanteert als voldoende dat de eenzijdige exacte
+95%-ondergrens van de dekking in elk scenario minstens 90% bedraagt.
+Dit is een vooraf vastgelegde tolerantie van vijf procentpunten
+onder de nominale intervaldekking. Zie [Morris, White en Crowther
+(2019)](https://doi.org/10.1002/sim.8086) over de onzekerheid door
+het eindige aantal simulaties.
+
+| Scenario | Gemeten einddekking over twaalf groepsperioden | Groepsperioden met voldoende einddekking |
+| --- | ---: | ---: |
+| Geschatte jaarfactor | 91,5–95,0% | 3 |
+| Vlakke jaarfactor | 90,5–96,0% | 3 |
+| Geschatte jaarfactor met kaveljaarschokken | 84,5–95,0% | 4 |
+
+Alleen vogels van bebouwing/overige in 1984–2026 haalt de drempel in
+alle drie scenario’s. De einddekking is respectievelijk 95,0%, 95,5%
+en 94,5%. Het laagste eindresultaat is 84,5% voor vogels van
+pionierbegroeiingen in 1958–1983 met kaveljaarschokken. Van de 414
+jaarposities halen er 10 de drempel in alle drie scenario’s. Geen
+groepsperiode haalt de drempel voor alle eigen jaren. De jaarproef
+betreft puntgewijze dekking.
+
+De toets ondersteunt voor code 900 in 1984–2026 alleen de modelgebonden
+einddekking binnen deze drie scenario’s en de gekozen tolerantie.
+Ruimtelijke afhankelijkheid tussen kavels, veranderende detectie,
+selectieve uitval van kavels en dekking na selectie op een ondersteunde
+richting zijn niet getoetst. De formele eind- en jaarintervallen
+blijven daarom ongepubliceerd. De bestaande richtingstatus van
+alle 18 groepsperioden, de zes toetsredenen en alle 156 soorten
+zijn bytegelijk overgenomen.
+
+De geregistreerde T7-proef `trim-bmp-2026-intervaldekking-12-20261119`
+bevat de grenswaarden, alle ruwe resultaten en het hashgebonden
+intervalbesluit voor website, dashboard en Shiny.
