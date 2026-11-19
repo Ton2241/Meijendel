@@ -8,14 +8,14 @@ De lokale technische vervolgcontrole is afgerond. Websitekoppelingen zijn in een
 
 ### BMP 2026 — invoer en hercontrole
 
-- [ ] Besluit of de index met gelijke soortweging aanvullend in de
-  gezamenlijke 2026-uitvoer komt. Bij vijf van de 18 groepsperioden
-  combineert die index winst op achtergehouden kavels met een stabiele
-  richting bij kaveltrekkingen en soortweglating. De aantalsindex wint op
-  territoria in 16 van de 18 rechtstreekse groepsvergelijkingen. Alle
-  negen groepen en 156 soorten blijven zichtbaar. De afzonderlijke
-  periodevalidatie van de twaalf uitvallende soorten blijft staan op 11
-  van 24 boven de geldigheidsdrempel. Zie het
+- [x] Aantalsindex als hoofdindex voor de negen bestaande ecologische
+  groepen gekozen en gevalideerd met 2.000 kaveltrekkingen. Alle 36.000
+  groepsperiodetrekkingen zijn volledig. Bij 12 van de 18 groepsperioden
+  is de richting ondersteund. Alle 156 soorten blijven zichtbaar.
+- [ ] Toets bij de gezamenlijke 2026-actualisering het kandidaatmanifest voor
+  website, dashboard en Shiny en leg de vrijgave van groepsintervallen vast.
+  De eigen periodevalidatie van de twaalf uitvallende soorten blijft staan
+  op 11 van 24 boven de geldigheidsdrempel. Zie het
   [draaiboek](docs/TRIM_BOOTSTRAP_2026_RUNBOOK.md).
 - [ ] **Begin januari 2027:** controleer de Sovon-jaarstatus 2026 van M4-5
   en M105 Hertenkamp opnieuw in Avimap. Leg de uitkomst per kavel vast en

@@ -162,3 +162,21 @@ De nieuwe gekoppelde kandidaat is gecontroleerd met acht Pythonchecks, JavaScrip
 ## Integrale lokale releaseproef van 4 november
 
 De aanvullende actieve manifestkoppeling, expliciete eindjaarcontrole en gezamenlijke activering/herstel zijn beschreven in [de proefnotitie](TRIM_INTEGRALE_RELEASE_HERSTELPROEF_20261104.md). Die notitie onderscheidt de bestaande 156-soortenuitvoer over 1958–2025, de werkelijk uitgevoerde lokale controles, de nog benodigde officiële 2026-uitvoer en de afzonderlijke Linux/gatewaykoppeling. De bestaande preview blijft beschikbaar. `MEIJENDEL_BOOTSTRAP_RELEASE=1` plus `MEIJENDEL_RELEASE_MANIFEST` activeert de gedeelde releaselezer; het manifest controleert bron, jaren, status en hashes voor alle drie consumenten. Een lokale proef is geen publicatieakkoord of bewijs van een VPS-installatie.
+
+
+### Ecologische hoofdindex tot en met 2026
+
+Gebruik bij de gezamenlijke actualisering het kandidaatmanifest uit de
+T7-proef `trim-bmp-2026-aantalsindex-2000-20261119`. Het bindt de
+aantalsindex aan de SQL-bron, de analysecontext, de 621 jaarwaarden, de
+18 groepsperioden en de 156 soortregels. De twee analyseperioden
+1958–1983 en 1984–2026 hebben elk hun eigen referentie van vijf jaar.
+
+Website, dashboard en Shiny horen dezelfde hoofdindex en richtingstatus
+te gebruiken. Controleer bij aansluiting de 18 groep-periodecombinaties,
+de 621 jaarwaarden, alle 156 soorten en de zichtbare redenen voor
+onvoldoende steun bij zes groepsperioden. De 95%-bootstrappercentielen
+staan als diagnostische waarden in het proefproduct. Voor bestaande
+formele intervalvelden blijft afzonderlijke vrijgave van deze
+groepsschatter nodig. De consumententoets en uitvoer naar productie
+volgen binnen de gezamenlijke releaseprocedure.

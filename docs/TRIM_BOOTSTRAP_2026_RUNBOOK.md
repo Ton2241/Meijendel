@@ -503,3 +503,42 @@ trekkingen zijn diagnostisch. Jaarwaarden, vijf kaveltoetsen per
 groepsperiode, 376 soortweglatingen, beide indexen en het soortenoverzicht
 staan in de geregistreerde T7-proef
 `trim-bmp-2026-groepsindex-gelijke-invloed-20261119`.
+
+
+### Aantalsindex als hoofdindex, validatie met 2.000 kaveltrekkingen
+
+Ton kiest de aantalsindex als hoofdindex voor de bestaande negen ecologische
+groepen. De gelijkgewogen variant blijft een gevoeligheidsvergelijking. De
+aantalsindex gebruikt dezelfde getelde nullen, kavels en groepstoewijzingen als
+de proef met 50 trekkingen. Elke van de 2.000 gezamenlijke trekkingen bevat
+17 historische en 36 latere kavelclusters, met teruglegging binnen elk
+stratum. Alle 36.000 fits over de 18 groepsperioden zijn volledig. Alle 621
+puntschattingen en de eerste 50 eindveranderingen per groepsperiode zijn
+gereproduceerd. De 156 soortregels, inclusief trendstatus en de negen soorten
+zonder ecologische groep, zijn bytegelijk aan de vorige proef.
+
+De toets voor een ondersteunde richting vraagt minimaal 1.900 volledige
+trekkingen, winst tegen een vlakke lijn in minstens vier van vijf tests
+op achtergehouden kavels, hetzelfde teken buiten nul in het centrale
+95%-bootstrapbereik van zowel de volledige run als beide helften en behoud
+van richting bij het weglaten van elke informatieve soort afzonderlijk.
+Van de 18 groepsperioden halen er 12 alle criteria, zes per periode.
+
+| Periode | Groep met onvoldoende steun voor de richting | Toets die uitvalt |
+| --- | --- | --- |
+| 1958–1983 | Watervogels | Kaveltoets en bootstrapbereik |
+| 1958–1983 | Vogels van open heide | Kaveltoets, bootstrapbereik en soortweglating |
+| 1958–1983 | Vogels van bebouwing/overige | Kaveltoets |
+| 1984–2026 | Watervogels | Kaveltoets |
+| 1984–2026 | Bosrandvogels | Kaveltoets en soortweglating |
+| 1984–2026 | Bosvogels | Kaveltoets en soortweglating |
+
+De geregistreerde proef `trim-bmp-2026-aantalsindex-2000-20261119` bevat
+de jaarlijkse hoofdindex, de twee periode-uitkomsten per groep, alle
+trekkingen, het soortenoverzicht en het hashgebonden kandidaatmanifest
+voor de gezamenlijke 2026-uitvoer. De beginwaarde is per periode het
+gemiddelde over de eerste vijf jaar. De eindverandering vergelijkt daarmee
+het gemiddelde over de laatste vijf jaar. Jaarpercentielen zijn puntgewijs.
+De zes groepsperioden blijven zichtbaar met hun toetsstatus. Het formele
+intervalbesluit en de gezamenlijke consumententoets staan vóór productie
+open. Zie [Lokale aansluiting bootstrap](TRIM_RELEASE_2026_AANSLUITING.md).
