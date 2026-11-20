@@ -261,6 +261,7 @@ class LinuxHooks:
    self.sql("CREATE TABLE IF NOT EXISTS Meijendel._release_probe(id int primary key,value varchar(100)); REPLACE INTO Meijendel._release_probe VALUES(1,'"+m['release_id']+"');")
    (Path(self.s['website_data'])/'_integral_release_probe').write_text(m['release_id']+'\n')
    self.pgsql("CREATE TABLE IF NOT EXISTS app._release_probe(id integer primary key,value text); INSERT INTO app._release_probe VALUES(1,'"+m['release_id']+"') ON CONFLICT(id) DO UPDATE SET value=excluded.value;")
+  if getattr(self,'ndff_transition',False):check_ndff_import(self)
   self.apply_migrations(package,m)
  def apply_migrations(self,package,m):
   if not m['cms']['migrations']:return
@@ -911,6 +912,46 @@ def check_production_release(stage,base,receipt,m):
  for name,expected in expected_commits.items():
   if (STATE/(name+'.commit')).read_text().strip()!=expected:raise ValueError('Productiecommit past niet bij deze fase')
 
+
+NDFF_INDEX_MAP = {
+ 'ndff_dagvlinders': ('vlinders_waarneming','Dagvlinders',129238),
+ 'ndff_nachtvlinders': ('vlinders_waarneming','Nachtvlinders',72978),
+ 'ndff_microvlinders': ('vlinders_waarneming','Microvlinders',22849),
+ 'ndff_libellen': ('libellen_waarneming','Libellen',32325),
+}
+NDFF_PACKAGE = '5f132a2411e68860f7c1a9c2c069a5f5d79ebd2b7b415e38bd48dd69e0cb8c9b'
+
+def ndff_checksums(h):
+ tables = sorted((*NDFF_INDEX_MAP, 'ndff_open_waarneming', 'ndff_open_waarneming_register'))
+ qualified = ','.join('Meijendel.'+name for name in tables)
+ rows = h.sql('CHECKSUM TABLE '+qualified+' EXTENDED;').splitlines()
+ if len(rows) != len(tables) or any(not re.fullmatch(r'(?:Meijendel|meijendel)\.[a-z_]+\t[0-9]+', row) for row in rows):
+  raise ValueError('Onvolledige NDFF-livecontrolesommen')
+ return sorted(rows)
+
+def check_ndff_transition(h, base, unknown):
+ if base.name != NDFF_PACKAGE or unknown != set(NDFF_INDEX_MAP):
+  raise ValueError('Niet-gedekte productieobjecten: '+','.join(sorted(unknown)))
+ proof_path = base/'ndff-transition.json'
+ secure_file(proof_path)
+ proof = jsonfile(proof_path)
+ if (proof.get('archive_sha256') != NDFF_PACKAGE or not proof.get('full_row_parity')
+     or proof.get('checksums') != ndff_checksums(h)):
+  raise ValueError('VPS-data wijkt af van het vastgelegde NDFF-bewijs')
+ print('NDFF_LIVE_PROOF_OK 257390',flush=True)
+ return True
+
+def check_ndff_import(h):
+ for source,group,count in NDFF_INDEX_MAP.values():
+  linked = h.sql(f"SELECT COUNT(*) FROM Meijendel.{source} o JOIN Meijendel.ndff_open_waarneming_register r USING(waarneming_id) WHERE o.soortgroep_raw='{group}' AND r.opslag_tabel='{source}' AND o.identiteit_sha256=r.identiteit_sha256;")
+  if linked != str(count):
+   raise RuntimeError('NDFF-registerkoppeling na import wijkt af: '+group)
+ defined = set(h.sql("SELECT table_name FROM information_schema.tables WHERE table_schema='Meijendel';").splitlines())
+ if defined.intersection(NDFF_INDEX_MAP):
+  raise RuntimeError('Vervallen NDFF-index komt nog voor na import')
+ print('NDFF_IMPORT_OK 257390',flush=True)
+
+
 WEBSITE_BINDING=Path('/etc/systemd/system/vwg-m-linux-app.service.d/50-integral.conf')
 
 
@@ -1047,7 +1088,7 @@ def production_action(stage,commit,base,receipt,m):
  if stage=='apply':
   live=set(h.sql("SELECT table_name FROM information_schema.tables WHERE table_schema='Meijendel';").splitlines())
   unknown=live-sql_objects(base/'payload'/core.sql_source(m))-set(OBJECTS)
-  if unknown:raise ValueError('Niet-gedekte productieobjecten: '+','.join(sorted(unknown)))
+  if unknown:h.ndff_transition=check_ndff_transition(h,base,unknown)
   package=root/'releases'/m['release_id']
   digest=jsonfile(base/'sealed.json')['sha256']
   if package.is_symlink():raise ValueError('Release-ID is een symbolische koppeling')
@@ -1151,6 +1192,11 @@ def main():
   if managed_preflight:secure_file(QUEUE_POLICY)
   base,receipt,m=freeze(a.commit,a.sha256,allow_inbox=not (queued or managed_preflight))
   if a.stage=='preflight':
+   if base.name==NDFF_PACKAGE:
+    h=LinuxHooks(jsonfile(CONTROL/'production/private/settings.json'))
+    live=set(h.sql("SELECT table_name FROM information_schema.tables WHERE table_schema='Meijendel';").splitlines())
+    unknown=live-sql_objects(base/'payload'/core.sql_source(m))-set(OBJECTS)
+    if unknown:check_ndff_transition(h,base,unknown)
    if managed_preflight:
     check_production_release('apply',base,receipt,m);response=jsonfile(base/'preflight.json')
    else:
