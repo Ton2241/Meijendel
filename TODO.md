@@ -6,6 +6,11 @@ De lokale technische vervolgcontrole is afgerond. Websitekoppelingen zijn in een
 
 ## Nu open
 
+### Sovon-herlevering BMP M71, M72, M16s en M15 voor 2024–2026
+
+- [ ] Codex voert na Tons uitvoeringsopdracht één herstelbare proef op T7 uit en vergelijkt de 84 gewijzigde kavel-soortwaarden voor 27 soorten, de bezoekmetadata en de cluster-ID’s met de levende MySQL-bron. De vier kavels tellen volgens de herlevering 597, 560 en 482 territoria voor 2024, 2025 en 2026. Leg de proefdatum vast zodra de uitvoering is ingepland.
+- [ ] Codex past na de proef de gevalideerde correctie lokaal toe en bouwt de getroffen TRIM-, website-, dashboard- en Shiny-uitvoer vanuit één bronversie. Ton beoordeelt de verschillen buiten de vier kavels afzonderlijk. Voor de gegevenspublicatie op de VPS is een afzonderlijk akkoord nodig. Zie [het bronregister](docs/MEIJENDEL_BRONREGISTER.md).
+
 ### Nieuwe Avimap-oppervlakten voor kavel 65 en 66
 
 - Ton en Codex verwerken bij de eerstvolgende gezamenlijke gegevensactualisering (datum te bepalen) de officiële RD New-export van 20 november 2026 voor project 252 in de oppervlaktenketen. Controleer de 144 regels voor kavel 65 en 66 over 1984–2055 tegen de nieuwe waarden en volg de bestaande validatie van SQL-export, dashboard en Shiny. Voor een aparte VPS-publicatie van gegevens geldt afzonderlijk akkoord.
