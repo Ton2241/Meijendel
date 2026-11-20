@@ -19,6 +19,10 @@ def check_checkout(root):
 
 def prepare(recipe_file,baseline,output,project):
  recipe=json.loads(recipe_file.read_text());analysis=Path(recipe['analysis_root']);website=Path(recipe['website_root'])
+ if recipe.get('dashboard_trim_root') or recipe.get('dashboard_trim_evidence'):
+  checked_tree(recipe['dashboard_trim_root'])
+  checked_tree(recipe['dashboard_trim_evidence'])
+  checked_tree(output)
  trial=recipe['mode']=='local_rehearsal'
  if trial:output=checked_tree(output)
  commits={name:check_checkout(path) for name,path in [('Meijendel',analysis),('VWG_M',website),('VWG_Project',project)]}
@@ -62,6 +66,10 @@ def prepare_presentation(previous_file,base_file,output,project):
  payload=receiptdir/'payload'
  release=core.verify(payload)
  base_bytes=base_file.read_bytes();base=json.loads(base_bytes)
+ if recipe.get('dashboard_trim_evidence'):
+  proof=json.loads(Path(recipe['dashboard_trim_evidence']).read_text())
+  if proof['actieve_release']!=base['release_id'] or proof['productiecommits']!=base['source_commits']:
+   raise ValueError('Dashboard is getoetst tegen een andere actieve basisrelease')
  base_commits={name:base['source_commits'][name] for name in ('Meijendel','VWG_M')}
  for name,start in base_commits.items():run(['git','-C',roots[name],'merge-base','--is-ancestor',start,commits[name]])
  changes=linux.presentation_changes(base,release)

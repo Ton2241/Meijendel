@@ -238,6 +238,21 @@ class PresentationReleaseContract(unittest.TestCase):
    with self.subTest(patch=patch), self.assertRaises(ValueError):
     linux.presentation_changes(old,new|patch)
 
+ def test_dashboard_trim_delta_permits_only_known_analytics_csv_paths(self):
+  permitted=('www/trim/soorten/soortindices_per_jaar.csv',
+             'www/trim_msi_evg/functionele_msi_per_groep_per_jaar.csv')
+  old=dict(release_id='A',source_hash='a'*64,files=dict.fromkeys(permitted,'b'*64))
+  changed=dict.fromkeys(permitted,'c'*64)
+  new=old|dict(release_id='B',files=changed)
+  self.assertEqual(linux.presentation_changes(old,new),changed)
+  for name in ('www/trim/bootstrap/run_manifest.json','www/trim/soorten/ander.csv',
+               'www/trim_msi_evg/gam_voorspellingen_landelijk_msi_groepen.csv',
+               'www/trim_msi_evg/../release-config.json'):
+   with self.subTest(name=name), self.assertRaises(ValueError):
+    linux.presentation_changes(old,new|{'files':changed|{name:'d'*64}})
+  with self.assertRaises(ValueError):
+   linux.presentation_changes(old,new|{'files':{permitted[0]:'c'*64}})
+
  def test_switch_failure_restores_previous_release_and_releases_lock(self):
   from unittest.mock import Mock, patch
   with tempfile.TemporaryDirectory() as directory:

@@ -9,6 +9,29 @@ from pathlib import Path
 
 SQL_SOURCE='data/meijendel.sql'
 LEGACY_SQL_SOURCE='data/Meijendel.sql'
+DASHBOARD_TRIM_ASSETS = frozenset({
+    'www/trim/soorten/analysebasis_plot_jaar.csv',
+    'www/trim/soorten/soorten_brugfactoren.csv',
+    'www/trim/soorten/soorten_bruikbare_tijdreeks_selectie.csv',
+    'www/trim/soorten/soorten_modelstatus.csv',
+    'www/trim/soorten/soorten_status_samenvatting.csv',
+    'www/trim/soorten/soorten_trendoverzicht.csv',
+    'www/trim/soorten/soorten_trendoverzicht_bruikbare_tijdreeks.csv',
+    'www/trim/soorten/soortindices_bruikbare_tijdreeks.csv',
+    'www/trim/soorten/soortindices_per_jaar.csv',
+    'www/trim_msi_evg/functionele_groepssamenstelling.csv',
+    'www/trim_msi_evg/functionele_loso_trendgevoeligheid.csv',
+    'www/trim_msi_evg/functionele_msi_per_groep_per_jaar.csv',
+    'www/trim_msi_evg/functionele_trendoverzicht_msi_groepen.csv',
+    'www/trim_msi_evg/gam_interpretatie_msi_groepen.csv',
+    'www/trim_msi_evg/gam_trendanalyse_msi_groepen.csv',
+    'www/trim_msi_evg/gam_voorspellingen_msi_groepen.csv',
+    'www/trim_msi_evg/groepssamenstelling_100tal.csv',
+    'www/trim_msi_evg/msi_per_groep_per_jaar.csv',
+    'www/trim_msi_evg/trendoverzicht_msi_groepen.csv',
+})
+
+
 def sql_source(manifest):
     source=manifest.get('mysql',{}).get('source')
     if source not in (SQL_SOURCE,LEGACY_SQL_SOURCE):raise ValueError('Onbekende SQL-binding')
@@ -200,6 +223,24 @@ def build_package(recipe,target):
     (target/'www/index.html').write_text('<!doctype html><html lang="nl"><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=bmp_meijendel_index.html"><title>Vogeldata Meijendel</title><a href="bmp_meijendel_index.html">Open het dashboard</a></html>')
     for name in ('trim','trim_msi_evg','groepen_grafieken','wintertellingen','output_ecologische_groepen'):
         copy(repo/name,'www/'+name)
+    trim_root = recipe.get('dashboard_trim_root')
+    trim_evidence = recipe.get('dashboard_trim_evidence')
+    if bool(trim_root) != bool(trim_evidence):
+        raise ValueError('TRIM-presentatie vraagt bronmap en controlebewijs')
+    if trim_root:
+        checked = json.loads(Path(trim_evidence).read_text())
+        changed = checked['afwijkingen']
+        if (checked['bron_sql_sha256'] != initial['source_hash'] or
+                set(checked['huidige_lichte_gateway_weigert']) != DASHBOARD_TRIM_ASSETS or
+                not DASHBOARD_TRIM_ASSETS <= changed.keys() or
+                sha(repo/'bmp_meijendel_index.html') != changed['www/bmp_meijendel_index.html']['sha256']):
+            raise ValueError('TRIM-controlebewijs past niet bij dashboard en SQL-bron')
+        for name in sorted(DASHBOARD_TRIM_ASSETS):
+            relative = name.removeprefix('www/')
+            source = safe_path(Path(trim_root), relative)
+            if source.is_symlink() or sha(source) != changed[name]['sha256']:
+                raise ValueError('TRIM-presentatie wijkt af van de geteste kandidaat: '+name)
+            copy(source, name)
     frozen=Path(recipe['browser_root'])
     for name in ('bmp_meijendel_data.json','bmp_meijendel_data.json.manifest'):copy(frozen/name,'www/'+name)
     if recipe.get('bootstrap_root'):

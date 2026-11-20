@@ -510,6 +510,7 @@ def presentation_path(name):
  return (name.startswith(('website/app/','website/docs/handleidingen/','shiny/R/',
                           'shiny/shiny_meijendel/','www/groepen_grafieken/',
                           'www/outputs/aantalsindex-preview/','www/outputs/bootstrap-presentatie-2026/'))
+         or name in core.DASHBOARD_TRIM_ASSETS
          or name in {'website/scripts/update_trim_manual_contract.py','www/release-config.json'}
          or (relative.parent==Path('www') and relative.suffix in {'.html','.css','.js'}))
 
@@ -520,6 +521,9 @@ def presentation_changes(old,new):
  original=old['files'];candidate=new['files']
  changes={name:candidate.get(name) for name in original.keys()|candidate.keys()
           if original.get(name)!=candidate.get(name)}
+ if any(name in core.DASHBOARD_TRIM_ASSETS and (name not in original or digest is None)
+        for name,digest in changes.items()):
+  raise ValueError('TRIM-presentatie mag alleen bestaande analysebestanden vervangen')
  if not changes or any(not presentation_path(name) for name in changes):
   raise ValueError('Presentatiepakket bevat wijzigingen buiten de web- of Shiny-presentatie')
  return changes

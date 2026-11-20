@@ -860,3 +860,11 @@ VPS-schijf. Website en Shiny krijgen de nieuwe releasebinding en het dashboard
 volgt de huidige release. De gateway controleert de drie afnemers en publieke
 routes vóór registratie van de commits. Een mislukte wissel herstelt de
 vorige release. Bij onbevestigd herstel blijft het productieslot bezet.
+
+Voor een vernieuwde TRIM-dashboardweergave kan het recept de T7-map
+`dashboard_trim_root` (de gecontroleerde www-map) en het bewijsbestand
+`dashboard_trim_evidence` (bestandverschillen en hashes tegen de actieve
+release) meegeven. De gateway accepteert alleen vervanging van de 19
+bekende TRIM- en MSI-CSV’s. De landelijke reeks, formele
+bootstrapbestanden, SQL-export, browserdataset en runtimebinding vallen
+buiten deze uitbreiding.
