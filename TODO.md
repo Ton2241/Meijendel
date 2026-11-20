@@ -25,12 +25,6 @@ De lokale technische vervolgcontrole is afgerond. Websitekoppelingen zijn in een
 - [x] Aantalsindex in de gewone websitegroepspagina’s, Dashboard en
   Shiny aangesloten en lokaal in één pakket getoetst. De negen
   groepen, alle 156 soorten en de zes toetsredenen zijn zichtbaar.
-- [ ] **20 november 2026 — Codex:** werk lokaal de schatbare TRIM-lijnen
-  voor soorten en groepen tot en met 2026 uit. Maak uitval zichtbaar en laat
-  formele bootstrapbanden weg. Neem M4-5 en M105 Hertenkamp in alle
-  TRIM-berekeningen voor 2026 mee als goedgekeurd. Ton verwacht dat het
-  uitblijven van de definitieve Sovon-goedkeuring administratief is. De
-  officiële Avimap-status blijft bronmetadata. Publicatie valt buiten deze taak.
 - [ ] **Begin januari 2027:** controleer de Sovon-jaarstatus 2026 van M4-5
   en M105 Hertenkamp opnieuw in Avimap. Leg de uitkomst per kavel vast en
   beoordeel bij afkeuring of gewijzigde bronwaarden welke 2026-regels in

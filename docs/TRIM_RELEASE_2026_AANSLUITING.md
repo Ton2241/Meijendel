@@ -330,3 +330,32 @@ In Chrome openden de negen ecologische groepspagina’s met 1984–2026
 als standaard. De grafiek werd getekend en de uitklapbediening werkte.
 Het bewijs staat in `outputs/presentatie-via-gateway` van dezelfde
 T7-proef.
+
+## Lokaal TRIM-dashboard tot en met 2026 — 20 november 2026
+
+De bevroren 2026-bron is gelezen uit de hashgecontroleerde Shiny-cache.
+De bestaande TRIM-generator is met eindjaar 2026 uitgevoerd, inclusief
+de op 19 november 2026 door Ton bevestigde analytische toelating van
+M4-5 en M105 Hertenkamp. M4-5 leverde in 2026 116 modelcellen met 143
+territoria en 77 getelde nullen. M105 leverde 89 modelcellen met 49
+territoria en 69 getelde nullen. De officiële Avimap-status wordt begin
+januari 2027 opnieuw gecontroleerd.
+
+In de lokale presentatie over 1958–2026 zijn alle 156 vogelcategorieën
+kiesbaar. Voor 129 categorieën is een TRIM-index voor 2026 schatbaar.
+Zeven categorieën hebben alleen een bruikbare reeks vóór 1984 en twintig
+hebben geen schatbare indexreeks. De soortkaart vermeldt het werkelijke
+modelbereik en toont uitval expliciet. Een ontbrekende jaarwaarde laat
+een gat in de TRIM-lijn. Voor Slechtvalk staan de zeven geschatte
+jaarindices over 2020–2026 alle op 100; R signaleert bij de beschrijvende
+loglineaire samenvatting een nagenoeg perfecte fit.
+
+De Chrome-toets omvat 44 groepsweergaven met samen 88 volledige en
+robuuste varianten. 86 varianten hebben een schatting voor 2026.
+Bij Viseters ontbreekt de robuuste groepsindicator, zowel binair als
+gewogen. De landelijke GAM-bron loopt van 1990 tot en met 2024.
+Formele bootstrapbanden zijn afwezig. De bestaande modelintervallen van
+gewone TRIM-periodes en beschrijvende GAM-banden worden onder hun eigen
+naam getoond. De lokale dashboardkopie en controlebestanden staan in de
+geregistreerde T7-proef trim-dashboard-2026-20261120. VPS-publicatie is
+een afzonderlijk besluit.

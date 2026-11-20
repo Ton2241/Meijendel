@@ -88,7 +88,8 @@ log "Genereer TRIM-soorten en TRIM-MSI-output"
 Rscript "$REPO_DIR/R/trim_soorten_en_msi_evg.R" \
   "$SQL_FILE" \
   "$REPO_DIR/trim/soorten" \
-  "$REPO_DIR/trim_msi_evg"
+  "$REPO_DIR/trim_msi_evg" \
+  "$ANALYSIS_END_YEAR"
 
 log "Genereer landelijke MSI-output"
 Rscript "$REPO_DIR/R/landelijke_msi_evg.R" \
