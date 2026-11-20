@@ -8,8 +8,7 @@ De lokale technische vervolgcontrole is afgerond. Websitekoppelingen zijn in een
 
 ### Publicatie gecorrigeerde Sovon BMP-reeks 2024–2026
 
-- [ ] Ton beoordeelt het lokaal getoetste pakket voor M71, M72, M16s en M15 en de bijgewerkte Rode-Lijsttekst. Publicatiedatum na besluit. Codex verifieert daarna de actieve VPS-basis en de actuele CMS-tekst, verzegelt de release en publiceert via de beheerroute zodra Ton daar afzonderlijk akkoord voor geeft. Het pakket met SQL-, dashboard-, website- en Shiny-pariteit staat op T7 onder Sovon BMP-correctie vier kavels 20261120. Zie [bronregister](docs/MEIJENDEL_BRONREGISTER.md).
-- [ ] Ton beslist vóór de geplande publicatie of Codex ook de acht afwijkende waarden in zes kavels in 2024 en negen in zes kavels in 2025 verwerkt. Bij akkoord controleert Codex eerst de actuele resultaten en jaarmatrices en verwerkt de gevalideerde verschillen zo mogelijk in hetzelfde pakket. Vijf cellen vragen onderscheid tussen een letterlijke nul en een ontbrekende waarde. De 54 exportwaarden van de formeel afgekeurde kaveljaren M75/2024 en M51/2025 zijn volgens het besluit van 3 oktober uitgesloten. Zie [bronregister](docs/MEIJENDEL_BRONREGISTER.md).
+- [ ] Ton geeft afzonderlijk akkoord voor publicatie van de gezamenlijke BMP-release 2024–2026 en Rode-Lijstbericht 457. De correctie voor M71, M72, M16s en M15 en de 17 aanvullende waarden in 2024 en 2025 zijn lokaal verwerkt. Codex bereidt pakket en controlebewijs voor op T7 onder sovon-bmp-aanvullende-correctie-20261120. Codex controleert vóór ontvangst voldoende vrije VPS-ruimte, de actuele basisrelease en de inhoud van het CMS-bericht. Datum in overleg na akkoord en beschikbare ruimte. Zie [bronregister](docs/MEIJENDEL_BRONREGISTER.md).
 
 ### Nieuwe Avimap-oppervlakten voor kavel 65 en 66
 
