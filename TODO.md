@@ -6,9 +6,9 @@ De lokale technische vervolgcontrole is afgerond. Websitekoppelingen zijn in een
 
 ## Nu open
 
-### Publicatie gecorrigeerde Sovon BMP-reeks 2024–2026
+### Rode-Lijstbericht 457 na de Sovon-publicatie
 
-- [ ] Ton geeft afzonderlijk akkoord voor publicatie van de gezamenlijke BMP-release 2024–2026 en Rode-Lijstbericht 457. De correctie voor M71, M72, M16s en M15 en de 17 aanvullende waarden in 2024 en 2025 zijn lokaal verwerkt. Codex bereidt pakket en controlebewijs voor op T7 onder sovon-bmp-aanvullende-correctie-20261120. Codex controleert vóór ontvangst voldoende vrije VPS-ruimte, de actuele basisrelease en de inhoud van het CMS-bericht. Datum in overleg na akkoord en beschikbare ruimte. Zie [bronregister](docs/MEIJENDEL_BRONREGISTER.md).
+- [ ] Ton geeft expliciet akkoord op de exacte concepttekst voor Rode-Lijstbericht 457 op vwg-m.nl. Codex publiceert daarna met behoud van de oorspronkelijke datum en positie en vergelijkt de openbare tekst met de kandidaat. De gecorrigeerde BMP-gegevens 2024–2026 draaien sinds 20 november in productie onder release 2026-11-20.3. Het gecontroleerde concept en de oorspronkelijke tekst staan op T7 onder sovon-bmp-aanvullende-correctie-20261120. Datum na tekstackoord.
 
 ### Nieuwe Avimap-oppervlakten voor kavel 65 en 66
 
