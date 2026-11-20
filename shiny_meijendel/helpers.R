@@ -1686,7 +1686,10 @@ bridge_species_indices <- function(pre_idx, post_idx) {
   list(series = combined, bridge_factor = bridge_factor, bridge_method = bridge_method)
 }
 
-analyse_species_subset <- function(species_matrix) {
+analyse_species_subset <- function(species_matrix, year_to) {
+  overall_period <- paste0("1958-", year_to)
+  post_year_to <- if (year_to >= 1984L) year_to else NA_integer_
+  post_period <- if (is.na(post_year_to)) NA_character_ else paste0("1984-", post_year_to)
   split_species <- split(species_matrix, species_matrix$soort_id)
   status_rows <- list()
   index_rows <- list()
@@ -1721,7 +1724,7 @@ analyse_species_subset <- function(species_matrix) {
     post_fit <- if (post_ok) fit_trim_model(post_df) else list(model = NULL, config = NA_character_, aic = NA_real_, error = "te_weinig_data_post", warnings = NA_character_, attempts = NA_character_, year_map = NULL)
 
     pre_idx <- if (!is.null(pre_fit$model)) collect_period_index(pre_fit, soort_id, soort_naam, euring_code, engelse_naam, "1958-1983") else NULL
-    post_idx <- if (!is.null(post_fit$model)) collect_period_index(post_fit, soort_id, soort_naam, euring_code, engelse_naam, "1984-2025") else NULL
+    post_idx <- if (!is.null(post_fit$model)) collect_period_index(post_fit, soort_id, soort_naam, euring_code, engelse_naam, post_period) else NULL
     bridged <- bridge_species_indices(pre_idx, post_idx)
 
     analyse_categorie <- classificeer_soort_status(
@@ -1810,7 +1813,7 @@ analyse_species_subset <- function(species_matrix) {
         "onvolledige_langetermijnreeks"
       }
       overall_contract <- trim_descriptive_contract(
-        periode = "1958-2025",
+        periode = overall_period,
         periode_van = min(series$jaar, na.rm = TRUE),
         periode_tot = max(series$jaar, na.rm = TRUE),
         trend_pct_per_jaar = overall_pct,
@@ -1825,9 +1828,9 @@ analyse_species_subset <- function(species_matrix) {
       )
       post_contract <- trim_overall_contract(
         post_fit,
-        periode = "1984-2025",
-        periode_van = 1984L,
-        periode_tot = 2025L
+        periode = post_period,
+        periode_van = if (is.na(post_year_to)) NA_integer_ else 1984L,
+        periode_tot = post_year_to
       )
 
       trend_rows[[counter]] <- cbind(data.frame(
@@ -2339,7 +2342,7 @@ analyse_subset <- function(tbls, selected_kavels, year_from, year_to) {
   basis <- prepare_analysis_basis_subset(tbls, selected_kavels, year_from, year_to)
   selection_df <- build_species_selection_subset(tbls, selected_kavels, year_from, year_to)
   species_matrix <- build_species_matrix_subset(tbls, basis, selection_df, year_from, year_to)
-  species_results <- analyse_species_subset(species_matrix)
+  species_results <- analyse_species_subset(species_matrix, year_to)
   group_mapping <- build_group_mapping(tbls)
   full_group_results <- analyse_groups_subset(species_results$indices, group_mapping, msi_variant = "volledig")
   robust_ids <- species_results$status$soort_id[
