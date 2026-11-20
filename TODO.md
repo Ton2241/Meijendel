@@ -6,6 +6,10 @@ De lokale technische vervolgcontrole is afgerond. Websitekoppelingen zijn in een
 
 ## Nu open
 
+### Nieuwe Avimap-oppervlakten voor kavel 65 en 66
+
+- Ton en Codex verwerken bij de eerstvolgende gezamenlijke gegevensactualisering (datum te bepalen) de officiële RD New-export van 20 november 2026 voor project 252 in de oppervlaktenketen. Controleer de 144 regels voor kavel 65 en 66 over 1984–2055 tegen de nieuwe waarden en volg de bestaande validatie van SQL-export, dashboard en Shiny. Voor een aparte VPS-publicatie van gegevens geldt afzonderlijk akkoord.
+
 ### BMP 2026 — invoer en hercontrole
 
 - [x] Aantalsindex als hoofdindex voor de negen bestaande ecologische
