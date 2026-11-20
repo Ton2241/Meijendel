@@ -8,15 +8,6 @@ De lokale technische vervolgcontrole is afgerond. Websitekoppelingen zijn in een
 
 ### BMP 2026 — invoer en hercontrole
 
-- [ ] **TRIM-dashboard 2026 publiceren — Codex.** De opdracht van 20 november
-  2026 wacht op Tons afzonderlijke akkoord voor de beperkte gatewayaanpassing
-  en op de interactieve installatie met VPS-sudo. De lichte gateway weigert
-  19 geteste TRIM- en MSI-CSV's. De volledige route vereist minimaal 28 GiB
-  vrije ruimte. Gemeten is 25,35 GiB. Na akkoord de toegestane bestanden
-  exact begrenzen en testen, vervolgens de lichte deploy uitvoeren en de live
-  TRIM-weergaven controleren. Er is geen vervolgdatum afgesproken. Bewijs:
-  T7-proef trim-dashboard-vps-20261120, outputs/deploy-controle.json.
-
 - [x] Aantalsindex als hoofdindex voor de negen bestaande ecologische
   groepen gekozen en gevalideerd met 2.000 kaveltrekkingen. Alle 36.000
   groepsperiodetrekkingen zijn volledig. Bij 12 van de 18 groepsperioden
