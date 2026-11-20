@@ -3,6 +3,9 @@
 
 No model fits. Preparation is local; the isolated Linux rehearsal is explicit.
 Installing gateway code requires the visible standard macOS Terminal window.
+A legacy upload needs room for staging and sealing before sending the archive.
+After a successful legacy apply the client can remove that exact inbox archive
+when its checksum still matches a verified T7 copy and the active release.
 """
 import argparse,gzip,importlib.util,io,json,os,re,secrets,shlex,subprocess,sys,tarfile
 from pathlib import Path
@@ -110,6 +113,138 @@ def check_preflight_commits(response,prepared,repos):
   run(['git','-C',repos[name],'merge-base','--is-ancestor',old,prepared['commits'][name]])
 
 
+GIB=1024**3
+PRESENTATION_LIMIT=32*1024**2
+
+# Match the gateway's extraction reserve, including a further compressed copy
+# made while sealing a legacy inbox upload.
+def package_workspace(expanded,sql_size,*,presentation=False):
+ if presentation:return expanded+GIB
+ return max(28*GIB,core.integral_workspace_bytes(expanded,sql_size))
+
+
+def archive_workspace(archive):
+ expanded=0
+ sql=[]
+ with tarfile.open(archive,'r|gz') as bundle:
+  for count,member in enumerate(bundle,1):
+   if count==1:presentation=member.name=='presentation.json'
+   if count>100000 or not (member.isfile() or member.isdir()) or member.size<0:
+    raise ValueError('Ongeldig releasearchief voor de opslagcontrole')
+   expanded+=member.size
+   if expanded>16*GIB:raise ValueError('Archief groter dan releasegrens')
+   if member.name in ('payload/'+core.SQL_SOURCE,'payload/'+core.LEGACY_SQL_SOURCE):
+    if not member.isfile():raise ValueError('Ongeldige SQL-export in releasearchief')
+    sql.append(member.size)
+ if not expanded:raise ValueError('Leeg releasearchief')
+ if presentation:
+  if sql or expanded>PRESENTATION_LIMIT or archive.stat().st_size>PRESENTATION_LIMIT:
+   raise ValueError('Ongeldig presentatiearchief voor de opslagcontrole')
+  return package_workspace(expanded,0,presentation=True)
+ if len(sql)!=1 or not sql[0]:raise ValueError('Exact één SQL-export vereist')
+ return package_workspace(expanded,sql[0])
+
+
+def legacy_ssh(target,key):
+ return ['/usr/bin/ssh','-T','-o','BatchMode=yes','-o','IdentitiesOnly=yes',
+         '-o','StrictHostKeyChecking=yes','-o','ConnectTimeout=10','-i',str(key),'--',target]
+
+
+def read_legacy_capacity(target,key):
+ command="""import json,os
+paths={'inbox':'/srv/vwgm/deploy-state/integral-inbox','packages':'/var/lib/vwgm-integral/packages'}
+result={}
+for name,path in paths.items():
+ vfs=os.statvfs(path)
+ result[name]={'device':os.stat(path).st_dev,'free':vfs.f_bavail*vfs.f_frsize}
+print(json.dumps(result))
+"""
+ response=run([*legacy_ssh(target,key),shlex.join(['/usr/bin/python3','-c',command])],
+              capture_output=True,text=True)
+ return json.loads(response.stdout)
+
+
+def check_legacy_capacity(archive,target,key):
+ size=archive.stat().st_size
+ workspace=archive_workspace(archive)
+ available=read_legacy_capacity(target,key)
+ inbox,packages=(available[name] for name in ('inbox','packages'))
+ if inbox['device']==packages['device']:
+  minima=[('VPS',min(inbox['free'],packages['free']),workspace+2*size)]
+ else:
+  minima=[('VPS-inbox',inbox['free'],size),('VPS-releaseopslag',packages['free'],workspace+size)]
+ for label,free,needed in minima:
+  print(f'OPSLAG|{label}|vrij_bytes={free}|vereist_bytes={needed}',flush=True)
+  if free<needed:
+   raise ValueError(f'Onvoldoende vrije ruimte voor overdracht: {label} heeft {free/GIB:.2f} GiB vrij, vereist {needed/GIB:.2f} GiB')
+
+
+LEGACY_CLEANUP_PROGRAM="""import hashlib,json,os,re,stat,sys
+from pathlib import Path
+
+def remove_completed(state,production,commits,digest,size):
+    if set(commits)!={'Meijendel','VWG_M','VWG_Project'} or any(
+        not re.fullmatch(r'[0-9a-f]{40}',value) for value in commits.values()
+    ) or not re.fullmatch(r'[0-9a-f]{64}',digest) or size<=0:
+        raise ValueError('Onvolledige overdrachtsidentiteit')
+    lock=state/'production.lock'
+    lock.mkdir(mode=0o700)
+    try:
+        active=(production/'current').resolve(strict=True)
+        if active.parent!=production/'releases':
+            raise ValueError('Actieve release ligt buiten de beheerde releasemap')
+        manifest=active/'release.json'
+        if not stat.S_ISREG(manifest.lstat().st_mode) or manifest.stat().st_uid!=production.stat().st_uid:
+            raise ValueError('Geen beheerd releasemanifest')
+        live=json.loads(manifest.read_text())
+        if live.get('release_id')!=active.name or live.get('source_commits')!=commits or live.get('gateway_package_sha256')!=digest:
+            raise ValueError('Actieve release hoort bij een andere overdracht')
+        for name in ('Meijendel','VWG_M'):
+            if (state/(name+'.commit')).read_text().strip()!=commits[name]:
+                raise ValueError('Geregistreerde productiecommit wijkt af')
+        inbox=state/'integral-inbox'
+        if inbox.resolve(strict=True)!=inbox:
+            raise ValueError('Inboxpad wijkt af')
+        archive=inbox/(commits['Meijendel']+'.tar.gz')
+        try:
+            fd=os.open(archive,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
+        except FileNotFoundError:
+            return False
+        with os.fdopen(fd,'rb') as data:
+            before=os.fstat(data.fileno())
+            if not stat.S_ISREG(before.st_mode) or before.st_uid!=os.geteuid() or before.st_size!=size:
+                raise ValueError('Geen regulier overdrachtsbestand met de verwachte eigenaar en omvang')
+            if hashlib.file_digest(data,'sha256').hexdigest()!=digest:
+                raise ValueError('SHA-256 van de VPS-overdracht wijkt af')
+            def identity(info):
+                return info.st_dev,info.st_ino,info.st_size,info.st_mtime_ns,info.st_ctime_ns
+            if identity(before)!=identity(archive.lstat()):
+                raise ValueError('Overdrachtsbestand veranderde tijdens controle')
+            archive.unlink()
+        return True
+    finally:
+        lock.rmdir()
+
+if __name__=='__main__':
+    if os.path.lexists('/etc/vwgm/vps-queue-required'):
+        raise ValueError('Wachtrijbeleid gebruikt geen klassieke overdracht')
+    removed=remove_completed(Path('/srv/vwgm/deploy-state'),
+        Path('/var/lib/vwgm-integral/production'),json.loads(sys.argv[1]),sys.argv[2],int(sys.argv[3]))
+    print('OVERDRACHTSARCHIEF_VERWIJDERD' if removed else 'OVERDRACHTSARCHIEF_AFWEZIG')
+"""
+
+
+def cleanup_legacy_inbox(prepared,target,key):
+ archive=Path(prepared['archive'])
+ if archive.is_symlink():raise ValueError('T7-archief is een symbolische koppeling')
+ archive=checked_tree(archive)
+ if not archive.is_file() or core.sha(archive)!=prepared['sha256']:
+  raise ValueError('SHA-256 van het geverifieerde T7-archief wijkt af')
+ command=shlex.join(['/usr/bin/python3','-I','-c',LEGACY_CLEANUP_PROGRAM,
+                     json.dumps(prepared['commits']),prepared['sha256'],str(archive.stat().st_size)])
+ run([*legacy_ssh(target,key),command],stdin=subprocess.DEVNULL)
+
+
 def managed_execute(prepared,stage,target,key,out,repos):
  commit=prepared['commits']['Meijendel'];digest=prepared['sha256']
  archive=Path(prepared['archive']);size=archive.stat().st_size
@@ -136,6 +271,10 @@ def managed_execute(prepared,stage,target,key,out,repos):
 
 def execute(prepared_file,stage,install=False,yes=False):
  p=json.loads(prepared_file.read_text());analysis=Path(p['recipe']['analysis_root']);website=Path(p['recipe']['website_root']);project=Path(p['project_root']);out=prepared_file.parent
+ key=Path.home()/'.ssh/vwgm_spectraip_ed25519';target='ton@45.87.43.90'
+ if stage=='cleanup-inbox':
+  if p['intent']!='production' or not yes:raise ValueError('Inboxopruiming vraagt een productiepak en --yes')
+  return cleanup_legacy_inbox(p,target,key)
  if p['intent']=='isolated_trial':out=checked_tree(out)
  repos={'Meijendel':analysis,'VWG_M':website,'VWG_Project':project}
  for name,path in repos.items():
@@ -155,11 +294,15 @@ def execute(prepared_file,stage,install=False,yes=False):
   if not os.isatty(0) or os.getenv('TERM_PROGRAM')!='Apple_Terminal':raise ValueError('Start installatie zelf in het standaard macOS Terminal-venster')
   env=os.environ|dict(VWG_M_DIR=str(website),MEIJENDEL_DIR=str(analysis))
   run(['bash',project/'scripts/install_vwgm_admin_gateway_vps.sh','--apply','--yes'],env=env)
- key=Path.home()/'.ssh/vwgm_spectraip_ed25519';target='ton@45.87.43.90';commit=p['commits']['Meijendel'];digest=p['sha256']
- run(['/usr/bin/rsync','-a','--partial','-e',shlex.join(['ssh','-i',str(key)]),p['archive'],target+':/srv/vwgm/deploy-state/integral-inbox/'+commit+'.tar.gz'])
+ commit=p['commits']['Meijendel'];digest=p['sha256']
+ if not re.fullmatch('[0-9a-f]{40}',commit):raise ValueError('Exacte Meijendel-commit vereist')
+ operations=out/'operations.json'
+ saved=json.loads(operations.read_text()) if operations.exists() else {}
+ if stage in ('preflight','apply','rehearse') and 'preflight' not in saved:
+  check_legacy_capacity(Path(p['archive']),target,key)
+  run(['/usr/bin/rsync','-a','--partial','-e',shlex.join(legacy_ssh(target,key)[:-2]),p['archive'],target+':/srv/vwgm/deploy-state/integral-inbox/'+commit+'.tar.gz'])
  def gateway(operation):
   # A reconnect reuses its saved operation ID, never starts another import.
-  operations=out/'operations.json';saved=json.loads(operations.read_text()) if operations.exists() else {}
   item=saved.get(operation);env=os.environ|dict(GATEWAY_ACTION='meijendel-integral')
   env.pop('GATEWAY_OPERATION_ID',None);env.pop('GATEWAY_NEW_OPERATION_ID',None)
   if item and item['state']=='complete':return (out/(operation+'.log')).read_text()
@@ -182,11 +325,15 @@ def execute(prepared_file,stage,install=False,yes=False):
   evidence=next(json.loads(line) for line in text.splitlines() if line.startswith('{') and 'meijendel-integral-linux-proof-v1' in line)
   if not evidence.get('success') or evidence['production_before']!=evidence['production_after']:raise ValueError('Geen groene onveranderde productie-identiteit')
   core.atomic_json(out/'linux-proof.json',evidence);gateway('cleanup')
+ if stage=='apply':
+  try:cleanup_legacy_inbox(p,target,key)
+  except (OSError,ValueError,subprocess.SubprocessError) as error:
+   print('AANDACHT: productie toegepast; overdrachtsbestand apart beoordelen: '+str(error),file=sys.stderr,flush=True)
  print('KLAAR — '+stage+' via gesloten gateway; '+('productie-inhoud niet gepubliceerd' if p['intent']=='isolated_trial' else 'controleer geregistreerde release'),flush=True)
 
 
 def main():
- a=argparse.ArgumentParser(description=__doc__);a.add_argument('--recipe',type=Path);a.add_argument('--baseline-bootstrap',type=Path);a.add_argument('--output',type=Path);a.add_argument('--project-root',type=Path);a.add_argument('--prepared',type=Path);a.add_argument('--stage',choices=['prepare','prepare-presentation','receive','preflight','rehearse','apply','rollback','cleanup'],default='prepare');a.add_argument('--base-manifest',type=Path);a.add_argument('--install-gateway',action='store_true');a.add_argument('--yes',action='store_true');args=a.parse_args()
+ a=argparse.ArgumentParser(description=__doc__);a.add_argument('--recipe',type=Path);a.add_argument('--baseline-bootstrap',type=Path);a.add_argument('--output',type=Path);a.add_argument('--project-root',type=Path);a.add_argument('--prepared',type=Path);a.add_argument('--stage',choices=['prepare','prepare-presentation','receive','preflight','rehearse','apply','rollback','cleanup','cleanup-inbox'],default='prepare');a.add_argument('--base-manifest',type=Path);a.add_argument('--install-gateway',action='store_true');a.add_argument('--yes',action='store_true');args=a.parse_args()
  if args.stage=='prepare-presentation':
   if not all([args.prepared,args.base_manifest,args.output,args.project_root]):a.error('prepare-presentation vraagt prepared, base-manifest, output en project-root')
   prepare_presentation(args.prepared,args.base_manifest,args.output,args.project_root)

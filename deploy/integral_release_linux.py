@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """Fixed Linux hooks for the hash-bound VWG gateway; no arbitrary commands/paths."""
 from __future__ import annotations
-import argparse,contextlib,hashlib,ipaddress,socket,http.server,tarfile,importlib.util,json,os,re,shutil,signal,stat,subprocess,sys,tempfile,time,urllib.parse,urllib.request
+import argparse,contextlib,gzip,hashlib,ipaddress,socket,http.server,tarfile,importlib.util,json,os,re,shutil,signal,stat,subprocess,sys,tempfile,time,urllib.parse,urllib.request
 from html.parser import HTMLParser
 from pathlib import Path
 BASE=Path('/srv/vwgm');STATE=BASE/'deploy-state';CONTROL=Path('/var/lib/vwgm-integral');INSTALL=Path(__file__).resolve().parent
@@ -109,6 +109,69 @@ def secure_file(path):
  s=Path(path).lstat()
  if not stat.S_ISREG(s.st_mode) or s.st_uid!=0 or s.st_gid!=0 or s.st_mode&0o022:raise ValueError('Geen veilig root-bestand: '+str(path))
 
+
+def write_mysql_gzip(source,target):
+ digest=hashlib.sha256()
+ with target.open('xb') as raw:
+  with gzip.GzipFile(filename='',mode='wb',fileobj=raw,compresslevel=1,mtime=0) as stream:
+   for chunk in iter(lambda:source.read(1024*1024),b''):
+    digest.update(chunk)
+    stream.write(chunk)
+  raw.flush()
+  os.fsync(raw.fileno())
+ return digest.hexdigest()
+
+def mysql_backup_source(path,manifest):
+ files=manifest['files']
+ names={'mysql.sql','mysql.sql.gz'} & files.keys()
+ if len(names)!=1:raise ValueError('Herstelset heeft geen eenduidige SQL-dump')
+ name=names.pop()
+ source=path/name
+ if source.is_symlink() or not source.is_file() or core.sha(source)!=files[name]:
+  raise ValueError('Beschadigde SQL-herstelbron')
+ if name.endswith('.gz'):
+  with gzip.open(source,'rb') as stream:
+   if hashlib.file_digest(stream,'sha256').hexdigest()!=manifest.get('mysql_sql_sha256'):
+    raise ValueError('Ongecomprimeerde SQL wijkt af van het herstelmanifest')
+ return source
+
+def sync_backup_directory(path):
+ fd=os.open(path,os.O_RDONLY|os.O_DIRECTORY)
+ try:os.fsync(fd)
+ finally:os.close(fd)
+
+def compress_mysql_backup(path):
+ manifest_path=path/'backup.json'
+ manifest=jsonfile(manifest_path)
+ source=mysql_backup_source(path,manifest)
+ raw=path/'mysql.sql'
+ if source!=raw:
+  if raw.exists():
+   if raw.is_symlink() or core.sha(raw)!=manifest['mysql_sql_sha256']:
+    raise ValueError('SQL-restbestand wijkt af')
+   raw.unlink()
+   sync_backup_directory(path)
+  return source
+ target=path/'mysql.sql.gz'
+ with tempfile.TemporaryDirectory(prefix='.mysql-compress-',dir=path) as tmp:
+  staged=Path(tmp)/target.name
+  with raw.open('rb') as stream:
+   digest=write_mysql_gzip(stream,staged)
+  if digest!=manifest['files']['mysql.sql']:
+   raise ValueError('SQL-bron veranderde tijdens compressie')
+  encoded=manifest|dict(files={k:v for k,v in manifest['files'].items() if k!='mysql.sql'},
+                        mysql_sql_sha256=digest)
+  encoded['files'][target.name]=core.sha(staged)
+  mysql_backup_source(staged.parent,encoded)
+  staged.replace(target)
+  sync_backup_directory(path)
+  secret_json(manifest_path,encoded)
+  with manifest_path.open('rb') as recorded:os.fsync(recorded.fileno())
+  sync_backup_directory(path)
+  raw.unlink()
+  sync_backup_directory(path)
+ return target
+
 def env_file(path):
  # The production env uses plain KEY=value records; do not execute it as shell code.
  result={}
@@ -204,20 +267,25 @@ class LinuxHooks:
  def snapshot(self,path):
   print('INTEGRAL_STEP='+'snapshot',flush=True)
   path.mkdir(parents=True,mode=0o700)
-  with (path/'mysql.sql').open('wb') as out,(path/'dump.log').open('wb') as err:
-   run(docker_mysql(self.mysql,'mysqldump',('--single-transaction','--quick','--routines','--events','--triggers','--hex-blob','--set-gtid-purged=OFF','--no-tablespaces',self.mysql_db)),stdout=out,stderr=err)
+  dump=path/'mysql.sql.gz'
+  cmd=docker_mysql(self.mysql,'mysqldump',('--single-transaction','--quick','--routines','--events','--triggers','--hex-blob','--set-gtid-purged=OFF','--no-tablespaces',self.mysql_db))
+  with (path/'dump.log').open('wb') as err,subprocess.Popen(cmd,stdout=subprocess.PIPE,stderr=err) as proc:
+   sql_sha256=write_mysql_gzip(proc.stdout,dump)
+   if proc.wait():raise RuntimeError('MySQL-back-up mislukt; zie besloten dump.log')
   with (path/'cms.dump').open('wb') as out:self.pg(['pg_dump','--format=custom',self.db],stdout=out)
   # Live website/historical objects are preserved from this database, not a stale local fixture.
   names=self.sql("SELECT table_name FROM information_schema.tables WHERE table_schema='Meijendel';").splitlines();owned=owned_objects(names)
   with (path/'website_objects.sql').open('wb') as out,(path/'dump.log').open('ab') as err:
    run(docker_mysql(self.mysql,'mysqldump',('--single-transaction','--no-tablespaces','--set-gtid-purged=OFF',self.mysql_db,*owned)),stdout=out,stderr=err)
   self.capture_files(self.s['website_data'],path/'app-data.tar')
-  m=dict(files={name:core.sha(path/name) for name in ('mysql.sql','cms.dump','website_objects.sql','app-data.tar')},filesystem=self.files_fingerprint(),mysql=self.mysql_fingerprint(),cms=self.pg_fingerprint(),owned=self.owned_fingerprint(),database=self.database_metadata())
+  m=dict(files={name:core.sha(path/name) for name in (dump.name,'cms.dump','website_objects.sql','app-data.tar')},mysql_sql_sha256=sql_sha256,filesystem=self.files_fingerprint(),mysql=self.mysql_fingerprint(),cms=self.pg_fingerprint(),owned=self.owned_fingerprint(),database=self.database_metadata())
   if not self.s['trial']:self.snapshot_production_files(path,m)
   secret_json(path/'backup.json',m)
  def import_mysql(self,path,reset=False):
   if reset:self.sql('SET SESSION sql_log_bin=0; DROP DATABASE IF EXISTS Meijendel; CREATE DATABASE Meijendel CHARACTER SET utf8mb4;')
-  with Path(path).open('rb') as src,self.log.open('ab') as log:
+  path=Path(path)
+  source=gzip.open(path,'rb') if path.suffix=='.gz' else path.open('rb')
+  with source as src,self.log.open('ab') as log:
    proc=subprocess.Popen(docker_mysql(self.mysql,args=('--binary-mode=1',self.mysql_db)),stdin=subprocess.PIPE,stdout=log,stderr=log)
    try:
     proc.stdin.write(b'SET SESSION sql_log_bin=0;\n');shutil.copyfileobj(src,proc.stdin,1024*1024);proc.stdin.close()
@@ -244,8 +312,9 @@ class LinuxHooks:
  def restore(self,path):
   print('INTEGRAL_STEP='+'restore',flush=True)
   m=jsonfile(path/'backup.json')
-  if any(core.sha(path/name)!=digest for name,digest in m['files'].items()):raise ValueError('Beschadigde herstelbron')
-  self.import_mysql(path/'mysql.sql',reset=True);self.restore_pg(path/'cms.dump',m['database'])
+  source=mysql_backup_source(path,m)
+  if any(core.sha(path/name)!=digest for name,digest in m['files'].items() if name!=source.name):raise ValueError('Beschadigde herstelbron')
+  self.import_mysql(source,reset=True);self.restore_pg(path/'cms.dump',m['database'])
   self.restore_files(path/'app-data.tar')
   if self.files_fingerprint()!=m['filesystem']:raise RuntimeError('Gedeelde appbestanden na herstel afwijkend')
   if self.mysql_fingerprint()!=m['mysql'] or self.pg_fingerprint()!=m['cms']:raise RuntimeError('Database-inhoud na herstel wijkt af')
@@ -486,7 +555,7 @@ def safe_extract(archive,destination):
    if count>100000 or expanded>16*GIB:raise ValueError('Archief groter dan releasegrens')
    if item.name in ('payload/data/meijendel.sql','payload/data/Meijendel.sql'):sql_size+=item.size
   members=tar.getmembers()
-  if sys.platform=='linux' and shutil.disk_usage(destination).free<expanded+5*sql_size+8*1024**3:raise ValueError('Onvoldoende ruimte voor pakket, proefdata, drie backups en 8GiB reserve')
+  if sys.platform=='linux' and shutil.disk_usage(destination).free<core.integral_workspace_bytes(expanded,sql_size):raise ValueError('Onvoldoende ruimte voor pakket, proefdata, drie backups en 8GiB reserve')
   for item in members:
    path=core.safe_path(destination,item.name)
    if item.isdir():path.mkdir(parents=True,exist_ok=True,mode=0o755)

@@ -834,6 +834,25 @@ geeft geen toestemming om opnieuw toe te passen. Bij actief beleid stopt
 de klassieke schrijfroute en vraagt afzonderlijk herstel om de beheerroute.
 
 
+### Opslagruimte voor de integrale gateway
+
+De klassieke client controleert de vrije ruimte vóór `rsync`. Hij gebruikt
+de uitgepakte archiefgrootte, vijfmaal de SQL-omvang, 8 GiB reserve en beide
+tijdelijke gecomprimeerde archiefkopieën op het gedeelde bestandssysteem.
+De bestaande ondergrens van 28 GiB blijft gelden. De gateway controleert
+bij uitpakken opnieuw. De ingestelde productiereserve blijft behouden.
+
+Na een geslaagde klassieke apply verwijdert de client de inboxkopie als de
+actieve release, productiecommits en SHA-256 overeenkomen met het
+geverifieerde archief op T7. Als alleen deze opruiming wacht, kan
+`--stage cleanup-inbox --yes` met hetzelfde `prepared.json` opnieuw worden
+uitgevoerd zolang die release actief is. De beheerde ontvangst gebruikt
+tijdelijke opslag zonder klassieke inboxkopie.
+
+Directe terugvalsets gebruiken `mysql.sql.gz` met twee checksums. Oude sets
+met `mysql.sql` blijven leesbaar. Houd een gatewayversie die beide formaten
+kent beschikbaar zolang er gecomprimeerde terugvalsets zijn.
+
 ### Lichte presentatie-uitrol
 
 De [projectstandaard voor presentatie- en codewijzigingen](../../VWG_Project/workflow.md#standaard-lichte-gatewaydeploy)

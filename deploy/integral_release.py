@@ -32,6 +32,11 @@ DASHBOARD_TRIM_ASSETS = frozenset({
 })
 
 
+def integral_workspace_bytes(expanded_bytes, sql_bytes):
+    """Space for extraction, SQL working copies and the 8 GiB reserve."""
+    return expanded_bytes + 5 * sql_bytes + 8 * 1024**3
+
+
 def sql_source(manifest):
     source=manifest.get('mysql',{}).get('source')
     if source not in (SQL_SOURCE,LEGACY_SQL_SOURCE):raise ValueError('Onbekende SQL-binding')

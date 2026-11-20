@@ -126,6 +126,51 @@ class ShinyMountRegression(unittest.TestCase):
    h.bind_trial_mysql()
   self.assertEqual(s['website_env']['MEIJENDEL_MYSQL_HOST'],'172.29.0.2')
   self.assertEqual(s['website_env']['MEIJENDEL_MYSQL_PORT'],'3306')
+
+class CompressedRollback(unittest.TestCase):
+ def test_existing_backup_can_be_compressed_without_changing_its_sql_identity(self):
+  import gzip,hashlib
+  with tempfile.TemporaryDirectory() as d:
+   path=Path(d)
+   contents=b'INSERT INTO voorbeeld VALUES (1);\n'*100
+   raw=path/'mysql.sql';raw.write_bytes(contents)
+   digest=hashlib.sha256(contents).hexdigest()
+   manifest={'files':{'mysql.sql':digest},'other':'preserved'}
+   (path/'backup.json').write_text(json.dumps(manifest))
+   self.assertEqual(linux.mysql_backup_source(path,manifest),raw)
+   final=linux.compress_mysql_backup(path)
+   saved=json.loads((path/'backup.json').read_text())
+   self.assertFalse(raw.exists())
+   self.assertEqual(saved['other'],'preserved')
+   self.assertEqual(saved['mysql_sql_sha256'],digest)
+   self.assertEqual(final,path/'mysql.sql.gz')
+   self.assertEqual(gzip.decompress(final.read_bytes()),contents)
+   self.assertEqual(linux.mysql_backup_source(path,saved),final)
+   self.assertEqual(linux.compress_mysql_backup(path),final)
+ def test_wrong_compressed_payload_is_rejected_before_destructive_import(self):
+  import gzip
+  from unittest.mock import Mock
+  with tempfile.TemporaryDirectory() as d:
+   path=Path(d)
+   source=path/'mysql.sql.gz';source.write_bytes(gzip.compress(b'wrong'))
+   m={'files':{'mysql.sql.gz':linux.core.sha(source)},'mysql_sql_sha256':'a'*64}
+   (path/'backup.json').write_text(json.dumps(m))
+   hook=object.__new__(linux.LinuxHooks); hook.import_mysql=Mock()
+   with self.assertRaisesRegex(ValueError,'SQL'):
+    hook.restore(path)
+   hook.import_mysql.assert_not_called()
+ def test_conversion_keeps_raw_on_failed_manifest_write(self):
+  from unittest.mock import patch
+  with tempfile.TemporaryDirectory() as d:
+   path=Path(d); raw=path/'mysql.sql'; raw.write_bytes(b'keep me')
+   m={'files':{'mysql.sql':linux.core.sha(raw)}}
+   (path/'backup.json').write_text(json.dumps(m))
+   with patch.object(linux,'secret_json',side_effect=OSError('write failed')):
+    with self.assertRaises(OSError):linux.compress_mysql_backup(path)
+   self.assertEqual(raw.read_bytes(),b'keep me')
+   self.assertEqual(json.loads((path/'backup.json').read_text()),m)
+   self.assertEqual(linux.compress_mysql_backup(path),path/'mysql.sql.gz')
+
 class InternalShinyBinding(unittest.TestCase):
  def test_shiny_health_uses_internal_container_endpoint(self):
   s=linux.layout('a'*40,True);s['shiny_upstream']='172.29.0.3:3838';h=linux.LinuxHooks(s)
