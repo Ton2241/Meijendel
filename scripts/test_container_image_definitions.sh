@@ -5,8 +5,10 @@ repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 shiny="$repo/deploy/shiny_image/Dockerfile"
 shiny_rebuild="$repo/deploy/rebuild_shiny_image_vps.sh"
 mysql_971="$repo/deploy/mysql_image/Dockerfile.9.7.1"
+mysql_974="$repo/deploy/mysql_image/Dockerfile.9.7.4"
 mysql_950="$repo/deploy/mysql_image/Dockerfile.9.5.0"
 mysql_rebuild="$repo/deploy/rebuild_mysql_image_vps.sh"
+mysql_974_security_rebuild="$repo/deploy/rebuild_mysql_974_security_vps.sh"
 meijendel_release="$repo/deploy/deploy_meijendel_release_vps_remote.sh"
 mysql_storage="$repo/deploy/optimize_mysql_storage_vps_remote.sh"
 mysql_storage_test="$repo/scripts/test_mysql_storage_maintenance.sh"
@@ -122,7 +124,7 @@ grep -Fq 'productie=ongewijzigd' <<<"$candidate_finalization"
 ! grep -Fq 'docker buildx rm "$BUILDER_NAME"' <<<"$candidate_finalization"
 ! grep -Fq 'docker image rm moby/buildkit:buildx-stable-1' <<<"$candidate_finalization"
 
-for file in "$mysql_971" "$mysql_950"; do
+for file in "$mysql_971" "$mysql_950" "$mysql_974"; do
   grep -Eq '^FROM golang@sha256:[0-9a-f]{64} AS gosu-builder$' "$file"
   grep -Fq '6456aaa0f3c854d199d0f037f068eb97515b7513' "$file"
   grep -Fq 'microdnf remove -y mysql-shell' "$file"
@@ -140,7 +142,15 @@ grep -Fq 'usermod --uid "$MYSQL_UID" --gid "$MYSQL_GID" mysql' "$mysql_971"
 grep -Fq 'test "$(id -u mysql)" -eq "$MYSQL_UID"' "$mysql_971"
 grep -Fq 'test "$(id -g mysql)" -eq "$MYSQL_GID"' "$mysql_971"
 [[ -x "$mysql_rebuild" ]]
+[[ -x "$mysql_974_security_rebuild" ]]
 grep -Fq 'rebuild_mysql_image_vps.sh' "$repo/deploy/README_DEPLOY.md"
+grep -Fq 'rebuild_mysql_974_security_vps.sh --finalize --yes' "$repo/deploy/README_DEPLOY.md"
+
+grep -Eq '^FROM mysql@sha256:[0-9a-f]{64}$' "$mysql_974"
+grep -Fq -- '--disablerepo=mysql9.7-server-minimal' "$mysql_974"
+grep -Fq "mysql --version | grep -Fq 'Ver 9.7.4 '" "$mysql_974"
+grep -Fq 'ARG MYSQL_UID=1999' "$mysql_974"
+grep -Fq 'ARG MYSQL_GID=1999' "$mysql_974"
 
 grep -Eq '^FROM mysql@sha256:[0-9a-f]{64}$' "$mysql_950"
 grep -Fq -- '--disablerepo=mysqlinnovation-server-minimal' "$mysql_950"
