@@ -1031,12 +1031,6 @@ in iCloud **Agenda**.
   heeft geen aanvullende bronadministratie. De export maakt het onderscheid
   tussen losse waarnemingen en inventarisaties niet mogelijk. De opvolging
   is afgerond en de agendaherinnering van 25 november is verwijderd.
-- [ ] **EIS-libellenexport 07.001 — 22 regels uit 1971–2006 zonder
-  aangetroffen NDFF-identiteit.** Codex herbeoordeelt bij nieuwe
-  waarnemingsidentiteiten of locatiebewijs. Voor 14 regels komen soort
-  en periode wel overeen met een ander hok. De 2.568 betrouwbare
-  koppelingen en twee interne hokwaarnemingen uit 1998 zijn verwerkt.
-  Zie het [bronregister](docs/MEIJENDEL_BRONREGISTER.md).
 - [x] **De Vlinderstichting — ruimtelijke en eerste trendtoets, 16 november
   2026.** De routekaart en 8.714 dagvlinderjaarcijfers zijn vergeleken met de
   actuele Meijendel-grens en de elf NDFF-routefamilies. Elf van de zeventien
