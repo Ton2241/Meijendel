@@ -6,6 +6,12 @@ De lokale technische vervolgcontrole is afgerond. Websitekoppelingen zijn in een
 
 ## Nu open
 
+### Jaarverslag Vogelwerkgroep Meijendel 2026
+
+- [ ] **Wintervogeltellingen.** Jan Westgeest is op 21 november 2026 per e-mail gevraagd om de tekst van 15 tot en met 29 december 2026 aan te leveren. Ton volgt de ontvangst op.
+- [ ] **Atlasbloktellingen.** André Leegwater is op 20 november 2026 telefonisch gevraagd om een tekst aan te leveren. Ton volgt de ontvangst op. Er is geen leverdatum vastgelegd.
+- [ ] **Begin januari 2027.** Ton verwerkt de bijdragen, rondt de jaarverslagtekst af en stuurt die aan Amy.
+
 ### Rode-Lijstbericht 457 na de Sovon-publicatie
 
 - [ ] Ton geeft expliciet akkoord op de exacte concepttekst voor Rode-Lijstbericht 457 op vwg-m.nl. Codex publiceert daarna met behoud van de oorspronkelijke datum en positie en vergelijkt de openbare tekst met de kandidaat. De gecorrigeerde BMP-gegevens 2024–2026 draaien sinds 20 november in productie onder release 2026-11-20.3. Het gecontroleerde concept en de oorspronkelijke tekst staan op T7 onder sovon-bmp-aanvullende-correctie-20261120. Datum na tekstackoord.
