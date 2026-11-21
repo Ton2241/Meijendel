@@ -32,8 +32,10 @@ op de vaste T7-back-uplocatie.
 
 De originele bijlage uit Thunderbird heeft SHA-256
 `b7122078f417a459afe69370733ff5cea2bcf93e9e2f509aec40403de2f0be8d`.
-De werkmap op T7 bevat de gecontroleerde bronkopie en de resultaten van de
-datum-, hok- en soortvergelijking. Zie het bronregister voor de beslisstand.
+Het oorspronkelijke bestand staat in `/Volumes/T7 Data/Home_Ton/Meijendel data/Vlinderstichting`
+onder de naam `NDFF-export_20-11-2026_Meijendel_libellen_1950-2008.xls`. De gecontroleerde resultaten van de datum-,
+hok- en soortvergelijking staan in de T7-proefmap. De 22 resterende regels
+uit 1971–2006 blijven onderdeel van het oorspronkelijke bestand.
 
 De proef met echte bronrijen onder MySQL 9.7.4 geeft gelijke SHA-256-waarden
 voor de vier meetnettabellen en hun 3.280 bronkoppelingen. De libellenaudit
