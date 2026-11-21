@@ -141,7 +141,8 @@ Van 60 bezoeken is alleen een grof vlak beschikbaar. Bij 53 daarvan bewijzen
 meerdere getelde taxa eveneens het algemene doelbereik. Zeven grove bezoeken
 bevatten slechts één taxon; hun doelbereik blijft `onbepaald`. Voor deze zeven
 wordt alleen de positieve telling bewaard en worden geen andere soorten als
-afwezig ingevuld. De vier `Meijendel.ndff_libel_*`-tabellen worden met
+afwezig ingevuld. De vier tabellen `Meijendel.libellen_bezoek`, `libellen_bezoek_taxon`,
+`libellen_routefamilie` en `libellen_routegeometrie` worden met
 `--audit-libellen` gecontroleerd; er staan geen afgeleide libellengegevens in
 het beveiligde schema.
 

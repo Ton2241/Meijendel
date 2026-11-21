@@ -143,7 +143,7 @@ RAVON_N2000_RULE_VERSION = "ndff-ravon-n2000-v1"
 OTTER_BEVER_RULE_VERSION = "ndff-otter-bever-v1"
 VLINDER_TABLE_PREFIX = "Meijendel.ndff_vlinder"
 VLIESVLEUGEL_TABLE_PREFIX = "Meijendel.ndff_vliesvleugel"
-LIBEL_TABLE_PREFIX = "Meijendel.ndff_libel"
+LIBEL_TABLE_PREFIX = "Meijendel.libellen"
 REPTILE_TABLE_PREFIX = "Meijendel.ndff_reptiel"
 AMPHIBIAN_TABLE_PREFIX = "Meijendel.ndff_amfibie"
 BAT_TABLE_PREFIX = "Meijendel.ndff_vleermuis"
@@ -11279,7 +11279,7 @@ SELECT JSON_OBJECT('soort','bron','bezoek_sleutel',b.bezoek_sleutel,
  'gegevensgeschiktheid',a.gegevensgeschiktheid,'kwaliteitsmelding',a.kwaliteitsmelding,
  'analysetype_gegevensgeschiktheid',d.gegevensgeschiktheid,
  'analysetype_kwaliteitsmelding',d.reden)
-FROM Meijendel.ndff_libel_bezoek b
+FROM Meijendel.libellen_bezoek b
 LEFT JOIN Meijendel.libellen_waarneming o
  ON o.periode_start=b.periode_start AND o.periode_stop=b.periode_stop
  AND o.protocol LIKE '07.201%' AND o.soortgroep_raw='Libellen'
@@ -11298,7 +11298,7 @@ SELECT JSON_OBJECT('soort','matrix','bezoek_sleutel',m.bezoek_sleutel,
  'wetenschappelijke_naam',m.wetenschappelijke_naam,'weergavenaam',t.weergavenaam,
  'groep_code',g.groep_code,'aantal',m.aantal,'waarnemingsstatus',m.waarnemingsstatus,
  'nulregel',m.nulregel)
-FROM Meijendel.ndff_libel_bezoek_taxon m
+FROM Meijendel.libellen_bezoek_taxon m
 LEFT JOIN Meijendel.taxa_bronkoppeling k ON k.koppeling_id=m.taxon_bronkoppeling_id
  AND k.koppelstatus IN ('kandidaat','bevestigd')
 LEFT JOIN Meijendel.taxa t ON t.taxon_id=k.taxon_id

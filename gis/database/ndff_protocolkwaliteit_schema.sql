@@ -482,7 +482,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_vliesvleugel_bezoek_taxon (
 -- De bron is volledig openbaar. Per route en bezoek blijft herkenbaar of het
 -- doelbereik algemeen is vastgesteld; bij onbekend doelbereik worden geen
 -- afgeleide nullen buiten de daadwerkelijk gemelde taxa opgeslagen.
-CREATE TABLE IF NOT EXISTS Meijendel.ndff_libel_routefamilie (
+CREATE TABLE IF NOT EXISTS Meijendel.libellen_routefamilie (
   reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
   routefamilie_id SMALLINT UNSIGNED NOT NULL,
   protocol_sleutel VARCHAR(16) CHARACTER SET ascii NOT NULL DEFAULT '07.201',
@@ -501,7 +501,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_libel_routefamilie (
   CHECK (laatste_jaar >= eerste_jaar)
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS Meijendel.ndff_libel_routegeometrie (
+CREATE TABLE IF NOT EXISTS Meijendel.libellen_routegeometrie (
   reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
   geometrie_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
   routefamilie_id SMALLINT UNSIGNED NOT NULL,
@@ -512,11 +512,11 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_libel_routegeometrie (
   KEY ix_ndff_libel_geometrie_route (reconstructieversie, routefamilie_id),
   CONSTRAINT fk_ndff_libel_geometrie_route FOREIGN KEY
     (reconstructieversie, routefamilie_id)
-    REFERENCES Meijendel.ndff_libel_routefamilie
+    REFERENCES Meijendel.libellen_routefamilie
       (reconstructieversie, routefamilie_id)
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS Meijendel.ndff_libel_bezoek (
+CREATE TABLE IF NOT EXISTS Meijendel.libellen_bezoek (
   reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
   bezoek_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
   periode_start DATETIME NOT NULL,
@@ -533,13 +533,13 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_libel_bezoek (
     (reconstructieversie, routefamilie_id, jaar),
   CONSTRAINT fk_ndff_libel_bezoek_route FOREIGN KEY
     (reconstructieversie, routefamilie_id)
-    REFERENCES Meijendel.ndff_libel_routefamilie
+    REFERENCES Meijendel.libellen_routefamilie
       (reconstructieversie, routefamilie_id),
   CHECK (periode_stop >= periode_start),
   CHECK (jaar = YEAR(periode_start))
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS Meijendel.ndff_libel_bezoek_taxon (
+CREATE TABLE IF NOT EXISTS Meijendel.libellen_bezoek_taxon (
   reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
   bezoek_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
   wetenschappelijke_naam VARCHAR(255) NOT NULL,
@@ -551,7 +551,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_libel_bezoek_taxon (
     (wetenschappelijke_naam, waarnemingsstatus),
   CONSTRAINT fk_ndff_libel_taxon_bezoek FOREIGN KEY
     (reconstructieversie, bezoek_sleutel)
-    REFERENCES Meijendel.ndff_libel_bezoek
+    REFERENCES Meijendel.libellen_bezoek
       (reconstructieversie, bezoek_sleutel),
   CHECK ((waarnemingsstatus='waargenomen' AND aantal > 0) OR
          (waarnemingsstatus='echte_nul' AND aantal = 0))

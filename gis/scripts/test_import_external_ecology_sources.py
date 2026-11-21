@@ -899,10 +899,17 @@ def check_central_query_routes():
         },
         'lvd_resultaat': {'resultaat_id','wetenschappelijke_naam','bronmetadata'},
         'pq_vegetatie_waarneming': {'waarneming_id','taxon_bronkoppeling_id'},
+        'libellen_bezoek_taxon': {
+            'reconstructieversie', 'bezoek_sleutel', 'wetenschappelijke_naam',
+            'waarnemingsstatus', 'taxon_bronkoppeling_id',
+        },
         'ndff_test_bezoek_taxon': {'reconstructieversie','bezoek_sleutel','wetenschappelijke_naam','waarnemingsstatus'},
         'ndff_habslak_hokjaar': {'reconstructieversie','hokjaar_sleutel','doelsoort','jaar'},
     }
     routes = module.central_query_routes(schema)
+    assert routes['libellen_bezoek_taxon']['kind'] == 'derived'
+    assert routes['libellen_bezoek_taxon']['role'] == 'afgeleide_meting'
+    assert routes['libellen_bezoek_taxon']['version_field'] == 'reconstructieversie'
     assert routes['territoria']['catalogue'] == 'soorten'
     assert routes['ndff_open_waarneming']['catalogue'] == 'ndff_soorten'
     assert routes['mossen_waarneming']['catalogue'] == 'ndff_soorten'

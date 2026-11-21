@@ -31,6 +31,8 @@ levering heeft voor deze route geen telobject of jaarcijfers. De historische
 groepsrijtellingen verderop beschrijven de nulmeting van 26 september en
 zijn geen opgave van nog bestaande ID-indexen.
 
+**Libellenmeetnet, 21 november 2026.** De reconstructie van meetnetprotocol 07.201 uit 2007–2021 staat in `libellen_bezoek` (461 bezoeken), `libellen_bezoek_taxon` (13.173 regels), `libellen_routefamilie` (9 routefamilies) en `libellen_routegeometrie` (18 geometrieën). De 3.280 gekoppelde bronwaarnemingen en de uitkomsten van beide bestaande libellenselecties zijn inhoudelijk gelijk gebleven.
+
 **Actuele aanvulling, 17 november 2026.** De geselecteerde primaire kaartlocaties
 van De Vlinderstichting staan in vier nieuwe, uitsluitend ruimtelijke tabellen:
 `vlinders_dag_telobject` (11), `vlinders_dag_geometrie` (194),
@@ -240,7 +242,7 @@ Het volledige voorstel is een gegevensmigratie. De complexiteit zit vooral in id
 
 | Onderdeel | Zwaarte | Wat het vergt |
 |---|---|---|
-| Een afgebakende meetfamilie hernoemen | Beperkt tot middelgroot | Schema, verwijzingen, import en tests samen aanpassen. De vier huidige `ndff_libel_*`-tabellen zijn een afgebakend voorbeeld. |
+| Een afgebakende meetfamilie hernoemen | Beperkt tot middelgroot | Schema, verwijzingen, import en tests samen aanpassen. De vier voormalige `ndff_libel_*`-tabellen zijn een afgebakend voorbeeld. |
 | NDFF-waarnemingen naar echte groepsfamilies verdelen | Groot | Stabiele ID's, ruimtelijke beoordeling, protocollen, analysebesluiten en de 233 dubbele lidmaatschappen correct meenemen. |
 | De zes externe datasets aansluiten | Middelgroot tot groot | 98.916 resultaten uit 1875–2025 per taxon en meetvorm toewijzen. Coleoptera is eenvoudiger af te bakenen dan STOWA. |
 | Vangblik vanuit soortgroepen bereikbaar maken | Middelgroot | Taxonkoppelingen en gecontroleerde verwijzingen voor 60.560 resultaten uit 1953–1960, zonder dubbele telling. |

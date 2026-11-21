@@ -156,7 +156,10 @@ def central_query_routes(schema: dict[str, set[str]]) -> dict[str, dict]:
                              'role': 'bronverwijzing',
                              'partitioned': 'ndff_open_waarneming_register' in schema,
                              'storage_tables': ndff_storage_parts(schema)}
-        elif table.startswith(('ndff_', 'sovon_avimap_', 'daz_bmp_', 'hns_', 'florbase_', 'lmfa_')) and columns & {'wetenschappelijke_naam', 'doelsoort'}:
+        elif (
+            table == 'libellen_bezoek_taxon'
+            or table.startswith(('ndff_', 'sovon_avimap_', 'daz_bmp_', 'hns_', 'florbase_', 'lmfa_'))
+        ) and columns & {'wetenschappelijke_naam', 'doelsoort'}:
             name = 'wetenschappelijke_naam' if 'wetenschappelijke_naam' in columns else 'doelsoort'
             version = 'reconstructieversie' if 'reconstructieversie' in columns else 'regelversie'
             if version not in columns:
@@ -456,10 +459,10 @@ CENTRAL_QUERY_SCHEMA = {
     'ndff_kwartiertelling_interval_taxon': frozenset(['aangemaakt_op', 'bronrecordaantal', 'interval_sleutel', 'kwaliteitsnotitie', 'meetwaarden_json', 'nulregel', 'reconstructieversie', 'soortgroep_raw', 'taxon_bronkoppeling_id', 'totaal_aantal', 'waarnemingsstatus', 'wetenschappelijke_naam']),
     'ndff_kwartiertelling_recordselectie': frozenset(['aangemaakt_op', 'eenduidig_plot_id', 'interval_sleutel', 'reconstructieversie', 'ruimtelijke_status', 'selectiereden', 'selectiestatus', 'waarneming_id']),
     'ndff_kwartiertelling_telinterval': frozenset(['aangemaakt_op', 'bronrecordaantal', 'duur_minuten', 'duurstatus', 'eenduidig_plot_id', 'geometrieversies', 'interval_sleutel', 'kwaliteitsnotitie', 'periode_start', 'periode_stop', 'plotversie_id', 'protocol_sleutel', 'reconstructieversie', 'routestatus', 'ruimtelijke_status', 'soortgroepen_met_positieve_regels']),
-    'ndff_libel_bezoek': frozenset(['bezoek_sleutel', 'bronrecordaantal', 'doelbereikstatus', 'jaar', 'periode_start', 'periode_stop', 'reconstructiestatus', 'reconstructieversie', 'routefamilie_id']),
-    'ndff_libel_bezoek_taxon': frozenset(['aantal', 'bezoek_sleutel', 'nulregel', 'reconstructieversie', 'taxon_bronkoppeling_id', 'waarnemingsstatus', 'wetenschappelijke_naam']),
-    'ndff_libel_routefamilie': frozenset(['aangemaakt_op', 'bezoekaantal', 'bronrecordaantal', 'componentaantal', 'doelbereikstatus', 'eerste_jaar', 'geometrieaantal', 'jaaraantal', 'laatste_jaar', 'protocol_sleutel', 'reconstructiestatus', 'reconstructieversie', 'routefamilie_id', 'ruimtelijke_omvang_m']),
-    'ndff_libel_routegeometrie': frozenset(['centrum_x_rd', 'centrum_y_rd', 'geometrie_sha256', 'oppervlakte_m2', 'reconstructieversie', 'routefamilie_id']),
+    'libellen_bezoek': frozenset(['bezoek_sleutel', 'bronrecordaantal', 'doelbereikstatus', 'jaar', 'periode_start', 'periode_stop', 'reconstructiestatus', 'reconstructieversie', 'routefamilie_id']),
+    'libellen_bezoek_taxon': frozenset(['aantal', 'bezoek_sleutel', 'nulregel', 'reconstructieversie', 'taxon_bronkoppeling_id', 'waarnemingsstatus', 'wetenschappelijke_naam']),
+    'libellen_routefamilie': frozenset(['aangemaakt_op', 'bezoekaantal', 'bronrecordaantal', 'componentaantal', 'doelbereikstatus', 'eerste_jaar', 'geometrieaantal', 'jaaraantal', 'laatste_jaar', 'protocol_sleutel', 'reconstructiestatus', 'reconstructieversie', 'routefamilie_id', 'ruimtelijke_omvang_m']),
+    'libellen_routegeometrie': frozenset(['centrum_x_rd', 'centrum_y_rd', 'geometrie_sha256', 'oppervlakte_m2', 'reconstructieversie', 'routefamilie_id']),
     'ndff_libellen': frozenset(['waarneming_id']),
     'ndff_liveatlas_bezoek': frozenset(['aangemaakt_op', 'bezoek_sleutel', 'bronrecordaantal', 'duur_minuten', 'duurstatus', 'eenduidig_plot_id', 'geometrieversies', 'kwaliteitsnotitie', 'periode_start', 'periode_stop', 'plotversie_id', 'protocol_sleutel', 'reconstructieversie', 'routestatus', 'ruimtelijke_status', 'soortgroepen_met_positieve_regels']),
     'ndff_liveatlas_bezoek_soortgroep': frozenset(['aangemaakt_op', 'bezoek_sleutel', 'bronrecordaantal', 'kwaliteitsnotitie', 'nulstatus', 'reconstructieversie', 'soortgroep_raw', 'volledigheidsstatus', 'waargenomen_taxa']),
