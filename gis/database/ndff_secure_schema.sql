@@ -29,7 +29,10 @@ CREATE TABLE IF NOT EXISTS ndff_import_batch (
   PRIMARY KEY (batch_id),
   UNIQUE KEY uq_ndff_batch_bestand_hash (origineel_bestand_sha256),
   CHECK (periode_start = 1950),
-  CHECK (periode_einde = 2025),
+  CHECK (
+    periode_einde = 2025
+    OR (ticketnummer = 'eis-libellen-20261120' AND periode_einde = 2008)
+  ),
   CHECK (vernietigd_op IS NULL OR gebruiksstatus = 'vernietigd')
 ) ENGINE=InnoDB;
 

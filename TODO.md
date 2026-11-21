@@ -1031,13 +1031,12 @@ in iCloud **Agenda**.
   heeft geen aanvullende bronadministratie. De export maakt het onderscheid
   tussen losse waarnemingen en inventarisaties niet mogelijk. De opvolging
   is afgerond en de agendaherinnering van 25 november is verwijderd.
-- [ ] **EIS-libellenexport 07.001 — zeven plaatsbare kandidaatregels uit 1998
-  en 2003 en bronkoppeling.** Codex controleert bij een volgende interne
-  beoordelingsronde welke bestaande bronadministratie de EIS-URI aan de
-  openbare identiteit koppelt, en welke gebruiksvoorwaarden gelden.
-  Daarna besluiten Ton en Codex over toelating per regel. Er is nog geen
-  datum afgesproken. Zie de beoordeling van 21 november in het
-  [bronregister](docs/MEIJENDEL_BRONREGISTER.md).
+- [ ] **EIS-libellenexport 07.001 — 343 onbesliste regels uit 1950–2008.**
+  Codex herbeoordeelt alleen als een aanvullende koppelsleutel beschikbaar
+  komt, met afzonderlijke aandacht voor de vier regels uit 1998 met
+  afwijkend hok. De 2.247 aannemelijke één-op-één-verrijkingen en twee
+  interne nieuwe waarnemingen uit 1998 zijn verwerkt. De levering en
+  herkomst staan in het [bronregister](docs/MEIJENDEL_BRONREGISTER.md).
 - [x] **De Vlinderstichting — ruimtelijke en eerste trendtoets, 16 november
   2026.** De routekaart en 8.714 dagvlinderjaarcijfers zijn vergeleken met de
   actuele Meijendel-grens en de elf NDFF-routefamilies. Elf van de zeventien

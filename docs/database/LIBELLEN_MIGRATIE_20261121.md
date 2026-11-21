@@ -28,7 +28,7 @@ Voor herstel worden eerst de vier tabelnamen teruggezet en daarna de
 29 bronidentiteiten en oorspronkelijke triggers. Bewaar de herstelkopie
 op de vaste T7-back-uplocatie.
 
-## Controle van de kandidaatlevering
+## Controle van de EIS-levering
 
 De originele bijlage uit Thunderbird heeft SHA-256
 `b7122078f417a459afe69370733ff5cea2bcf93e9e2f509aec40403de2f0be8d`.
@@ -62,3 +62,16 @@ met nul fouten. De volledige NDFF-contracttest stopt ook op de
 ongewijzigde uitgangscommit 43d88485 bij een bestaande Sovon-assertie
 over `sovon_bmp_bezoek`. De afzonderlijke libellentests en de centrale
 taxoncontracttest slagen.
+
+## Invoer van de EIS-levering
+
+Na herbeoordeling van het volledige profiel zijn 2.247 bronverrijkingen
+en twee nieuwe besloten waarnemingen verwerkt. De twee nieuwe regels uit
+1998 hebben bestaande centrale soortidentiteit via de NDFF-catalogus en
+behouden hun oorspronkelijke hok, EIS-URI en protocol 07.001. De oude
+periodecontrole in het besloten batchregister is uitsluitend voor deze
+levering aangevuld met eindjaar 2008. De oorspronkelijke bron, de
+invoerscriptuitvoer, het besluit over de 343 onbesliste regels en de
+herstelbestanden zijn op T7 geregistreerd. Twee opeenvolgende invoeren
+op de proefserver leverden 2.247 verrijkingen en twee nieuwe regels,
+gevolgd door nul toevoegingen. Dezelfde controle is lokaal herhaald.
