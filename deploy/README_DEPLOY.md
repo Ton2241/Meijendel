@@ -545,6 +545,47 @@ MYSQL_PORT=3307 MEIJENDEL_ANALYSIS_END_YEAR=2026 ./deploy/update_en_deploy_meije
 Zie `../docs/TRIM_INTEGRALE_RELEASE_HERSTELPROEF_20261104.md` voor het lokale pakketcontract, de native praktijkproef en de productiegrenzen. `deploy/integral_release.py build|verify` heeft geen netwerk- of VPS-acties. `scripts/rehearse_integral_release.py` werkt alleen met geïsoleerde lokale proefdatabases. De native adapter is geen productiehostadapter. De bestaande gesloten gateway blijft verplicht. De concrete Linux-binding is lokaal aangesloten en getest; installatie en werkelijke VPS-proef volgen volgens `../docs/TRIM_INTEGRALE_LINUX_GATEWAY_20261104.md`.
 
 De gewone generatie- en deployroute vereist nu expliciet `MEIJENDEL_ANALYSIS_END_YEAR` of `MEIJENDEL_RELEASE_MANIFEST`; een ontbrekend eindjaar blokkeert vóór export/SSH. Kies 2026 pas nadat die officiële bron is gevalideerd. Voor een lokale 2025-proef is de waarde 2025. De voorbeelden hierboven zijn instructies voor een toekomstige vrijgegeven 2026-release, geen opdracht die nu is uitgevoerd.
+
+## MySQL 9.7.4: beveiligingsrebuild zonder versie-upgrade (21 november 2026)
+
+Gebruik voor een actuele 9.7.4→9.7.4-imageverversing uitsluitend:
+
+```sh
+deploy/rebuild_mysql_974_security_vps.sh
+deploy/rebuild_mysql_974_security_vps.sh --apply --yes
+```
+
+De eerste opdracht is preflight en wijzigt niets. De tweede vraagt sudo in het
+standaard macOS Terminal-venster, bouwt een verse kandidaat uit
+`Dockerfile.9.7.4`, scant de exacte image en voert pas daarna een geïsoleerde
+logische proefimport uit. De kandidaat blijft MySQL 9.7.4 met UID/GID 1999,
+moet 0 HIGH/0 CRITICAL scannen en bevat minimaal libxml2
+2.9.13-18.el9_9.1, curl en libcurl 7.76.1-44.el9_9.1 en krb5-libs
+1.21.1-10.0.1.el9_9.2.
+
+De actieve datamount wordt direct uit de gebonden productiecontainer gelezen;
+er is geen datamapmigratie. De bestaande validator vergelijkt bron en doel als
+9.7.4→9.7.4. Een mislukte wissel herstelt automatisch de exact oude container,
+image en naam. Na succes blijven alleen de nieuwe actieve image en exact één
+gedocumenteerde rollback staan. De Meijendel-datarelease verandert niet.
+
+Verwijder die rollback pas na een nieuwe aantoonbaar groene 01:15 VPS-back-up,
+03:00 forced-read-only NAS-pull, 05:00 immutable snapshot en herstelcontrole:
+
+```sh
+deploy/rebuild_mysql_974_security_vps.sh --finalize --yes
+```
+
+Finalisatie verwijdert uitsluitend de exact aangetroffen gestopte MySQL-
+rollback en voert daarna opnieuw scan, isolatie, rooktest, back-up en
+herstelcontrole uit. De route gebruikt geen Docker-prune en blokkeert wanneer
+de beheerde VPS-wachtrij verplicht is maar deze actie daar nog niet beschikbaar
+is.
+
+`rebuild_mysql_image_vps.sh`, `prepare_mysql_974_vps.sh` en
+`switch_mysql_974_vps.sh` zijn historische 9.7.1-routes. Gebruik ze niet voor
+dit 9.7.4-beveiligingsonderhoud.
+
 ## MySQL 9.7.4: afzonderlijke kandidaatvoorbereiding (22 oktober 2026)
 
 `deploy/prepare_mysql_974_vps.sh` bereidt uitsluitend de versie-upgradeproef voor.
