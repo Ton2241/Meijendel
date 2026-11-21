@@ -224,7 +224,7 @@ finalize_current() {
   local rollback_container rollback_tag rollback_image output status=0 attention discovered
   [[ "$(docker inspect --format '{{.State.Status}}' "$ACTIVE_CONTAINER")" == "running" ]] || fail "actieve MySQL draait niet"
   [[ "$(docker inspect --format '{{.Image}}' "$ACTIVE_CONTAINER")" == "$EXPECTED_OLD_IMAGE" ]] || fail "actieve eindimage wijkt af"
-  [[ "$(docker inspect --format '{{range .Mounts}}{{if eq .Destination \"/var/lib/mysql\"}}{{.Source}}{{end}}{{end}}' "$ACTIVE_CONTAINER")" == "$EXPECTED_DATA_MOUNT" ]] || fail "actieve datamount wijkt af"
+  [[ "$(docker inspect --format '{{range .Mounts}}{{if eq .Destination "/var/lib/mysql"}}{{.Source}}{{end}}{{end}}' "$ACTIVE_CONTAINER")" == "$EXPECTED_DATA_MOUNT" ]] || fail "actieve datamount wijkt af"
   wait_mysql "$ACTIVE_CONTAINER" || fail "actieve MySQL werd niet gereed"
   discovered="$(single_rollback_name "$(docker ps -a --format '{{.Names}}')")" || return 1
   [[ "$discovered" == "$PREVIOUS_CONTAINER" ]] || fail "aangetroffen rollback wijkt af van de gebonden onderhoudsstatus"
@@ -233,7 +233,7 @@ finalize_current() {
   rollback_image="$(docker inspect --format '{{.Image}}' "$rollback_container")"
   [[ "$rollback_image" == "$EXPECTED_ROLLBACK_IMAGE" ]] || fail "rollbackimage wijkt af van de gebonden onderhoudsstatus"
   [[ "$(docker inspect --format '{{.State.Status}}' "$rollback_container")" == "exited" ]] || fail "rollbackcontainer is niet gestopt"
-  [[ "$(docker inspect --format '{{range .Mounts}}{{if eq .Destination \"/var/lib/mysql\"}}{{.Source}}{{end}}{{end}}' "$rollback_container")" == "$EXPECTED_DATA_MOUNT" ]] || fail "rollbackcontainermount wijkt af"
+  [[ "$(docker inspect --format '{{range .Mounts}}{{if eq .Destination "/var/lib/mysql"}}{{.Source}}{{end}}{{end}}' "$rollback_container")" == "$EXPECTED_DATA_MOUNT" ]] || fail "rollbackcontainermount wijkt af"
   [[ "$(docker image inspect --format '{{.Id}}' "$rollback_tag")" == "$rollback_image" ]] || fail "rollbacktag wijst niet naar rollbackimage"
 
   docker rm "$rollback_container" >/dev/null
@@ -292,7 +292,7 @@ main() {
   [[ "$(cat "$STATE_FILE")" == "$EXPECTED_DATA_COMMIT" ]] || fail "Meijendel-datarelease wijzigde vóór onderhoud"
   [[ "$(docker inspect --format '{{.State.Status}}' "$ACTIVE_CONTAINER")" == "running" ]] || fail "actieve MySQL draait niet"
   [[ "$(docker inspect --format '{{.Image}}' "$ACTIVE_CONTAINER")" == "$EXPECTED_OLD_IMAGE" ]] || fail "actieve image veranderde"
-  EXPECTED_DATA_MOUNT="$(docker inspect --format '{{range .Mounts}}{{if eq .Destination \"/var/lib/mysql\"}}{{.Source}}{{end}}{{end}}' "$ACTIVE_CONTAINER")"
+  EXPECTED_DATA_MOUNT="$(docker inspect --format '{{range .Mounts}}{{if eq .Destination "/var/lib/mysql"}}{{.Source}}{{end}}{{end}}' "$ACTIVE_CONTAINER")"
   [[ -n "$EXPECTED_DATA_MOUNT" && -d "$EXPECTED_DATA_MOUNT" ]] || fail "actieve datamount ontbreekt"
   [[ "$(docker inspect --format '{{.HostConfig.RestartPolicy.Name}}' "$ACTIVE_CONTAINER")" == "unless-stopped" ]] || fail "restartbeleid wijkt af"
   docker port "$ACTIVE_CONTAINER" 3306/tcp | grep -Fxq '127.0.0.1:3307' || fail "poortbinding wijkt af"
@@ -378,7 +378,7 @@ SQL
     --local-infile=0 --mysqlx=0 --binlog-expire-logs-seconds=259200 --innodb-redo-log-capacity=536870912 >/dev/null
   wait_mysql "$ACTIVE_CONTAINER" || fail "nieuwe actieve MySQL werd niet gereed"
   [[ "$(docker inspect --format '{{.Image}}' "$ACTIVE_CONTAINER")" == "$CANDIDATE_ID" ]] || fail "actieve image wijkt af"
-  [[ "$(docker inspect --format '{{range .Mounts}}{{if eq .Destination \"/var/lib/mysql\"}}{{.Source}}{{end}}{{end}}' "$ACTIVE_CONTAINER")" == "$EXPECTED_DATA_MOUNT" ]] || fail "actieve datamount wijkt af"
+  [[ "$(docker inspect --format '{{range .Mounts}}{{if eq .Destination "/var/lib/mysql"}}{{.Source}}{{end}}{{end}}' "$ACTIVE_CONTAINER")" == "$EXPECTED_DATA_MOUNT" ]] || fail "actieve datamount wijkt af"
   /usr/local/libexec/vwgm-admin/check-caddy-mysql-isolation
   smoke_status publieke-home www.vwg-m.nl /welkom/index.asp 200
   smoke_status mysql-soortpagina www.vwg-m.nl '/soorten/vogel.asp?id=90' 200

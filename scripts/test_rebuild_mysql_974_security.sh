@@ -153,5 +153,7 @@ grep -Fq 'FROM mysql@sha256:' "$dockerfile" || fail "MySQL 9.7.4-basisimage is n
   fail "ongerichte Docker-prune aangetroffen"
 ! grep -Fq '9.7.1' "$local_script" "$remote_script" ||
   fail "historische 9.7.1-route lekt in de 9.7.4-beveiligingsroute"
+! grep -Fq '\"/var/lib/mysql\"' "$remote_script" ||
+  fail "Docker inspect-sjabloon bevat ongeldige geescape-te aanhalingstekens"
 
 printf 'OK: MySQL 9.7.4-beveiligingsroute blokkeert oude pakketten en onveilige scans.\n'
