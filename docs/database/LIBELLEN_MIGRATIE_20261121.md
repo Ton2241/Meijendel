@@ -75,3 +75,26 @@ invoerscriptuitvoer, het besluit over de 343 onbesliste regels en de
 herstelbestanden zijn op T7 geregistreerd. Twee opeenvolgende invoeren
 op de proefserver leverden 2.247 verrijkingen en twee nieuwe regels,
 gevolgd door nul toevoegingen. Dezelfde controle is lokaal herhaald.
+
+## Nadere bronkoppeling
+
+De 2.247 eerste koppelingen bevestigen dat de openbare FFV-identiteit
+exact SHA-256 is van de letterlijke EIS-waarnemings-URI. Van de 343
+resterende regels hebben 321 diezelfde unieke identiteit bij een
+bestaand libellenrecord uit 1958–2007. Ook periode, hokgeometrie, aantal
+en protocol 07.001 komen overeen. Die koppelingen zijn toegevoegd aan
+`ndff_open_leveringsverrijking` onder methode `eis_uri_sha256_identiteit`.
+De eerder ingevoerde koppelingen zijn eveneens exact bevestigd.
+
+De herstelproef begon met 2.247 koppelingen, voegde er 321 toe en vond bij
+herhaling nul nieuwe regels. Een gerichte terugdraaiing herstelde het
+oorspronkelijke aantal. De levende database telt 2.568 unieke gekoppelde
+EIS-URI's. Voor 22 EIS-regels uit 1971–2006 ontbreekt een overeenkomstige
+identiteit in beide NDFF-registers. Er zijn in deze taak geen nieuwe
+waarnemingen geregistreerd.
+
+De herstelkopie van de verrijkingstabel staat op T7 als
+`Meijendel-voor-EIS-bronkoppelingen-20261121.sql.gz` met SHA-256
+`36021d85a9e077a61391eea583d8167b8741be4cbc3fa462f19c1dddf3bd7720`.
+Import-, herstel- en selectiebestanden staan in de geregistreerde
+T7-proefmap met voorvoegsel `eis-nader-`.
