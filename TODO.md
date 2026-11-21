@@ -1017,7 +1017,6 @@ in iCloud **Agenda**.
 | Persoon of organisatie | Laatste uitgaande mail | Open opvolging |
 | --- | --- | --- |
 | Zodion Zoogdieronderzoek Nederland / Petra Verburg | 16 november | Petra stuurde op 16 november een automatisch afwezigheidsbericht met contactroutes voor urgente vragen. Het verzoek om meetgegevens van zoogdieren en vleermuizen is voorlopig niet urgent. **30 november om 09.30 uur.** Ton belt het secretariaat (024-7410500) om te vragen of Petra weer bereikbaar is. **14 december om 09.00 uur.** Ton controleert eerst of Petra inmiddels inhoudelijk heeft gereageerd. |
-| NDFF / Marie Bekker | 6 november | **4 december.** Controleer ticket 59072 op antwoord op de aanvullende gegevensvraag. |
 | RAVON / Rolf van Leeningen | 7 oktober | **7 december.** Rolf zoekt uit welke meetgegevens beschikbaar zijn. Controleer de stand en beoordeel het rappel. |
 | Staatsbosbeheer / Alex Zuijdervliet | 12 november | **10 december.** Controleer of de collega die in december naar de oorspronkelijke florakartering uit 2002–2008 kijkt, al heeft gereageerd. |
 | NIOZ / Eva Lansu | 13 november | **11 december.** Controleer de reactie over het getrainde classificatiemodel uit *Squeezed Sands*. |

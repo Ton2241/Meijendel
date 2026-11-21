@@ -1,6 +1,6 @@
 # Bronregister ecologische gegevens Meijendel
 
-**Stand: 20 november 2026.**
+**Stand: 21 november 2026.**
 
 **Opslagwijziging van 23 oktober 2026.** De 32.353 openbare NDFF-moswaarnemingen uit 1940–2025 en 28.643 openbare NDFF-korstmoswaarnemingen uit 1936–2025 zijn als volledige bronregels naar `Meijendel.mossen_waarneming` en `Meijendel.korstmossen_waarneming` verhuisd. Op dat moment bleven 749.834 openbare regels in `ndff_open_waarneming`. Een smal register verbindt de 810.830 unieke openbare identiteiten met precies één fysieke tabel; het bewaart geen tweede volledige waarneming. De vroegere ID-only-tabellen `ndff_mossen` en `ndff_korstmossen` zijn verwijderd. De afzonderlijke BLWG-formulieren en hun resultaten, de bestaande PQ-kwalificaties en de afgeschermde exacte geometrieën zijn behouden. Dit was een opslagverbetering, geen nieuwe bron of bewijs voor extra trends.
 
@@ -966,6 +966,8 @@ Delpher, gerichte deelgebiedzoekslag op 12 november 2026. Elf krantentreffers ui
 **Overige meetnetten:** de overige aangeschreven bronorganisaties hebben op 25 september 2026 nog niet inhoudelijk gereageerd. Nieuwe leveringen worden niet automatisch geïmporteerd, maar eerst gecontroleerd op dekking, sleutels, nullen, inspanning en overlap.
 
 **Habitatkaart T1:** Ingrid de Vries heeft de gevalideerde kaart van Meijendel nog niet en verwacht dat deze mogelijk in december 2026 beschikbaar komt. Zij heeft toegezegd de kaart te delen zodra dat kan; december is een verwachting, geen bevestigde leverdatum. De kaart kan veranderingen in habitat helpen verklaren, maar is zelf geen soortenwaarneming.
+
+NDFF / Marie Bekker — ticket 59072 afgehandeld op 21 november 2026. Marie antwoordde op 20 november om 12.14 uur Nederlandse tijd dat de door haar gecontroleerde paddenstoelenmeetnetwaarnemingen geen gekoppelde looproutes of zoekgebieden bevatten. Het antwoord noemt geen aantal gecontroleerde records of afgebakende jaren; dit is geen aanvullende gegevenslevering. De NDFF-API kan in het algemeen een looproute of zoekgebied als GPS-geometrie meeleveren, maar kent volgens Marie geen afzonderlijk veld voor de registratie van een bezoek. Een bezoek is hoogstens indirect afleidbaar uit een meegeleverde route en de tijdstippen van de waarnemingen; voor de door haar gecontroleerde meetnetwaarnemingen ontbreekt die route-informatie. Daarmee levert dit antwoord geen basis om ontbrekende bezoeken, meetinspanning of nulwaarnemingen te reconstrueren of de bestaande trendtoelating te verruimen. Ton bedankte Marie op 20 november om 20.57 uur; er staat voor dit ticket geen vervolgvraag open. De achterhaalde controle van 4 december is uit de ToDo en iCloud Agenda verwijderd. De bestaande gegevens en beoordelingen in Meijendel en Meijendel_bronnen en de overige kandidaatbronnen blijven ongewijzigd. Bron: ontvangen NDFF-antwoord en Tons verzonden bedankmail in Thunderbird, beide van 20 november 2026, onderwerp Ontbrekende data in de NDFF (#59072).
 
 ## 5. Bronnen die niet verder worden uitgewerkt
 
