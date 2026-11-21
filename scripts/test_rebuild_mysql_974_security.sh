@@ -15,6 +15,25 @@ bash -n "$local_script" "$remote_script"
 # Bron het echte remote contract; main mag bij sourcen niet draaien.
 source "$remote_script"
 
+fake_client_dir="$(mktemp -d "${TMPDIR:-/tmp}/vwgm-mysql974-fd3.XXXXXX")"
+cleanup_fake_client() { rm -rf -- "$fake_client_dir"; }
+trap cleanup_fake_client EXIT
+cat > "$fake_client_dir/mysql" <<'FAKE_MYSQL'
+#!/usr/bin/env bash
+set -euo pipefail
+[[ "$1" == '--defaults-extra-file=/dev/fd/3' ]]
+shift
+[[ "$*" == '--batch' ]]
+client_config="$(cat /dev/fd/3)"
+grep -Fxq 'user=root' <<< "$client_config"
+grep -Fxq 'password="fd3-test\\secret\"quote"' <<< "$client_config"
+FAKE_MYSQL
+chmod +x "$fake_client_dir/mysql"
+PATH="$fake_client_dir:$PATH" MYSQL_ROOT_PASSWORD='fd3-test\secret"quote' \
+  bash -c "$MYSQL_ROOT_CLIENT_SCRIPT" bash mysql --batch
+rm -rf -- "$fake_client_dir"
+trap - EXIT
+
 version_ge '2.9.13-18.el9_9.1' '2.9.13-18.el9_9.1' || fail "gelijke RPM-versie werd afgewezen"
 version_ge '2.9.13-18.el9_9.2' '2.9.13-18.el9_9.1' || fail "nieuwere RPM-versie werd afgewezen"
 ! version_ge '2.9.13-14.el9_8.5' '2.9.13-18.el9_9.1' || fail "oude RPM-versie werd toegelaten"
@@ -155,5 +174,11 @@ grep -Fq 'FROM mysql@sha256:' "$dockerfile" || fail "MySQL 9.7.4-basisimage is n
   fail "historische 9.7.1-route lekt in de 9.7.4-beveiligingsroute"
 ! grep -Fq '\"/var/lib/mysql\"' "$remote_script" ||
   fail "Docker inspect-sjabloon bevat ongeldige geescape-te aanhalingstekens"
+! grep -Fq -- '-p"$MYSQL_ROOT_PASSWORD"' "$remote_script" ||
+  fail "MySQL-rootwachtwoord wordt als procesargument doorgegeven"
+grep -Fq 'MYSQL_ROOT_CLIENT_SCRIPT=' "$remote_script" ||
+  fail "FD3-clienthelper ontbreekt in de beveiligingsroute"
+grep -Fq -- '--defaults-extra-file=/dev/fd/3' "$remote_script" ||
+  fail "beveiligingsroute gebruikt de FD3-clientconfiguratie niet"
 
 printf 'OK: MySQL 9.7.4-beveiligingsroute blokkeert oude pakketten en onveilige scans.\n'

@@ -14,7 +14,34 @@ EXPECTED_DATA_MOUNT=""
 SWITCH_STARTED=0
 SUCCESS=0
 
+MYSQL_ROOT_CLIENT_SCRIPT="$(cat <<'MYSQL_ROOT_CLIENT'
+set -euo pipefail
+client="$1"
+shift
+mysql_password="${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD ontbreekt}"
+unset MYSQL_ROOT_PASSWORD
+mysql_password_escaped="${mysql_password//\\/\\\\}"
+mysql_password_escaped="${mysql_password_escaped//\"/\\\"}"
+exec 3< <(
+  printf '[client]\nuser=root\npassword="%s"\n' "$mysql_password_escaped"
+)
+mysql_credentials_pid=$!
+mysql_status=0
+"$client" --defaults-extra-file=/dev/fd/3 "$@" || mysql_status=$?
+exec 3<&-
+wait "$mysql_credentials_pid" 2>/dev/null || true
+exit "$mysql_status"
+MYSQL_ROOT_CLIENT
+)"
+
 fail() { printf 'BLOKKADE|mysql-974-security-rebuild|%s\n' "$*" >&2; exit 1; }
+
+docker_mysql_root() {
+  local container="${1:?}" client="${2:?}"
+  shift 2
+  docker exec -i "$container" bash -c "$MYSQL_ROOT_CLIENT_SCRIPT" \
+    bash "$client" "$@"
+}
 
 version_ge() {
   local actual="${1:?}" minimum="${2:?}" first
@@ -127,9 +154,8 @@ PY
 wait_mysql() {
   local container="${1:?}" attempt version
   for attempt in $(seq 1 150); do
-    version="$(docker exec "$container" sh -c \
-      'mysql --batch --skip-column-names -uroot -p"$MYSQL_ROOT_PASSWORD" -e "SELECT VERSION()"' \
-      2>/dev/null || true)"
+    version="$(docker_mysql_root "$container" mysql \
+      --batch --skip-column-names -e 'SELECT VERSION()' 2>/dev/null || true)"
     [[ "$version" == "9.7.4" ]] && return 0
     sleep 2
   done
@@ -270,6 +296,7 @@ finalize_current() {
 main() {
   [[ "$EUID" -eq 0 && "$#" -eq 5 ]] || fail "root, bronmap, broncommit, actieve image, datarelease en modus vereist"
   local stage="$1" source_commit="$2" old_image="$3" data_commit="$4" finalize_only="$5"
+  local mysql_user mysql_database
   [[ "$stage" =~ ^/var/tmp/vwgm-mysql974-security-root-[A-Za-z0-9_]+$ ]] || fail "ongeldige root-bronmap"
   [[ "$(stat -c '%u:%a' "$stage")" == "0:700" ]] || fail "root-bronmap moet 0700 zijn"
   [[ "$source_commit" =~ ^[0-9a-f]{40}$ && "$old_image" =~ ^sha256:[0-9a-f]{64}$ && "$data_commit" =~ ^[0-9a-f]{40}$ ]] || fail "ongeldige bronbinding"
@@ -343,8 +370,11 @@ main() {
   scan_candidate "$CANDIDATE_TAG"
 
   echo "== Logische proefimport en volledige 9.7.4→9.7.4-validatie =="
-  docker exec "$ACTIVE_CONTAINER" sh -c \
-    'exec mysqldump --single-transaction --routines --triggers --events --hex-blob --set-gtid-purged=OFF --no-tablespaces -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE"' \
+  mysql_database="$(docker exec "$ACTIVE_CONTAINER" printenv MYSQL_DATABASE)"
+  [[ "$mysql_database" =~ ^[A-Za-z0-9_]+$ ]] || fail "onveilige MySQL-databasenaam"
+  docker_mysql_root "$ACTIVE_CONTAINER" mysqldump \
+    --single-transaction --routines --triggers --events --hex-blob \
+    --set-gtid-purged=OFF --no-tablespaces "$mysql_database" \
     | gzip -c > "$TEST_DUMP"
   gzip -t "$TEST_DUMP"
   install -d -o 1999 -g 1999 -m 0700 "$TEST_DATA"
@@ -352,12 +382,10 @@ main() {
     --env-file "$MYSQL_ENV" -v "$TEST_DATA:/var/lib/mysql" "$CANDIDATE_ID" \
     --local-infile=0 --mysqlx=0 --binlog-expire-logs-seconds=259200 --innodb-redo-log-capacity=536870912 >/dev/null
   wait_mysql "$CANDIDATE_CONTAINER" || fail "proefcontainer werd niet gereed"
-  gzip -dc "$TEST_DUMP" | docker exec -i "$CANDIDATE_CONTAINER" sh -c 'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE"'
-  local mysql_user mysql_database
+  gzip -dc "$TEST_DUMP" | docker_mysql_root "$CANDIDATE_CONTAINER" mysql "$mysql_database"
   mysql_user="$(docker exec "$CANDIDATE_CONTAINER" printenv MYSQL_USER)"
-  mysql_database="$(docker exec "$CANDIDATE_CONTAINER" printenv MYSQL_DATABASE)"
-  [[ "$mysql_user" =~ ^[A-Za-z0-9_]+$ && "$mysql_database" =~ ^[A-Za-z0-9_]+$ ]] || fail "onveilige MySQL-envnaam"
-  docker exec -i "$CANDIDATE_CONTAINER" sh -c 'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD"' <<SQL
+  [[ "$mysql_user" =~ ^[A-Za-z0-9_]+$ ]] || fail "onveilige MySQL-gebruikersnaam"
+  docker_mysql_root "$CANDIDATE_CONTAINER" mysql <<SQL
 REVOKE ALL PRIVILEGES, GRANT OPTION FROM '$mysql_user'@'%';
 GRANT SELECT ON \`$mysql_database\`.* TO '$mysql_user'@'%';
 SQL

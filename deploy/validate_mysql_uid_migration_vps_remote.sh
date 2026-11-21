@@ -8,18 +8,66 @@ EXPECTED_GID="${4:?verwachte GID ontbreekt}"
 EXPECTED_SOURCE_VERSION="${5:-9.7.1}"
 EXPECTED_TARGET_VERSION="${6:-9.7.1}"
 
+MYSQL_ROOT_CLIENT_SCRIPT="$(cat <<'MYSQL_ROOT_CLIENT'
+set -euo pipefail
+client="$1"
+shift
+mysql_password="${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD ontbreekt}"
+unset MYSQL_ROOT_PASSWORD
+mysql_password_escaped="${mysql_password//\\/\\\\}"
+mysql_password_escaped="${mysql_password_escaped//\"/\\\"}"
+exec 3< <(
+  printf '[client]\nuser=root\npassword="%s"\n' "$mysql_password_escaped"
+)
+mysql_credentials_pid=$!
+mysql_status=0
+"$client" --defaults-extra-file=/dev/fd/3 "$@" || mysql_status=$?
+exec 3<&-
+wait "$mysql_credentials_pid" 2>/dev/null || true
+exit "$mysql_status"
+MYSQL_ROOT_CLIENT
+)"
+
+MYSQL_READER_CLIENT_SCRIPT="$(cat <<'MYSQL_READER_CLIENT'
+set -euo pipefail
+mysql_user="${MYSQL_USER:?MYSQL_USER ontbreekt}"
+mysql_password="${MYSQL_PASSWORD:?MYSQL_PASSWORD ontbreekt}"
+mysql_database="${MYSQL_DATABASE:?MYSQL_DATABASE ontbreekt}"
+unset MYSQL_USER MYSQL_PASSWORD MYSQL_DATABASE
+mysql_user_escaped="${mysql_user//\\/\\\\}"
+mysql_user_escaped="${mysql_user_escaped//\"/\\\"}"
+mysql_password_escaped="${mysql_password//\\/\\\\}"
+mysql_password_escaped="${mysql_password_escaped//\"/\\\"}"
+exec 3< <(
+  printf '[client]\nuser="%s"\npassword="%s"\n' "$mysql_user_escaped" "$mysql_password_escaped"
+)
+mysql_credentials_pid=$!
+mysql_status=0
+mysql --defaults-extra-file=/dev/fd/3 -h127.0.0.1 "$mysql_database" "$@" || mysql_status=$?
+exec 3<&-
+wait "$mysql_credentials_pid" 2>/dev/null || true
+exit "$mysql_status"
+MYSQL_READER_CLIENT
+)"
+
 fail() { printf 'FOUT: %s\n' "$*" >&2; exit 1; }
+docker_mysql_root() {
+  local container="$1" client="$2"
+  shift 2
+  docker exec -i "$container" bash -c "$MYSQL_ROOT_CLIENT_SCRIPT" \
+    bash "$client" "$@"
+}
 mysql_query() {
-  local container="$1" sql="$2"
-  docker exec "$container" sh -c \
-    'exec mysql --batch --skip-column-names -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE" -e "$1"' \
-    sh "$sql"
+  local container="$1" sql="$2" mysql_database
+  mysql_database="$(docker exec "$container" printenv MYSQL_DATABASE)"
+  [[ "$mysql_database" =~ ^[A-Za-z0-9_]+$ ]] || fail "onveilige MySQL-databasenaam"
+  docker_mysql_root "$container" mysql --batch --skip-column-names \
+    "$mysql_database" -e "$sql"
 }
 
 for container in "$SOURCE_CONTAINER" "$TARGET_CONTAINER"; do
   docker inspect "$container" >/dev/null 2>&1 || fail "container ontbreekt: $container"
-  docker exec "$container" sh -c \
-    'mysqladmin ping -uroot -p"$MYSQL_ROOT_PASSWORD" --silent' >/dev/null 2>&1 ||
+  docker_mysql_root "$container" mysqladmin ping --silent >/dev/null 2>&1 ||
     fail "MySQL is niet gereed: $container"
   [[ "$(docker exec "$container" id -u mysql)" == "$EXPECTED_UID" || "$container" == "$SOURCE_CONTAINER" ]] ||
     fail "mysql-UID wijkt af in $container"
@@ -49,8 +97,12 @@ inventory() {
     fi
     printf '%s\t%s\n' "$table" "$count" >> "$tmp_dir/$prefix.rows"
   done < "$tmp_dir/$prefix.objects"
-  docker exec "$container" sh -c \
-    'exec mysqldump --no-data --skip-comments --skip-dump-date --no-tablespaces --set-gtid-purged=OFF -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE"' \
+  local mysql_database
+  mysql_database="$(docker exec "$container" printenv MYSQL_DATABASE)"
+  [[ "$mysql_database" =~ ^[A-Za-z0-9_]+$ ]] || fail "onveilige MySQL-databasenaam"
+  docker_mysql_root "$container" mysqldump \
+    --no-data --skip-comments --skip-dump-date --no-tablespaces \
+    --set-gtid-purged=OFF "$mysql_database" \
     > "$tmp_dir/$prefix.schema.sql"
   mysql_query "$container" \
     'SELECT @@global.time_zone, @@global.sql_mode, @@global.character_set_server, @@global.collation_server' \
@@ -76,8 +128,7 @@ mysql_database="$(docker exec "$TARGET_CONTAINER" printenv MYSQL_DATABASE)"
 [[ "$mysql_user" =~ ^[A-Za-z0-9_]+$ && "$mysql_database" =~ ^[A-Za-z0-9_]+$ ]] ||
   fail "onveilige MySQL-envnaam"
 if ! privilege_inventory="$(
-  docker exec -i "$TARGET_CONTAINER" sh -c \
-    'exec mysql --batch --skip-column-names -uroot -p"$MYSQL_ROOT_PASSWORD"' <<SQL
+  docker_mysql_root "$TARGET_CONTAINER" mysql --batch --skip-column-names <<SQL
 SELECT COUNT(*), COALESCE(SUM(PRIVILEGE_TYPE <> 'SELECT'), 0)
 FROM information_schema.SCHEMA_PRIVILEGES
 WHERE GRANTEE = CONCAT(QUOTE('$mysql_user'), '@', QUOTE('%'))
@@ -91,8 +142,8 @@ read -r privilege_count unexpected_count <<< "$privilege_inventory"
   fail "rechteninventaris heeft een onverwacht formaat"
 [[ "$privilege_count" -eq 1 && "$unexpected_count" -eq 0 ]] ||
   fail "leesaccount heeft niet exact één SELECT-schemarecht"
-docker exec "$TARGET_CONTAINER" sh -c \
-  'mysql --batch --skip-column-names -h127.0.0.1 -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE" -e "SELECT 1"' |
+docker exec -i "$TARGET_CONTAINER" bash -c "$MYSQL_READER_CLIENT_SCRIPT" \
+  bash --batch --skip-column-names -e 'SELECT 1' |
   grep -qx 1 || fail "leesaccount kan de kandidaatdatabase niet lezen"
 
 check_count=0

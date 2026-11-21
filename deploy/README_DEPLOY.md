@@ -563,6 +563,10 @@ moet 0 HIGH/0 CRITICAL scannen en bevat minimaal libxml2
 2.9.13-18.el9_9.1, curl en libcurl 7.76.1-44.el9_9.1 en krb5-libs
 1.21.1-10.0.1.el9_9.2.
 
+Alle MySQL-clientaanroepen in de rebuild en validator lezen root- en
+leescredentials uitsluitend via een tijdelijke FD3-clientconfiguratie. Het
+wachtwoord staat niet in de procesargumenten.
+
 De actieve datamount wordt direct uit de gebonden productiecontainer gelezen;
 er is geen datamapmigratie. De bestaande validator vergelijkt bron en doel als
 9.7.4→9.7.4. Een mislukte wissel herstelt automatisch de exact oude container,
