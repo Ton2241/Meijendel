@@ -253,10 +253,10 @@ def main() -> int:
         "meijendel.ndff_vliesvleugel_routegeometrie",
         "meijendel.ndff_vliesvleugel_bezoek",
         "meijendel.ndff_vliesvleugel_bezoek_taxon",
-        "meijendel.ndff_libel_routefamilie",
-        "meijendel.ndff_libel_routegeometrie",
-        "meijendel.ndff_libel_bezoek",
-        "meijendel.ndff_libel_bezoek_taxon",
+        "meijendel.libellen_routefamilie",
+        "meijendel.libellen_routegeometrie",
+        "meijendel.libellen_bezoek",
+        "meijendel.libellen_bezoek_taxon",
         "meijendel.ndff_reptiel_routefamilie",
         "meijendel.ndff_reptiel_routegeometrie",
         "meijendel.ndff_reptiel_bezoek",
@@ -1806,7 +1806,11 @@ def main() -> int:
     assert "meijendel_ndff_secure.ndff_vlinder_" not in importer_text.casefold()
     assert module.VLINDER_TABLE_PREFIX == "Meijendel.ndff_vlinder"
     assert module.VLIESVLEUGEL_TABLE_PREFIX == "Meijendel.ndff_vliesvleugel"
-    assert module.LIBEL_TABLE_PREFIX == "Meijendel.ndff_libel"
+    assert module.LIBEL_TABLE_PREFIX == "Meijendel.libellen"
+    for suffix in ("bezoek", "bezoek_taxon", "routefamilie", "routegeometrie"):
+        assert f"Meijendel.libellen_{suffix}" in module.libel_validation_sql()
+    assert "Meijendel.libellen_bezoek b" in module.libel_analysis_input_sql()
+    assert "Meijendel.libellen_bezoek_taxon m" in module.libel_analysis_input_sql()
     assert module.LIVEATLAS_TABLE_PREFIX == "Meijendel.ndff_liveatlas"
     assert module.KWARTIERTELLING_TABLE_PREFIX == "Meijendel.ndff_kwartiertelling"
     assert module.NACHTVLINDER_TABLE_PREFIX == "Meijendel.ndff_nachtvlinder"
@@ -2474,7 +2478,7 @@ def main() -> int:
     architecture = ARCHITECTURE.read_text(encoding="utf-8")
     assert "ndff_open_waarneming_protocol" in architecture
     assert "Meijendel_ndff_secure.ndff_waarneming_protocol" in architecture
-    assert "ndff_libel_*" in architecture
+    assert "libellen_bezoek" in architecture
     assert "ndff_reptiel_*" in architecture
     assert "ndff_vleermuis_*" in architecture
     assert "ndff_konijn_*" in architecture

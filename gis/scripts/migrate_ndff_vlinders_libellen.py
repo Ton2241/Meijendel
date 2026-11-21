@@ -235,7 +235,7 @@ def route_link_schema_sql() -> list[str]:
           CONSTRAINT fk_libellen_waarneming_route_bron FOREIGN KEY (waarneming_id)
             REFERENCES Meijendel.libellen_waarneming(waarneming_id),
           CONSTRAINT fk_libellen_waarneming_route_bezoek FOREIGN KEY (reconstructieversie,bezoek_sleutel)
-            REFERENCES Meijendel.ndff_libel_bezoek(reconstructieversie,bezoek_sleutel),
+            REFERENCES Meijendel.libellen_bezoek(reconstructieversie,bezoek_sleutel),
           CONSTRAINT fk_libellen_waarneming_route_jaar FOREIGN KEY (telobject_id,jaar)
             REFERENCES Meijendel.libellen_routejaar(telobject_id,jaar),
           CONSTRAINT ck_libellen_tove_pair CHECK ((telobject_id IS NULL AND jaar IS NULL)
@@ -288,10 +288,10 @@ def route_link_insert_sql() -> list[str]:
             CASE WHEN g.geometrie_sha256 IS NOT NULL THEN 'eigen_geometrie'
                  ELSE 'alleen_bezoekinterval' END
           FROM Meijendel.libellen_waarneming o
-          JOIN Meijendel.ndff_libel_bezoek b
+          JOIN Meijendel.libellen_bezoek b
             ON b.reconstructieversie='ndff-libellenroute-v1'
            AND b.bezoek_sleutel={visit_key_expr('o')}
-          LEFT JOIN Meijendel.ndff_libel_routegeometrie g
+          LEFT JOIN Meijendel.libellen_routegeometrie g
             ON g.reconstructieversie=b.reconstructieversie
            AND g.routefamilie_id=b.routefamilie_id
            AND g.geometrie_sha256=o.openbare_geometrie_sha256

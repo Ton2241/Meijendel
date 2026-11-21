@@ -245,7 +245,7 @@ analysebesluit, zodat een niet-doelsoort geen trendgeschiktheid kan erven van
 alleen de protocolcode.
 
 De gereconstrueerde openbare NEM-routeketens staan eveneens in `Meijendel`.
-`ndff_vlinder_*`, `ndff_vliesvleugel_*`, `ndff_libel_*`, `ndff_reptiel_*`,
+`ndff_vlinder_*`, `ndff_vliesvleugel_*`, `libellen_bezoek`, `libellen_bezoek_taxon`, `libellen_routefamilie` en `libellen_routegeometrie`, `ndff_reptiel_*`,
 `ndff_amfibie_*` en `ndff_vleermuis_*` bewaren per geversioneerde reconstructie meeteenheden,
 brongeometrieën, bezoeken en de bezoek-soortmatrix. De libellenketen bewaart aanvullend `doelbereikstatus`,
 zodat echte nullen alleen ontstaan bij een aantoonbaar algemene route en niet
