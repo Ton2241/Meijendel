@@ -8,7 +8,7 @@ De lokale technische vervolgcontrole is afgerond. Websitekoppelingen zijn in een
 
 ### Jaarverslag Vogelwerkgroep Meijendel 2026
 
-- [ ] **Wintervogeltellingen.** Jan Westgeest is op 21 november 2026 per e-mail gevraagd om de tekst van 15 tot en met 29 december 2026 aan te leveren. Ton volgt de ontvangst op.
+- [ ] **Wintervogeltellingen.** Jan Westgeest is op 21 november 2026 per e-mail gevraagd om de tekst van 15 tot en met 29 december 2026 aan te leveren; de bijdrage wordt vóór het jaareinde verwacht. Ton controleert op **19 december 2026 om 09.00 uur** of de bijdrage is ontvangen. De herinnering staat in iCloud **Agenda**. Bij ontbreken bepaalt Ton de vervolgactie; geen automatisch rappel.
 - [ ] **Atlasbloktellingen.** André Leegwater is op 20 november 2026 telefonisch gevraagd om een tekst aan te leveren. Ton volgt de ontvangst op. Er is geen leverdatum vastgelegd.
 - [ ] **Begin januari 2027.** Ton verwerkt de bijdragen, rondt de jaarverslagtekst af en stuurt die aan Amy.
 
