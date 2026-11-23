@@ -8,7 +8,7 @@ De lokale technische vervolgcontrole is afgerond. Websitekoppelingen zijn in een
 
 ### Jaarverslag Vogelwerkgroep Meijendel 2026
 
-- [ ] **Wintervogeltellingen.** Jan Westgeest is op 21 november 2026 per e-mail gevraagd om de tekst van 15 tot en met 29 december 2026 aan te leveren; de bijdrage wordt vóór het jaareinde verwacht. Ton controleert op **19 december 2026 om 09.00 uur** of de bijdrage is ontvangen. De herinnering staat in iCloud **Agenda**. Bij ontbreken bepaalt Ton de vervolgactie; geen automatisch rappel.
+- [ ] **Wintervogeltellingen.** Jans eerste concept is op 22 november 2026 ontvangen. Hij wil de decembertelling afwachten en vraagt het voorlopige stuk nog niet in te leveren. Ton controleert op **19 december 2026 om 09.00 uur** of de definitieve decemberaanvulling is ontvangen of wanneer die volgt. De definitieve bijdrage wordt vóór het jaareinde verwacht; op de controledatum is zij nog niet te laat. De herinnering staat in iCloud **Agenda**. Ton bepaalt de vervolgactie; geen automatisch rappel.
 - [ ] **Atlasbloktellingen.** André Leegwater is op 20 november 2026 telefonisch gevraagd om een tekst aan te leveren. Ton volgt de ontvangst op. Er is geen leverdatum vastgelegd.
 - [ ] **Begin januari 2027.** Ton verwerkt de bijdragen, rondt de jaarverslagtekst af en stuurt die aan Amy.
 
@@ -1118,7 +1118,7 @@ in iCloud **Agenda**.
   antwoord van Maarten Werink op Tons mail van 26 oktober 2026. Harrie van
   der Hagen verwees het besluit over verstrekking naar Maarten. De
   Thunderbird-controle op 16 november vond geen antwoord van Maarten op de
-  aanvraag en geen levering. Controleer op maandag 23 november om 09.00 uur
+  aanvraag en geen levering. Controleer op **10 december 2026 om 09.00 uur**
   opnieuw de correspondentie in Thunderbird en eventuele levering. De
   herinnering staat in iCloud **Agenda**.
   Bepaal bij uitblijven van een reactie met Ton of een rappel passend is.
