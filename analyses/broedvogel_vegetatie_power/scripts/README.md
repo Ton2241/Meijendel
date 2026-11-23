@@ -49,6 +49,22 @@ Na ontvangst van de modelgewichten controleert
 `controleer_lansu_checkpoint.py` de SHA256-hash, het aantal invoerkanalen en
 het aantal uitvoerklassen voordat inferentie mag beginnen.
 
+De openbare trainingsdata en de gepubliceerde U-net kunnen technisch worden
+gecontroleerd met:
+
+```bash
+analyses/broedvogel_vegetatie_power/scripts/run_lansu_training_pilot.sh \
+  '/Volumes/T7 Data/Home_Ton/Proefomgevingen/lansu-zelftraining-2026-11-23' \
+  '/Volumes/T7 Data/Home_Ton/Proefomgevingen/lansu-zelftraining-2026-11-23/runtime/data/data'
+```
+
+De runner controleert de Python-omgeving en de 440 beeld-maskerparen, voert
+de tests uit en beproeft één deterministische uitsnede met vier klassen op
+Apple MPS. De uitvoer is technisch bewijs en geen habitatmodel. De openbare
+levering bevat geen officiële train-, validatie- en testsplits; daarom start
+de runner bewust geen volledige training. De exacte pakketversies staan in
+`requirements_lansu_training.txt`.
+
 ## Stap 1: vogelmatrix
 
 Voer vanuit de repository uit:

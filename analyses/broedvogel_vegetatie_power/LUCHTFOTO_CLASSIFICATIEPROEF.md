@@ -140,6 +140,23 @@ trainingsbeelden en maskers. De code kan een checkpoint opslaan en laden, maar
 het gepubliceerde archief bevat geen getrainde modelgewichten. Ton heeft die al
 bij de auteur opgevraagd. Niet opnieuw vragen; eerst de reactie afwachten.
 
+Op 23 november 2026 is ook het volledige openbare datapakket gecontroleerd.
+Het bronarchief van 6.552.447.633 bytes stemt overeen met de gepubliceerde MD5
+en bevat 440 zevenbands beelden van 2.048 bij 2.048 pixels en 440 gelijknamige
+maskers. Er ontbreken geen paren. De gepubliceerde U-net is lokaal opgebouwd;
+een echte uitsnede met vier habitatklassen heeft op Apple MPS een volledige
+voorwaartse en achterwaartse trainingsstap doorlopen en de modelparameters
+gewijzigd. Daarmee zijn code, LZW-compressie, bandindeling, normalisatie en
+rekenroute technisch compatibel.
+
+De proef levert geen habitatkaart op. In het datapakket ontbreken de door de
+code verwachte `training.csv`, `validation.csv` en `test.csv`. Zonder die
+officiële indeling kan de gepubliceerde training en validatie niet exact worden
+herhaald. De oorspronkelijke gewichten blijven daarom de kortste route. Als
+die uitblijven, is eigen hertraining technisch mogelijk, maar alleen als nieuw
+modelonderzoek met ruimtelijk gescheiden gegevens, een passende GPU en eigen
+validatie in Meijendel.
+
 Dit verandert het negatieve resultaat van de eigen overdrachtstoets niet. De
 landelijke nauwkeurigheid is gemeten binnen de gegevensopzet van Lansu en
 bewijst niet dat één getraind model verschillende Meijendelse beeldjaren

@@ -1,6 +1,6 @@
 # Analyse op hoofdlijnen en uitkomsten
 
-**Stand:** 13 november 2026
+**Stand:** 23 november 2026
 
 **Status:** de analysematrix, tellergevoeligheid, vegetatiestappen,
 structuurproeven, omgevingsmodellen, niet-lineaire vertraagde modellen en de
@@ -72,11 +72,14 @@ Sindsdien is een direct relevante methodebron toegevoegd. Lansu et al. (2025)
 classificeerden 562 km² Nederlandse kustduinen op 25 centimeter met een U-net.
 Alleen RGB behaalde 92% totale nauwkeurigheid; met infrarood, afstand tot zee,
 DSM en kroonhoogte was dat 95%. De scripts en 6,55 GB trainingsmateriaal zijn
-openbaar, maar de getrainde modelgewichten niet. Ton heeft die al bij de auteur
-opgevraagd. Het model biedt daardoor een concrete nieuwe proefroute voor
-recente Meijendel-beelden, maar maakt de eerdere zwakke overdracht tussen
-beeldjaren niet ongedaan en is niet rechtstreeks toepasbaar op historische
-zwart-witfoto's.
+openbaar. De volledige levering is nu gecontroleerd: 440 zevenbands beelden
+hebben ieder een gelijknamig masker. Een echte uitsnede met vier klassen heeft
+op Apple MPS een technische trainingsstap doorlopen. De levering bevat echter
+geen modelgewichten en ook niet de officiële train-, validatie- en testsplits.
+Ton heeft de gewichten al bij de auteur opgevraagd. Het model biedt daardoor
+een concrete nieuwe proefroute voor recente Meijendel-beelden, maar maakt de
+eerdere zwakke overdracht tussen beeldjaren niet ongedaan en is niet
+rechtstreeks toepasbaar op historische zwart-witfoto's.
 
 Die proefroute is technisch voorbereid. Voor de vijf aaneengesloten plots
 M13s, M13, M14, M15 en M16 zijn de originele 25-centimeterbeelden van 2020
@@ -87,10 +90,13 @@ nu afgeleid uit LGN2020-klasse 17. Ook het uitsluitingsmasker volgt de
 landgebruiksklassen uit supplementaire tabel S3. Binnen de vijf plots valt
 98,0% binnen dat studiegebied. De voorlopige BRT-afstand correleerde 0,997
 met LGN, maar week mediaan 13 meter absoluut af en is daarom vervangen. De
-gewichten blijven de praktische blokkade voor inferentie. Bij levering wordt
-tevens vastgesteld of zij met LGN2019 of LGN2020 zijn getraind, omdat de
-supplementaire bijlage LGN19 noemt. Een technische controle weigert ieder
-checkpoint dat niet exact zeven invoerkanalen en zeven uitvoerklassen bevat.
+oorspronkelijke gewichten blijven de kortste route naar inferentie. Bij
+levering wordt tevens vastgesteld of zij met LGN2019 of LGN2020 zijn getraind,
+omdat de supplementaire bijlage LGN19 noemt. Een technische controle weigert
+ieder checkpoint dat niet exact zeven invoerkanalen en zeven uitvoerklassen
+bevat. Zelf trainen is technisch mogelijk, maar zou zonder de officiële
+gegevenssplits een nieuw modelonderzoek zijn met een ruimtelijk onafhankelijke
+indeling, passende GPU en eigen validatie in Meijendel.
 
 De aanvullende representativiteitsanalyse laat zien dat de
 landbedekkingsklassen waarin minstens één PQ ligt binnen de 25 kaartplots per
@@ -719,11 +725,15 @@ onafhankelijke referenties voor meer beeldjaren.
 Het gepubliceerde U-net van Lansu et al. is daarom niet als nieuwe uitkomst in
 het vogelmodel opgenomen, maar als kandidaatmethode vastgelegd. Artikel en
 proefschrift staan met PDF in de Zotero-collectie Meijendel. Het Zenodo-pakket
-bevat de trainingsbeelden, maskers en scripts, maar geen getrainde gewichten.
-Na ontvangst van die gewichten volgt eerst een kleine lokale overdrachtstoets
-op volledig achtergehouden Meijendel-pixels. Alleen bij voldoende
-klasseprestaties én stabiliteit tussen beeldjaren wordt opgeschaald. Voor de
-zwart-witbeelden van vóór 1975 blijft een afzonderlijk getrainde en
+bevat 440 complete zevenbands beeld-maskerparen en scripts, maar geen getrainde
+gewichten en geen officiële train-, validatie- en testsplits. De code en data
+hebben op Apple MPS één technische trainingsstap met echte data doorlopen; dat
+is geen getraind habitatmodel. Na ontvangst van de oorspronkelijke gewichten
+volgt eerst een kleine lokale overdrachtstoets op volledig achtergehouden
+Meijendel-pixels. Alleen bij voldoende klasseprestaties én stabiliteit tussen
+beeldjaren wordt opgeschaald. Als die gewichten uitblijven, vergt eigen
+hertraining eerst een nieuwe ruimtelijke gegevensindeling en lokale validatie.
+Voor de zwart-witbeelden van vóór 1975 blijft een afzonderlijk getrainde en
 gevalideerde classificatie nodig.
 
 ### Aanvullende modellen met stikstof en CBS-landgebruik
@@ -1124,7 +1134,7 @@ brondata blijft vanzelfsprekend nodig om de getallen exact te reproduceren.
 | Representativiteit PQ’s binnen kaartplots | Uitgevoerd; geen algemeen gewogen model | In 2001 liggen 82 bruikbare PQ’s in 18 van 25 plots en in 2022 100 in 19 plots. Klassen met minstens één PQ beslaan per plot mediaan 47,2% en 58,4% van het oppervlak; de spreiding binnen die klassen is niet getoetst. Weging corrigeert scheefheid tussen bemonsterde klassen, maar vult ontbrekende klassen niet aan. |
 | Vegetatiehoogte en gerichte habitatgroepen | Uitgevoerd | AHN2–AHN5 leveren 220 geharmoniseerde structuurregels voor 55 plots en vier momenten, 2008–2023. De tijdstoets is nu uitvoerbaar, maar alleen het boomgroepmodel slaagt numeriek; de winst is 0,0024 logscorepunt en niet robuust voor het weglaten van een soort. AHN1/1997–1998 is wegens sterke methodegevoeligheid alleen experimenteel. Geen model gaat door naar power. |
 | Jaarlijkse RGB/CIR-luchtfoto's | Proef uitgevoerd; niet toegelaten | Tien beelden uit 2016, 2020, 2022, 2023 en 2024 zijn voor 53 Natura 2000-plots onderzocht. De onafhankelijke overdracht 2020–2023 behaalt macro-F1 0,420–0,469 en blijft onder 0,60; normalisatie en textuur verbeteren dit niet. De rasters van 2001 en 2022 missen de oorspronkelijke trainings- en validatiereferenties en maken daarvan geen jaarlijkse reeks. |
-| U-net van Lansu et al. (2025) | Methode beschikbaar; gewichten opgevraagd | Zes klassen; 562 km² op 25 cm. Nauwkeurigheid: RGB 92%, alle lagen 95% en 499 veldpunten 88%. Eerst lokaal toetsen; niet gebruiken voor historische zwart-witfoto's. |
+| U-net van Lansu et al. (2025) | Technisch beproefd; gewichten en officiële gegevenssplits ontbreken | Zes klassen; 562 km² op 25 cm. De 440 beeld-maskerparen zijn compleet en één echte vierklassen-uitsnede heeft op Apple MPS een trainingsstap doorlopen. Dit is geen habitatmodel. Oorspronkelijke gewichten blijven de kortste route; eigen hertraining vereist ruimtelijke splits en lokale validatie. Niet gebruiken voor historische zwart-witfoto's. |
 | Weer | In gerichte modellen verwerkt | Dagweer uit 1958–2025 is samengevat als wintertemperatuur, vorstdagen, voorjaarstemperatuur en voorjaarsneerslag. Dit zijn correcties en mogelijke verklaringen, geen afzonderlijk bewijs van een weereffect. |
 | Stikstof en CBS-landgebruik | Uitgevoerd | Stikstof gebruikt 60.127 soort–plot–jaarrijen, 674 plotjaren, 51 plots en 2005–2023; CBS-landgebruik 15.039 rijen, 168 plotjaren, 49 plots en vier kaartjaren uit 2010–2022. Stikstof laat een verschil tussen plots zien, maar geen gemiddelde binnen-plotreactie. Van twaalf volledige modellen zijn er vier geldig; van 36 validaties twaalf. Geen tijdstoets slaagt en geen model gaat door naar power. |
 | HYVEG, MODAK en PROBE | Brononderzoek uitgevoerd | MODAK blijkt een haalbaarheidsstudie uit 2003. PROBE is een actuele vegetatiemodellenfamilie, maar de huidige Meijendel-database mist de volledige invoer voor PROBE-1. De PROBE-3-proef voor droog duin gebruikte 30 veldproefvlakken en modelleerde juist voor deze analyse belangrijke processen als begrazing, konijnen en vertraagde respons niet. Geen PROBE-run of poweranalyse uitgevoerd. |

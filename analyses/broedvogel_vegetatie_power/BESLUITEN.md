@@ -4,6 +4,26 @@ Dit bestand bewaart de inhoudelijke en technische keuzes voor deze analyse.
 Nieuwe besluiten worden gedateerd toegevoegd; eerdere besluiten worden niet
 stilzwijgend herschreven.
 
+## 23 november 2026 — zelftraining technisch mogelijk, nog niet reproduceerbaar
+
+- Het openbare Zenodo-archief van 6.552.447.633 bytes is volledig gedownload,
+  met de gepubliceerde MD5 gecontroleerd en bevat 440 complete zevenbands
+  beeld-maskerparen van 2.048 bij 2.048 pixels.
+- De gepubliceerde U-net is in een reproduceerbare Apple-Silicon-runtime
+  opgebouwd. Eén echte uitsnede met vier habitatklassen heeft op Apple MPS een
+  volledige trainingsstap doorlopen; de modelgewichten veranderden. Dit is
+  uitsluitend een technische compatibiliteitsproef.
+- Het archief bevat niet de door de code verwachte bestanden `training.csv`,
+  `validation.csv` en `test.csv`, en evenmin getrainde modelgewichten. Exacte
+  herhaling van de gepubliceerde training en validatie is daarom niet mogelijk.
+- Ontvangst van de oorspronkelijke gewichten blijft de kortste route naar de
+  voorbereide Meijendel-inferentie. Als die uitblijven, kan een nieuw model
+  worden getraind na vastlegging van ruimtelijk onafhankelijke gegevenssplits,
+  een passende GPU-omgeving en lokale validatie. Deze tweede route is geen
+  reconstructie van het gepubliceerde model.
+- Brondata, runtime en bewijs blijven op T7. De levende database, Shiny en de
+  VPS zijn niet gewijzigd.
+
 ## 13 november 2026 — modelinvoer voorbereid voor M13s tot en met M16
 
 - De eerste lokale Lansu-toets gebruikt de vijf aaneengesloten buitenduinplots

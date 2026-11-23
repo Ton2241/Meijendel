@@ -6,8 +6,10 @@ De lokale modelinvoer is voorbereid voor vijf aaneengesloten buitenduinplots:
 M13s, M13, M14, M15 en M16. Het product bevat 25 volledige modeltegels en de
 zeven banden uit de gepubliceerde configuratie van Lansu et al.: rood, groen,
 blauw, nabij-infrarood, DSM, kroonhoogte en afstand tot zee. De invoer is nog
-geen habitatkaart. Classificatie begint pas wanneer de opgevraagde gewichten
-zijn ontvangen en het checkpoint de technische controle doorstaat.
+geen habitatkaart. De openbare trainingsset en code zijn inmiddels technisch
+beproefd, maar de officiële gegevenssplits en modelgewichten ontbreken.
+Classificatie begint pas wanneer passende gewichten de technische controle
+doorstaan of nadat een afzonderlijk gevalideerd model opnieuw is getraind.
 
 De grote bron- en rasterbestanden staan in de geregistreerde T7-werkmap
 `/Volumes/T7 Data/Home_Ton/Proefomgevingen/lansu-modelinvoer-2020-2026-11-13`.
@@ -105,3 +107,28 @@ beeldmateriaal waarmee die kaart is gemaakt, blijft daarnaast een beperkte
 handmatige validatieset nodig. Pas wanneer klassefouten en ruimtelijke
 patronen aanvaardbaar zijn, wordt besloten over opschaling naar de overige
 Natura 2000-plots en andere beeldjaren.
+
+## Zelf trainen zonder ontvangen gewichten
+
+De volledige openbare Zenodo-set is op 23 november 2026 gecontroleerd. Zij
+bevat 440 zevenbands beelden van 2.048 bij 2.048 pixels en 440 gelijknamige
+maskers; alle paren zijn compleet. Het bronarchief van 6.552.447.633 bytes
+stemt overeen met de gepubliceerde MD5. Op de iMac is de gepubliceerde U-net
+met Apple MPS opgebouwd en heeft één echte uitsnede met vier habitatklassen
+een volledige trainingsstap doorlopen. De gewichten veranderden. Code,
+bestandsindeling, compressie, normalisatie en rekenroute zijn dus technisch
+compatibel.
+
+Dit is geen getraind habitatmodel. In de levering ontbreken de door de code
+verwachte bestanden `training.csv`, `validation.csv` en `test.csv`. Daardoor
+is onbekend welke tegels de auteurs voor training, afstelling en onafhankelijke
+toetsing gebruikten. Volledige hertraining zonder die indeling zou een nieuw
+modelonderzoek zijn, met een ruimtelijk gescheiden gegevensindeling, passende
+GPU en eigen validatie in Meijendel. De kortste route blijft daarom ontvangst
+van de oorspronkelijke gewichten. Als die uitblijven, is hertraining wel een
+uitvoerbare tweede route, maar niet op grond van deze technische proef alleen.
+
+Brondata, runtime en bewijs staan uitsluitend op T7 in
+`Proefomgevingen/lansu-zelftraining-2026-11-23`. De reproduceerbare code staat
+in de repository. Er is niets aan de levende database, Shiny of de VPS
+gewijzigd.

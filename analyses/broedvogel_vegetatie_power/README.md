@@ -59,9 +59,15 @@ Voor de afzonderlijke Lansu-route is inmiddels een gecontroleerde
 gepubliceerde banden in 25 volledige modeltegels. Dit is een technische
 voorbereiding, geen nieuwe classificatie-uitkomst. LGN2020 levert inmiddels
 de afstand tot zee en het uitsluitingsmasker volgens supplementaire tabel S3.
-De gewichten zijn nog niet ontvangen; dat is de resterende blokkade voor
-inferentie. Bij levering wordt tevens gecontroleerd of het model LGN2019 dan
-wel LGN2020 verwacht; de supplementaire bijlage noemt LGN19.
+De openbare trainingslevering is inmiddels volledig gedownload: 440
+zevenbands beelden en 440 gelijknamige maskers. Een echte beeld-maskeruitsnede
+heeft op Apple MPS een technische trainingsstap doorlopen. De gewichten zijn
+nog niet ontvangen en de levering bevat evenmin de officiële train-,
+validatie- en testsplits. Dat blijft de blokkade voor directe inferentie en
+exacte reproductie. Zelf hertrainen is technisch mogelijk, maar wordt een
+nieuw model met een eigen ruimtelijke gegevensindeling en lokale validatie.
+Bij ontvangst van gewichten wordt tevens gecontroleerd of het model LGN2019
+dan wel LGN2020 verwacht; de supplementaire bijlage noemt LGN19.
 
 Op 19 oktober 2026 zijn de oorspronkelijke geclassificeerde rasters voor 2001
 en 2022 ontvangen. Zij bevestigen de gepubliceerde oppervlaktes en voegen voor
