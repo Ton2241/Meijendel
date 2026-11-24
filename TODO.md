@@ -9,7 +9,7 @@ De lokale technische vervolgcontrole is afgerond. Websitekoppelingen zijn in een
 ### Jaarverslag Vogelwerkgroep Meijendel 2026
 
 - [ ] **Wintervogeltellingen.** Jans eerste concept is op 22 november 2026 ontvangen. Hij wil de decembertelling afwachten en vraagt het voorlopige stuk nog niet in te leveren. Ton controleert op **19 december 2026 om 09.00 uur** of de definitieve decemberaanvulling is ontvangen of wanneer die volgt. De definitieve bijdrage wordt vóór het jaareinde verwacht; op de controledatum is zij nog niet te laat. De herinnering staat in iCloud **Agenda**. Ton bepaalt de vervolgactie; geen automatisch rappel.
-- [ ] **Atlasbloktellingen.** André Leegwater is op 20 november 2026 telefonisch gevraagd om een tekst aan te leveren. Ton volgt de ontvangst op. Er is geen leverdatum vastgelegd.
+- [ ] **Atlasbloktellingen.** Verwerk Andrés op 23 november 2026 ontvangen en door Ton aanvaarde bijdrage in het definitieve jaarverslag. Ton heeft toegezegd de tweede en derde zin om te wisselen. Deze verwerking hoort bij de afronding begin januari 2027; er staat geen ontvangstcontrole of rappel aan André meer open.
 - [ ] **Begin januari 2027.** Ton verwerkt de bijdragen, rondt de jaarverslagtekst af en stuurt die aan Amy.
 
 ### Rode-Lijstbericht 457 na de Sovon-publicatie
