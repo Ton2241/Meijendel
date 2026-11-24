@@ -5,8 +5,16 @@ spec=importlib.util.spec_from_file_location('linux',ROOT/'deploy/integral_releas
 class LinuxContract(unittest.TestCase):
  def test_queued_apply_checks_preflight_before_claiming_approval(self):
   launcher=(ROOT/'deploy/integral_release_linux.py').read_text()
-  self.assertLess(launcher.index("base,receipt,m=freeze(a.commit"),launcher.index("queue_check('authorize',a.sha256)"))
-  self.assertLess(launcher.index("check_production_release(a.stage,base,receipt,m)"),launcher.index("queue_check('authorize',a.sha256)"))
+  freeze=launcher.index("base,receipt,m=freeze(a.commit")
+  authorization=launcher.index("queue_check('authorize',a.sha256)",freeze)
+  self.assertLess(freeze,authorization)
+  self.assertLess(launcher.index("check_production_release(a.stage,base,receipt,m)",freeze),authorization)
+ def test_finalization_routes_require_queue_authorization_before_returning(self):
+  launcher=(ROOT/'deploy/integral_release_linux.py').read_text()
+  authorization=launcher.index("queue_check('authorize',a.sha256)",launcher.index("with global_lock()"))
+  finalization=launcher.index("if a.stage in ('finalize-plan','finalize','adopt-finalization')")
+  self.assertLess(authorization,finalization)
+  self.assertLess(launcher.index("queue_check('require-active',a.sha256)",authorization),finalization)
  def test_trial_layout_has_only_private_names_and_loopback_ports(self):
   layout=linux.layout('a'*40,trial=True)
   self.assertTrue(layout['database'].startswith('vwg_integral_'))
@@ -279,7 +287,7 @@ class ReleaseFinalizationContract(unittest.TestCase):
   old=self.identity('release-old','c'*64)|{'path':'/control/production/releases/release-old'}
   return {
    'active':active,'previous':previous,
-   'journal':{'phase':'active','attempted':'release-B','activated_at':'2026-11-22T20:00:00Z'},
+   'journal':{'phase':'active','previous':'release-A','attempted':'release-B','activated_at':'2026-11-22T20:00:00Z'},
    'health':{'release_id':'release-B','three_services':True,'shiny_cache_and_bootstrap':True},
    'sealed_packages':[
     active|{'path':'/control/packages/'+'b'*64,'bytes':100,'fingerprint':[1,2]},
@@ -302,7 +310,7 @@ class ReleaseFinalizationContract(unittest.TestCase):
  def inventory(self):
   return {'containers':[{'name':'meijendel-mysql','image':'sha256:'+'d'*64,
                          'mount_sources':['/control/production/runtime']}],
-          'queue_identity':None,
+          'queue_identity':None,'host_mount_sources':[],
           'build_cache':[{'ID':'cacheold123','Reclaimable':True,'Mutable':False,
                           'Shared':False,'Size':'700','UsageCount':0,'Parents':[],
                           'CreatedAt':'2026-11-20T00:00:00Z','LastUsedAt':'2026-11-20T00:00:00Z',
@@ -341,6 +349,25 @@ class ReleaseFinalizationContract(unittest.TestCase):
   with self.assertRaisesRegex(ValueError,'cache'):
    linux.build_finalization_plan(context,self.proof(),inventory)
 
+ def test_candidate_nested_inside_active_mount_or_host_mount_is_blocked(self):
+  context=self.context();inventory=self.inventory()
+  inventory['containers'][0]['mount_sources']=['/control/packages']
+  with self.assertRaisesRegex(ValueError,'actieve verwijzing'):
+   linux.build_finalization_plan(context,self.proof(),inventory)
+  inventory=self.inventory();inventory['host_mount_sources']=['/control/production/releases/release-old/data']
+  with self.assertRaisesRegex(ValueError,'actieve verwijzing'):
+   linux.build_finalization_plan(context,self.proof(),inventory)
+
+ def test_direct_predecessor_from_journal_is_the_only_rollback_release(self):
+  context=self.context()
+  context['previous']=self.identity('release-direct','d'*64)|{'path':'/control/production/releases/release-direct'}
+  context['releases'].append(context['previous']|{'bytes':10,'fingerprint':[1,10]})
+  context['journal']['previous']='release-direct'
+  plan=linux.build_finalization_plan(context,self.proof(),self.inventory())
+  removed={item.get('path') for item in plan['objects']}
+  self.assertNotIn('/control/production/releases/release-direct',removed)
+  self.assertIn('/control/production/releases/release-A',removed)
+
  def test_apply_uses_exact_plan_and_targeted_buildkit_id_only(self):
   plan=linux.build_finalization_plan(self.context(),self.proof(),self.inventory())
   removed=[];commands=[]
@@ -353,6 +380,17 @@ class ReleaseFinalizationContract(unittest.TestCase):
   self.assertEqual(len(removed),4)
   self.assertEqual(commands,[['docker','buildx','prune','--force','--filter','id=cacheold123','--filter','inuse=false']])
   self.assertEqual(result['free_bytes_after'],41*linux.GIB)
+
+ def test_apply_records_each_completed_object_before_a_later_failure(self):
+  plan=linux.build_finalization_plan(self.context(),self.proof(),self.inventory())
+  progress=[]
+  def remove(item):
+   if progress:raise RuntimeError('second failed')
+   progress.append(item['path'])
+  with self.assertRaisesRegex(RuntimeError,'second failed'):
+   linux.apply_finalization_plan(plan,remove_path=remove,command=lambda args:None,
+                                 free_bytes=lambda:41*linux.GIB,record_progress=progress.append)
+  self.assertEqual(progress[1]['path'],progress[0])
 
  def test_upload_gate_requires_completed_previous_release_and_36_gib_after_upload(self):
   active=self.identity('release-B','b'*64)
@@ -398,6 +436,17 @@ class ReleaseFinalizationContract(unittest.TestCase):
    linux.verify_finalization_result(plan,remaining_paths={'/releases/old'},remaining_cache_ids=set())
   with self.assertRaises(RuntimeError):
    linux.verify_finalization_result(plan,remaining_paths=set(),remaining_cache_ids={'cache123'})
+
+ def test_newest_current_proof_is_selected_and_expired_proof_is_rejected(self):
+  from datetime import datetime,timezone
+  now=datetime(2026,11,24,6,tzinfo=timezone.utc)
+  def proof(created,protected):return {'proof_created_at':created,'snapshot_status':{'protected_until':protected}}
+  older=proof('2026-11-24T04:00:00Z','2026-11-30T05:00:00Z')
+  newest=proof('2026-11-24T05:00:00Z','2026-11-30T05:00:00Z')
+  self.assertEqual(linux.select_current_chain_proof([(older,'a'),(newest,'b')],now=now)[1],'b')
+  expired=proof('2026-11-22T00:00:00Z','2026-11-24T05:59:59Z')
+  with self.assertRaisesRegex(ValueError,'actueel'):
+   linux.select_current_chain_proof([(expired,'c')],now=now)
 
 
 

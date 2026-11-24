@@ -60,7 +60,8 @@ class ManagedClientContract(unittest.TestCase):
   with patch.object(client,'run',side_effect=run):
    client.managed_finalization(prepared,'finalize','host','key')
    client.managed_finalization(prepared,'adopt-finalization','host','key')
-  self.assertEqual(commands,[f"meijendel-finalize {'a'*40} {'b'*64}",
+  self.assertEqual(commands,[f"meijendel-finalize-plan {'a'*40} {'b'*64}",
+                             f"meijendel-finalize {'a'*40} {'b'*64}",
                              f"meijendel-adopt-finalization {'a'*40} {'b'*64}"])
 
 class LegacyStorageContract(unittest.TestCase):

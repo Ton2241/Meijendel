@@ -272,9 +272,12 @@ def managed_execute(prepared,stage,target,key,out,repos):
 def managed_finalization(prepared,stage,target,key):
  commit=prepared['commits']['Meijendel'];digest=prepared['sha256']
  if stage not in ('finalize','adopt-finalization'):raise ValueError('Onbekende finalisatiefase')
- action='meijendel-finalize' if stage=='finalize' else 'meijendel-adopt-finalization'
  ssh=['/usr/bin/ssh','-T','-o','BatchMode=yes','-o','IdentitiesOnly=yes',
       '-o','StrictHostKeyChecking=yes','-i',key,'--',target]
+ if stage=='finalize':
+  run([*ssh,f'meijendel-finalize-plan {commit} {digest}'],stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,text=True)
+  action='meijendel-finalize'
+ else:action='meijendel-adopt-finalization'
  return run([*ssh,f'{action} {commit} {digest}'],stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,text=True)
 
 

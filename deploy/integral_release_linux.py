@@ -2,7 +2,7 @@
 """Fixed Linux hooks for the hash-bound VWG gateway; no arbitrary commands/paths."""
 from __future__ import annotations
 import argparse,contextlib,gzip,hashlib,ipaddress,socket,http.server,tarfile,importlib.util,json,os,re,shutil,signal,stat,subprocess,sys,tempfile,time,urllib.parse,urllib.request
-from datetime import datetime,timezone
+from datetime import datetime,timedelta,timezone
 from html.parser import HTMLParser
 from pathlib import Path
 BASE=Path('/srv/vwgm');STATE=BASE/'deploy-state';CONTROL=Path('/var/lib/vwgm-integral');INSTALL=Path(__file__).resolve().parent
@@ -769,6 +769,8 @@ def receive_release(commit,digest,size,source):
   scratch=Path(scratch);archive=scratch/'archive';base=scratch/'verified'
   receive_archive(archive,size,digest,source)
   unpack_release(archive,base,commit)
+  if shutil.disk_usage(package_root).free<MIN_FINALIZED_FREE_BYTES:
+   raise RuntimeError('Na uitpakken blijft minder dan 36 GiB vrij')
   allowed={'payload','receipt.json','presentation.json'} if (base/'presentation.json').is_file() else {'payload','receipt.json'}
   if {item.name for item in base.iterdir()}!=allowed:
    raise ValueError('Onbekend bestand op hoofdniveau van het pakket')
@@ -808,7 +810,7 @@ def global_lock():
 
 def queue_stage(stage):
  required=QUEUE_POLICY.exists() or QUEUE_POLICY.is_symlink()
- if stage in ('apply-queued','receive-queued','finalize-queued','adopt-finalization-queued'):
+ if stage in ('apply-queued','receive-queued','finalize-plan-queued','finalize-queued','adopt-finalization-queued'):
   secure_file(QUEUE_POLICY)
   return stage.removesuffix('-queued'),True
  if required and stage!='preflight':
@@ -892,13 +894,21 @@ def build_finalization_plan(context,proof,inventory):
   if (set(item)!={'name','image','mount_sources'} or not re.fullmatch(r'[A-Za-z0-9_.-]{1,128}',str(item['name']))
       or not re.fullmatch(r'sha256:[0-9a-f]{64}',str(item['image'])) or not isinstance(item['mount_sources'],list)
       or any(not isinstance(source,str) or not source.startswith('/') for source in item['mount_sources'])):raise ValueError('Onbekende containerinventaris')
+ host_mounts=inventory.get('host_mount_sources')
+ if not isinstance(host_mounts,list) or any(not isinstance(path,str) or not path.startswith('/') for path in host_mounts):
+  raise ValueError('Hostmountinventaris ontbreekt')
  keep_paths={active['path'],previous['path']};keep_digests={active['package_digest'],previous['package_digest']}
  objects=[]
+ def overlaps(left,right):
+  left=left.rstrip('/') or '/';right=right.rstrip('/') or '/'
+  return left==right or left.startswith(right+'/') or right.startswith(left+'/')
  def candidate(kind,item,reason):
   path=item['path']
   for container in containers:
-   if any(source==path or source.startswith(path.rstrip('/')+'/') for source in container['mount_sources']):
+   if any(overlaps(source,path) for source in container['mount_sources']):
     raise ValueError('Kandidaat heeft een actieve verwijzing: '+path)
+  if any(source==path or source.startswith(path.rstrip('/')+'/') for source in host_mounts):
+   raise ValueError('Kandidaat heeft een actieve verwijzing: '+path)
   objects.append({'kind':kind,'path':path,'reason':reason,'bytes':item['bytes'],'fingerprint':item['fingerprint']})
  for item in context.get('sealed_packages',[]):
   if item['package_digest'] not in keep_digests:candidate('sealed_package',item,'niet actieve of vorige verzegelde release')
@@ -908,7 +918,8 @@ def build_finalization_plan(context,proof,inventory):
  for item in context.get('inbox',[]):
   if item['digest'] not in keep_digests:candidate('inbox_archive',item,'verzegeld uploadarchief zonder actieve herstelrol')
  queue_identity=inventory.get('queue_identity')
- if queue_identity and any(item.get('package_digest')==queue_identity for item in context.get('sealed_packages',[]) if item['package_digest'] not in keep_digests):
+ if queue_identity and (any(item.get('package_digest')==queue_identity for item in context.get('sealed_packages',[]) if item['package_digest'] not in keep_digests)
+                        or any(item.get('digest')==queue_identity for item in context.get('inbox',[]))):
   raise ValueError('Verwijderkandidaat heeft een actieve wachtrijverwijzing')
  cache_keys={'ID','Reclaimable','Mutable','Shared','Size','UsageCount','Parents','CreatedAt','LastUsedAt','Description','Type'}
  caches=inventory.get('build_cache')
@@ -925,12 +936,13 @@ def build_finalization_plan(context,proof,inventory):
          'free_bytes_before':context['free_bytes'],'projected_free_bytes':context['free_bytes']+total,'objects':objects}
 
 
-def apply_finalization_plan(plan,*,remove_path,command,free_bytes):
+def apply_finalization_plan(plan,*,remove_path,command,free_bytes,record_progress=lambda item:None):
  if plan.get('schema')!='vwgm-release-finalization-plan-v1':raise ValueError('Onbekend finalisatieplan')
  for item in plan['objects']:
   if item['kind']=='buildkit_cache':
    command(['docker','buildx','prune','--force','--filter','id='+item['id'],'--filter','inuse=false'])
   else:remove_path(item)
+  record_progress(item)
  return plan|{'free_bytes_after':free_bytes()}
 
 
@@ -995,7 +1007,10 @@ def collect_finalization_context():
   secure_file(FINALIZATION_STATE);adopted=jsonfile(FINALIZATION_STATE)
   if adopted.get('adopted') is True and adopted.get('status')=='pending' and _same_identity(adopted.get('release',{}),active):
    journal=journal|{'activated_at':adopted['activated_at']}
- last=jsonfile(root/'last_backup.json');previous_path=Path(last.get('package','')).resolve()
+ previous_name=journal.get('previous')
+ if not isinstance(previous_name,str) or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.-]{0,127}',previous_name):
+  raise ValueError('Productiejournal mist de directe voorganger')
+ previous_path=core.safe_path(root/'releases',previous_name)
  if previous_path.parent!=root/'releases' or previous_path==active_path:raise ValueError('Geen eenduidige vorige rollbackrelease')
  previous=_release_record(previous_path);releases=[]
  for path in (root/'releases').iterdir():
@@ -1007,6 +1022,9 @@ def collect_finalization_context():
   else:sealed.append(_sealed_record(path))
  inbox=[];inbox_root=STATE/'integral-inbox'
  if inbox_root.exists():
+  root_info=inbox_root.lstat()
+  if stat.S_ISLNK(root_info.st_mode) or not stat.S_ISDIR(root_info.st_mode) or root_info.st_mode&0o022:
+   raise ValueError('Onveilige integrale inboxroot')
   for path in inbox_root.iterdir():
    if not re.fullmatch(r'[0-9a-f]{40}\.tar\.gz',path.name):raise ValueError('Onbekend object in integrale inbox')
    item=_tree_record(path,'inbox_archive');item['digest']=core.sha(path);inbox.append(item)
@@ -1023,7 +1041,12 @@ def collect_finalization_inventory():
  queue_identity=None;active=QUEUE_CONFIG/'active.json'
  if active.exists() or active.is_symlink():secure_file(active);queue_identity=jsonfile(active).get('identity')
  output=run(['docker','buildx','du','--format=json'],capture_output=True,text=True).stdout
- return {'containers':containers,'queue_identity':queue_identity,
+ mounts=[]
+ for line in Path('/proc/self/mountinfo').read_text().splitlines():
+  fields=line.split()
+  if len(fields)<10 or '-' not in fields:raise ValueError('Onbekend hostmountschema')
+  mounts.append(re.sub(r'\\([0-7]{3})',lambda match:chr(int(match.group(1),8)),fields[4]))
+ return {'containers':containers,'host_mount_sources':sorted(set(mounts)),'queue_identity':queue_identity,
          'build_cache':[json.loads(line) for line in output.splitlines() if line.strip()]}
 
 
@@ -1032,25 +1055,47 @@ def _proof_module():
  module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module);return module
 
 
+def select_current_chain_proof(matches,*,now):
+ eligible=[]
+ for value,digest in matches:
+  created=_instant(value['proof_created_at'],'bewijsaanmaak')
+  protected_until=_instant(value['snapshot_status']['protected_until'],'beschermingseinde')
+  if now-created<=timedelta(hours=30) and protected_until>now:eligible.append((value,digest))
+ if not eligible:raise ValueError('Geen actueel en nog beschermd ketenbewijs')
+ return max(eligible,key=lambda item:_instant(item[0]['proof_created_at'],'bewijsaanmaak'))
+
+
 def matching_chain_proof(identity,activated_at,*,now):
  module=_proof_module();root_directory(CHAIN_RECEIPTS,0o700);matches=[]
  for path in CHAIN_RECEIPTS.iterdir():
   secure_file(path);value=module.validate_chain_proof(module.parse_json_object(path.read_bytes()),now=now,supported_versions=SUPPORTED_SNAPSHOT_VERSIONS)
-  if _same_identity(_proof_release_identity(value),identity) and _instant(value['pull_proof']['backup']['created_at'],'back-up')>_instant(activated_at,'activering'):matches.append(value)
+  if _same_identity(_proof_release_identity(value),identity) and _instant(value['pull_proof']['backup']['created_at'],'back-up')>_instant(activated_at,'activering'):
+   matches.append((value,core.sha(path)))
  if not matches:raise ValueError('Geen geldig ketenbewijs na activering voor deze release')
- return min(matches,key=lambda item:_instant(item['proof_created_at'],'bewijsaanmaak'))
+ return select_current_chain_proof(matches,now=now)
 
 
 def _remove_planned_path(item):
  path=Path(item['path']);allowed={'sealed_package':CONTROL/'packages','staging':CONTROL/'packages','release':CONTROL/'production/releases','inbox_archive':STATE/'integral-inbox'}
  parent=allowed.get(item['kind'])
  if parent is None or path.parent!=parent:raise ValueError('Finalisatiepad ligt buiten de vaste beheerroot')
- info=path.lstat()
+ parent_info=parent.lstat()
+ if stat.S_ISLNK(parent_info.st_mode) or not stat.S_ISDIR(parent_info.st_mode) or parent_info.st_mode&0o022:
+  raise ValueError('Onveilige beheerroot voor finalisatie')
+ parent_fd=os.open(parent,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW)
+ try:info=os.stat(path.name,dir_fd=parent_fd,follow_symlinks=False)
+ finally:os.close(parent_fd)
  if [info.st_dev,info.st_ino,info.st_ctime_ns]!=item['fingerprint'] or stat.S_ISLNK(info.st_mode):raise ValueError('Finalisatieobject veranderde sinds het plan')
  inventory=collect_finalization_inventory()
- if any(source==str(path) or source.startswith(str(path)+'/') for container in inventory['containers'] for source in container['mount_sources']):raise ValueError('Finalisatieobject kreeg een actieve mount')
- if path.is_dir():shutil.rmtree(path)
- else:path.unlink()
+ sources=[source for container in inventory['containers'] for source in container['mount_sources']]
+ if any(source==str(path) or source.startswith(str(path)+'/') or str(path).startswith(source.rstrip('/')+'/') for source in sources):raise ValueError('Finalisatieobject kreeg een actieve mount')
+ if any(source==str(path) or source.startswith(str(path)+'/') for source in inventory['host_mount_sources']):raise ValueError('Finalisatieobject kreeg een actieve hostmount')
+ if stat.S_ISDIR(info.st_mode):shutil.rmtree(path)
+ elif stat.S_ISREG(info.st_mode):
+  parent_fd=os.open(parent,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW)
+  try:os.unlink(path.name,dir_fd=parent_fd)
+  finally:os.close(parent_fd)
+ else:raise ValueError('Finalisatieobject is geen reguliere map of bestand')
 
 
 def record_pending_finalization(*,adopted=False):
@@ -1061,26 +1106,64 @@ def record_pending_finalization(*,adopted=False):
  secret_json(FINALIZATION_STATE,value);return value
 
 
-def finalize_current(commit,digest,start_mutation):
- context=collect_finalization_context();identity=context['active']
+def verify_live_finalization_context(context):
+ identity=context['active'];package=Path(identity['path']);manifest=jsonfile(package/'release.json')
+ commits=manifest.get('source_commits',{})
+ if any(commits.get(name)!=identity['commits'][name] for name in ('Meijendel','VWG_M')):
+  raise ValueError('Actieve releasemanifest en finalisatie-identiteit verschillen')
+ for name in ('Meijendel','VWG_M'):
+  path=STATE/(name+'.commit')
+  if path.is_symlink() or path.read_text().strip()!=commits[name]:raise ValueError('Actueel VPS-statebestand wijkt af: '+name)
+ h=LinuxHooks(jsonfile(CONTROL/'production/private/settings.json'));h.health(package)
+ refreshed=collect_finalization_context()
+ if not _same_identity(refreshed['active'],identity):raise ValueError('Actieve release wijzigde tijdens de rooktest')
+ return refreshed
+
+
+def _write_finalization_audit(status,identity,digest,**fields):
+ now=datetime.now(timezone.utc);value={'schema':'vwgm-release-finalization-audit-v1','status':status,
+  'recorded_at':now.isoformat().replace('+00:00','Z'),'release':identity,'package_digest':digest}|fields
+ root_directory(FINALIZATION_AUDIT,0o700)
+ name=now.strftime('%Y%m%dT%H%M%S.%fZ')+'--'+digest[:16]+'.json'
+ secret_json(FINALIZATION_AUDIT/name,value);return value
+
+
+def plan_current_finalization(commit,digest):
+ context=verify_live_finalization_context(collect_finalization_context());identity=context['active']
  if identity['commits']['Meijendel']!=commit or identity['package_digest']!=digest:raise ValueError('Finalisatie hoort niet bij de actieve release')
  secure_file(FINALIZATION_STATE);state=jsonfile(FINALIZATION_STATE)
- adopted=require_pending_finalization(state,identity,context['journal']['activated_at'])
- proof=matching_chain_proof(identity,context['journal']['activated_at'],now=datetime.now(timezone.utc))
- plan=build_finalization_plan(context,proof,collect_finalization_inventory())
- secret_json(FINALIZATION_PLAN,plan);plan=jsonfile(FINALIZATION_PLAN);start_mutation()
+ require_pending_finalization(state,identity,context['journal']['activated_at'])
+ proof,proof_digest=matching_chain_proof(identity,context['journal']['activated_at'],now=datetime.now(timezone.utc))
+ plan=build_finalization_plan(context,proof,collect_finalization_inventory())|{'proof_sha256':proof_digest}
+ secret_json(FINALIZATION_PLAN,plan)
+ _write_finalization_audit('planned',identity,digest,proof_sha256=proof_digest,plan=plan)
+ return plan
+
+
+def finalize_current(commit,digest,start_mutation):
+ completed=[];identity={'release_id':'unknown','package_digest':digest,'commits':{}}
  try:
-  result=apply_finalization_plan(plan,remove_path=_remove_planned_path,command=lambda args:run(args),free_bytes=lambda:shutil.disk_usage(CONTROL).free)
+  context=verify_live_finalization_context(collect_finalization_context());identity=context['active']
+  if identity['commits']['Meijendel']!=commit or identity['package_digest']!=digest:raise ValueError('Finalisatie hoort niet bij de actieve release')
+  secure_file(FINALIZATION_STATE);state=jsonfile(FINALIZATION_STATE)
+  adopted=require_pending_finalization(state,identity,context['journal']['activated_at'])
+  proof,proof_digest=matching_chain_proof(identity,context['journal']['activated_at'],now=datetime.now(timezone.utc))
+  expected=build_finalization_plan(context,proof,collect_finalization_inventory())|{'proof_sha256':proof_digest}
+  secure_file(FINALIZATION_PLAN);plan=jsonfile(FINALIZATION_PLAN)
+  if plan!=expected:raise ValueError('Actuele finalisatie-inventaris wijkt af van de beheerde dry-run')
+  start_mutation()
+  result=apply_finalization_plan(plan,remove_path=_remove_planned_path,command=lambda args:run(args),free_bytes=lambda:shutil.disk_usage(CONTROL).free,record_progress=lambda item:completed.append(item))
   remaining=collect_finalization_inventory();remaining_paths={item['path'] for group in ('sealed_packages','releases','staging','inbox') for item in collect_finalization_context().get(group,[])}
   verify_finalization_result(plan,remaining_paths=remaining_paths,remaining_cache_ids={item['ID'] for item in remaining['build_cache']})
   if result['free_bytes_after']<MIN_FINALIZED_FREE_BYTES:raise RuntimeError('Na finalisatie is minder dan 36 GiB vrij')
-  audit=result|{'schema':'vwgm-release-finalization-audit-v1','completed_at':datetime.now(timezone.utc).isoformat().replace('+00:00','Z')}
-  root_directory(FINALIZATION_AUDIT,0o700);secret_json(FINALIZATION_AUDIT/(proof['chain_date']+'--'+identity['release_id']+'.json'),audit)
-  secret_json(FINALIZATION_STATE,{'schema':'vwgm-release-finalization-state-v1','status':'complete','release':identity,'activated_at':context['journal']['activated_at'],'proof_created_at':proof['proof_created_at'],'completed_at':audit['completed_at'],'adopted':adopted})
+  audit=_write_finalization_audit('complete',identity,digest,proof_sha256=proof_digest,plan=plan,completed=completed,free_bytes_after=result['free_bytes_after'])
+  secret_json(FINALIZATION_STATE,{'schema':'vwgm-release-finalization-state-v1','status':'complete','release':identity,'activated_at':context['journal']['activated_at'],'proof_created_at':proof['proof_created_at'],'completed_at':audit['recorded_at'],'adopted':adopted})
   FINALIZATION_PLAN.unlink()
   return audit
- except Exception:
-  secret_json(FINALIZATION_STATE,{'schema':'vwgm-release-finalization-state-v1','status':'failed','release':identity,'activated_at':context['journal']['activated_at'],'failed_at':datetime.now(timezone.utc).isoformat().replace('+00:00','Z')})
+ except Exception as error:
+  _write_finalization_audit('failed' if completed else 'blocked',identity,digest,completed=completed,error=type(error).__name__+': '+str(error))
+  if completed:
+   secret_json(FINALIZATION_STATE,{'schema':'vwgm-release-finalization-state-v1','status':'failed','release':identity,'activated_at':context['journal']['activated_at'],'failed_at':datetime.now(timezone.utc).isoformat().replace('+00:00','Z')})
   raise
 
 def make_readable(package):
@@ -1491,7 +1574,7 @@ def main():
  def upload_expired(signum,frame):raise RuntimeError('Ontvangsttermijn voor Meijendel-pakket is verlopen')
  for signum in (signal.SIGTERM,signal.SIGINT,signal.SIGHUP):signal.signal(signum,interrupted)
  parser=argparse.ArgumentParser(description=__doc__)
- parser.add_argument('stage',choices=['preflight','rehearse','apply','apply-queued','receive-queued','finalize-queued','adopt-finalization-queued','rollback','cleanup','recover'])
+ parser.add_argument('stage',choices=['preflight','rehearse','apply','apply-queued','receive-queued','finalize-plan-queued','finalize-queued','adopt-finalization-queued','rollback','cleanup','recover'])
  parser.add_argument('commit');parser.add_argument('sha256');parser.add_argument('byte_count',nargs='?');a=parser.parse_args()
  layout(a.commit,True)
  if os.geteuid()!=0:raise SystemExit('Alleen via de gesloten root-gateway')
@@ -1513,12 +1596,19 @@ def main():
    try:response=receive_release(a.commit,a.sha256,size,sys.stdin.buffer)
    finally:signal.alarm(0)
    print(json.dumps(response));return
-  if a.stage in ('finalize','adopt-finalization'):
+  if queued and a.stage=='finalize-plan':
+   queue_check('check',a.sha256)
+  if queued and a.stage in ('finalize','adopt-finalization'):
+   queue_check('authorize',a.sha256)
+   queue_check('require-active',a.sha256)
+  if a.stage in ('finalize-plan','finalize','adopt-finalization'):
    active=current_release_identity()
    if active['commits']['Meijendel']!=a.commit or active['package_digest']!=a.sha256:raise ValueError('Beheeractie hoort niet bij de actieve release')
    if a.stage=='adopt-finalization':
     context=collect_finalization_context();now=datetime.now(timezone.utc);activated=context['journal'].get('activated_at') or now.isoformat().replace('+00:00','Z')
     adopt_finalization_state(FINALIZATION_STATE,active,activated,now=now);print('INTEGRAL_ADOPT_FINALIZATION_OK');return
+   if a.stage=='finalize-plan':
+    print(json.dumps(plan_current_finalization(a.commit,a.sha256),sort_keys=True));return
    print(json.dumps(finalize_current(a.commit,a.sha256,start_mutation),sort_keys=True));return
   if queued:
    sealed=CONTROL/'packages'/a.sha256
