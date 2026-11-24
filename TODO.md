@@ -1017,7 +1017,7 @@ en leveringen. Werk bij een vervolgbericht de bestaande taak en herinnering
 bij. Verwijder afgeronde opvolging uit deze lijst. Ton beslist over verzending
 van rappels.
 
-Stand 19 november 2026. Alle data hieronder vallen in 2026. De opvolging staat
+Stand 24 november 2026. De opvolging loopt waar vermeld door in 2027 en staat
 in iCloud **Agenda**.
 
 | Persoon of organisatie | Laatste uitgaande mail | Open opvolging |
@@ -1026,7 +1026,7 @@ in iCloud **Agenda**.
 | RAVON / Rolf van Leeningen | 7 oktober | **7 december.** Rolf zoekt uit welke meetgegevens beschikbaar zijn. Controleer de stand en beoordeel het rappel. |
 | Staatsbosbeheer / Alex Zuijdervliet | 12 november | **10 december.** Controleer of de collega die in december naar de oorspronkelijke florakartering uit 2002–2008 kijkt, al heeft gereageerd. |
 | NIOZ / Eva Lansu | 23 november, 15.46 uur | **21 december 2026 om 09.00 uur.** Controleer antwoord of levering op de aanvullende mail over *Squeezed Sands*: modelgewichten/checkpoint van het volledige zevenbandsmodel, oorspronkelijke train-/validatie-/testsplits of exacte tegelverdeling en bevestiging welke modelversie, voorbewerking en checkpoint bij elkaar horen. Een export van de trainingsmap volstaat als dat eenvoudiger is. Verzonden vanuit voorzitter@vwg-m.nl; eerste verzoek 13 november. De iCloud-herinnering is verplaatst van 11 naar 21 december, vier weken na de vervolgmail. Ton bepaalt de vervolgactie; geen automatisch rappel. |
-| Haags Gemeentearchief / Michael Mellema | 13 november | **11 december.** Controleer of de stukken uit collectie 0395-01 beschikbaar zijn. Op het rappel over de aanvraag van 13 oktober kwam een automatische ontvangstbevestiging. |
+| Haags Gemeentearchief / Michael Mellema | 13 november; antwoord 24 november | **4 januari 2027 om 09.15 uur.** Controleer eerst nieuw bericht over de twintig aangevraagde inventarisnummers uit archief 0395-01. Michael meldt dat er nog geen inzagetermijn is, verwacht beschikbaarheid in 2026 niet meer en adviseert begin 2027 opnieuw contact. Ton beoordeelt daarna een kort vervolgbericht. De iCloud-herinnering vervangt 11 december; nog geen bezoek of levering bevestigd. |
 | Sovon / Lara Marx | 18 november | **1 december om 09.00 uur.** Ton controleert of de watervogelkavelgrenzen zijn aangepast overeenkomstig de gecorrigeerde BMP-grenzen en of de download van watervogeltellingen voor seizoen 2025/2026 beschikbaar is. Lara gaf de grenscorrecties op 18 november door aan de beheerder van de watervogeldatabase; uitvoering is nog niet bevestigd. De eerdere BMP-grenscontrole is afgerond. Deze opvolging staat in iCloud **Agenda** en vervangt de controle van 12 december. |
 
 ## Externe ecologiebronnen na fase 1 en 2
