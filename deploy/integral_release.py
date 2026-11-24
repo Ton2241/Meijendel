@@ -5,6 +5,7 @@ No SSH/network deployment. Database/service operations are supplied by an explic
 local adapter; the same activation, backup and recovery order is used everywhere.
 """
 import contextlib,fcntl,hashlib,json,os,re,time
+from datetime import datetime,timezone
 from pathlib import Path
 
 SQL_SOURCE='data/meijendel.sql'
@@ -154,7 +155,7 @@ def activate(root,package,hooks):
                 raise RuntimeError('Activering en herstel mislukt; diensten gestopt; zie journal.json') from recovery_error
             journal.update(phase='restored',error=str(error));atomic_json(root/'journal.json',journal)
             raise
-        journal['phase']='active';atomic_json(root/'journal.json',journal)
+        journal.update(phase='active',activated_at=datetime.now(timezone.utc).isoformat().replace('+00:00','Z'));atomic_json(root/'journal.json',journal)
         atomic_json(root/'last_backup.json',{'package':str(old) if old else None,'backup':str(backup)})
         return m
 

@@ -37,6 +37,8 @@ class IntegralReleaseTests(unittest.TestCase):
     def start(s,p):pass
     def health(s,p):assert s.value==p.name
    h=Hooks();m.set_current(root,a);m.activate(root,b,h)
+   journal=json.loads((root/'journal.json').read_text())
+   self.assertEqual(journal['phase'],'active');self.assertRegex(journal['activated_at'],r'Z$')
    self.assertEqual(h.value,'B');m.rollback(root,h)
    self.assertEqual(h.value,'A');self.assertEqual(m.current(root),a.resolve())
  def test_failed_snapshot_restarts_original_without_partial_restore(self):

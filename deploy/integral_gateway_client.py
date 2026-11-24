@@ -191,7 +191,7 @@ def remove_completed(state,production,commits,digest,size):
     lock.mkdir(mode=0o700)
     try:
         active=(production/'current').resolve(strict=True)
-        if active.parent!=production/'releases':
+        if active.parent!=(production/'releases').resolve(strict=True):
             raise ValueError('Actieve release ligt buiten de beheerde releasemap')
         manifest=active/'release.json'
         if not stat.S_ISREG(manifest.lstat().st_mode) or manifest.stat().st_uid!=production.stat().st_uid:
@@ -203,7 +203,7 @@ def remove_completed(state,production,commits,digest,size):
             if (state/(name+'.commit')).read_text().strip()!=commits[name]:
                 raise ValueError('Geregistreerde productiecommit wijkt af')
         inbox=state/'integral-inbox'
-        if inbox.resolve(strict=True)!=inbox:
+        if inbox.is_symlink() or not inbox.is_dir():
             raise ValueError('Inboxpad wijkt af')
         archive=inbox/(commits['Meijendel']+'.tar.gz')
         try:
@@ -269,6 +269,15 @@ def managed_execute(prepared,stage,target,key,out,repos):
   run([*ssh,f'meijendel-apply {commit} {digest}'],stdin=subprocess.DEVNULL)
 
 
+def managed_finalization(prepared,stage,target,key):
+ commit=prepared['commits']['Meijendel'];digest=prepared['sha256']
+ if stage not in ('finalize','adopt-finalization'):raise ValueError('Onbekende finalisatiefase')
+ action='meijendel-finalize' if stage=='finalize' else 'meijendel-adopt-finalization'
+ ssh=['/usr/bin/ssh','-T','-o','BatchMode=yes','-o','IdentitiesOnly=yes',
+      '-o','StrictHostKeyChecking=yes','-i',key,'--',target]
+ return run([*ssh,f'{action} {commit} {digest}'],stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,text=True)
+
+
 def execute(prepared_file,stage,install=False,yes=False):
  p=json.loads(prepared_file.read_text());analysis=Path(p['recipe']['analysis_root']);website=Path(p['recipe']['website_root']);project=Path(p['project_root']);out=prepared_file.parent
  key=Path.home()/'.ssh/vwgm_spectraip_ed25519';target='ton@45.87.43.90'
@@ -286,8 +295,10 @@ def execute(prepared_file,stage,install=False,yes=False):
  if managed_target or managed_key:
   if not managed_target or not managed_key or not Path(managed_key).is_file():
    raise ValueError('Gebruik tegelijk de afgeschermde doelhost en deploysleutel')
-  if stage not in ('receive','apply') or install or p['intent']!='production':
-   raise ValueError('De afgeschermde ingang ondersteunt ontvangst en apply van een productiepak')
+  if stage not in ('receive','apply','finalize','adopt-finalization') or install or p['intent']!='production':
+   raise ValueError('De afgeschermde ingang ondersteunt alleen de vaste productie-fasen')
+  if stage in ('finalize','adopt-finalization'):
+   return managed_finalization(p,stage,managed_target,managed_key)
   return managed_execute(p,stage,managed_target,managed_key,out,repos)
  if stage=='receive':raise ValueError('Ontvangst vereist de afgeschermde doelhost en deploysleutel')
  if install:
@@ -333,7 +344,7 @@ def execute(prepared_file,stage,install=False,yes=False):
 
 
 def main():
- a=argparse.ArgumentParser(description=__doc__);a.add_argument('--recipe',type=Path);a.add_argument('--baseline-bootstrap',type=Path);a.add_argument('--output',type=Path);a.add_argument('--project-root',type=Path);a.add_argument('--prepared',type=Path);a.add_argument('--stage',choices=['prepare','prepare-presentation','receive','preflight','rehearse','apply','rollback','cleanup','cleanup-inbox'],default='prepare');a.add_argument('--base-manifest',type=Path);a.add_argument('--install-gateway',action='store_true');a.add_argument('--yes',action='store_true');args=a.parse_args()
+ a=argparse.ArgumentParser(description=__doc__);a.add_argument('--recipe',type=Path);a.add_argument('--baseline-bootstrap',type=Path);a.add_argument('--output',type=Path);a.add_argument('--project-root',type=Path);a.add_argument('--prepared',type=Path);a.add_argument('--stage',choices=['prepare','prepare-presentation','receive','preflight','rehearse','apply','rollback','cleanup','cleanup-inbox','finalize','adopt-finalization'],default='prepare');a.add_argument('--base-manifest',type=Path);a.add_argument('--install-gateway',action='store_true');a.add_argument('--yes',action='store_true');args=a.parse_args()
  if args.stage=='prepare-presentation':
   if not all([args.prepared,args.base_manifest,args.output,args.project_root]):a.error('prepare-presentation vraagt prepared, base-manifest, output en project-root')
   prepare_presentation(args.prepared,args.base_manifest,args.output,args.project_root)

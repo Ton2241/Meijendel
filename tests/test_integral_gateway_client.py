@@ -49,6 +49,20 @@ class ManagedClientContract(unittest.TestCase):
     with self.assertRaisesRegex(ValueError,'dit archief'):
      client.managed_execute(prepared,'apply','loopback','key',out,repos)
 
+ def test_finalize_and_adopt_use_only_fixed_managed_commands(self):
+  from types import SimpleNamespace
+  from unittest.mock import patch
+  prepared={'commits':{'Meijendel':'a'*40},'sha256':'b'*64}
+  commands=[]
+  def run(args,**kwargs):
+   commands.append(args[-1]);self.assertEqual(kwargs['stdin'],subprocess.DEVNULL)
+   return SimpleNamespace(stdout='OK')
+  with patch.object(client,'run',side_effect=run):
+   client.managed_finalization(prepared,'finalize','host','key')
+   client.managed_finalization(prepared,'adopt-finalization','host','key')
+  self.assertEqual(commands,[f"meijendel-finalize {'a'*40} {'b'*64}",
+                             f"meijendel-adopt-finalization {'a'*40} {'b'*64}"])
+
 class LegacyStorageContract(unittest.TestCase):
  def test_release_budget_checks_both_compressed_copies_and_preserves_reserve(self):
   import io,tarfile

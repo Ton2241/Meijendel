@@ -268,6 +268,138 @@ class QueueLockContract(unittest.TestCase):
     secure.assert_called_once_with(marker)
 
 
+class ReleaseFinalizationContract(unittest.TestCase):
+ def identity(self,name,digest):
+  return {'release_id':name,'package_digest':digest,
+          'commits':{'Meijendel':'a'*40,'VWG_M':'b'*40}}
+
+ def context(self):
+  active=self.identity('release-B','b'*64)|{'path':'/control/production/releases/release-B'}
+  previous=self.identity('release-A','a'*64)|{'path':'/control/production/releases/release-A'}
+  old=self.identity('release-old','c'*64)|{'path':'/control/production/releases/release-old'}
+  return {
+   'active':active,'previous':previous,
+   'journal':{'phase':'active','attempted':'release-B','activated_at':'2026-11-22T20:00:00Z'},
+   'health':{'release_id':'release-B','three_services':True,'shiny_cache_and_bootstrap':True},
+   'sealed_packages':[
+    active|{'path':'/control/packages/'+'b'*64,'bytes':100,'fingerprint':[1,2]},
+    previous|{'path':'/control/packages/'+'a'*64,'bytes':200,'fingerprint':[1,3]},
+    old|{'path':'/control/packages/'+'c'*64,'bytes':300,'fingerprint':[1,4]},
+   ],
+   'releases':[active|{'bytes':400,'fingerprint':[1,5]},previous|{'bytes':500,'fingerprint':[1,6]},old|{'bytes':600,'fingerprint':[1,7]}],
+   'staging':[{'path':'/control/packages/.receive-old','bytes':50,'fingerprint':[1,8]}],
+   'inbox':[{'path':'/state/integral-inbox/old.tar.gz','digest':'c'*64,'bytes':25,'fingerprint':[1,9]}],
+   'free_bytes':40*linux.GIB,
+  }
+
+ def proof(self):
+  release={'release_id':'release-B','package_digest':'b'*64,
+           'meijendel_commit':'a'*40,'vwg_m_commit':'b'*40}
+  return {'chain_date':'2026-11-23','proof_created_at':'2026-11-23T04:15:00Z',
+          'pull_proof':{'release':release,
+                        'backup':{'created_at':'2026-11-23T00:15:00Z'}}}
+
+ def inventory(self):
+  return {'containers':[{'name':'meijendel-mysql','image':'sha256:'+'d'*64,
+                         'mount_sources':['/control/production/runtime']}],
+          'queue_identity':None,
+          'build_cache':[{'ID':'cacheold123','Reclaimable':True,'Mutable':False,
+                          'Shared':False,'Size':'700','UsageCount':0,'Parents':[],
+                          'CreatedAt':'2026-11-20T00:00:00Z','LastUsedAt':'2026-11-20T00:00:00Z',
+                          'Description':'old release build','Type':'regular'}]}
+
+ def test_plan_matches_proof_health_and_keeps_current_plus_one_previous(self):
+  plan=linux.build_finalization_plan(self.context(),self.proof(),self.inventory())
+  removed={(item['kind'],item.get('path',item.get('id'))) for item in plan['objects']}
+  self.assertEqual(removed,{('sealed_package','/control/packages/'+'c'*64),
+                            ('release','/control/production/releases/release-old'),
+                            ('staging','/control/packages/.receive-old'),
+                            ('inbox_archive','/state/integral-inbox/old.tar.gz'),
+                            ('buildkit_cache','cacheold123')})
+  self.assertEqual(plan['projected_free_bytes'],40*linux.GIB+1675)
+
+ def test_mismatch_stale_proof_failed_health_or_nonactive_journal_blocks_all(self):
+  for mutate in (
+   lambda c,p,i:p['pull_proof']['release'].update(package_digest='0'*64),
+   lambda c,p,i:p['pull_proof']['backup'].update(created_at='2026-11-22T19:00:00Z'),
+   lambda c,p,i:c['health'].update(three_services=False),
+   lambda c,p,i:c['journal'].update(phase='restored'),
+  ):
+   context=self.context();proof=self.proof();inventory=self.inventory();mutate(context,proof,inventory)
+   with self.subTest(mutate=mutate),self.assertRaises(ValueError):
+    linux.build_finalization_plan(context,proof,inventory)
+
+ def test_active_mount_queue_reference_or_unknown_cache_schema_blocks_everything(self):
+  context=self.context();inventory=self.inventory()
+  inventory['containers'][0]['mount_sources'].append('/control/packages/'+'c'*64+'/payload')
+  with self.assertRaisesRegex(ValueError,'actieve verwijzing'):
+   linux.build_finalization_plan(context,self.proof(),inventory)
+  inventory=self.inventory();inventory['queue_identity']='c'*64
+  with self.assertRaisesRegex(ValueError,'wachtrij'):
+   linux.build_finalization_plan(context,self.proof(),inventory)
+  inventory=self.inventory();inventory['build_cache'][0]['Unexpected']=True
+  with self.assertRaisesRegex(ValueError,'cache'):
+   linux.build_finalization_plan(context,self.proof(),inventory)
+
+ def test_apply_uses_exact_plan_and_targeted_buildkit_id_only(self):
+  plan=linux.build_finalization_plan(self.context(),self.proof(),self.inventory())
+  removed=[];commands=[]
+  result=linux.apply_finalization_plan(
+   plan,
+   remove_path=lambda item:removed.append((item['kind'],item['path'])),
+   command=lambda args:commands.append(args),
+   free_bytes=lambda:41*linux.GIB,
+  )
+  self.assertEqual(len(removed),4)
+  self.assertEqual(commands,[['docker','buildx','prune','--force','--filter','id=cacheold123','--filter','inuse=false']])
+  self.assertEqual(result['free_bytes_after'],41*linux.GIB)
+
+ def test_upload_gate_requires_completed_previous_release_and_36_gib_after_upload(self):
+  active=self.identity('release-B','b'*64)
+  complete={'schema':'vwgm-release-finalization-state-v1','status':'complete','release':active}
+  linux.check_upload_admission(active,complete,'c'*64,40*linux.GIB,2*linux.GIB)
+  with self.assertRaisesRegex(ValueError,'finalisatie'):
+   linux.check_upload_admission(active,None,'c'*64,40*linux.GIB,2*linux.GIB)
+  with self.assertRaisesRegex(RuntimeError,'36 GiB'):
+   linux.check_upload_admission(active,complete,'c'*64,37*linux.GIB,2*linux.GIB)
+  # An exact retry of the active package is not a new release.
+  linux.check_upload_admission(active,None,'b'*64,36*linux.GIB,1)
+
+ def test_adoption_is_explicit_and_idempotent_only_for_same_active_release(self):
+  import json
+  from datetime import datetime,timezone
+  with tempfile.TemporaryDirectory() as d:
+   path=Path(d)/'finalization.json';active=self.identity('release-B','b'*64)
+   linux.adopt_finalization_state(path,active,'2026-11-22T20:00:00Z',now=datetime(2026,11,23,tzinfo=timezone.utc))
+   saved=json.loads(path.read_text())
+   self.assertEqual(saved['status'],'pending');self.assertTrue(saved['adopted'])
+   linux.adopt_finalization_state(path,active,'2026-11-22T20:00:00Z',now=datetime(2026,11,23,tzinfo=timezone.utc))
+   with self.assertRaisesRegex(ValueError,'andere release'):
+    linux.adopt_finalization_state(path,self.identity('release-C','c'*64),'2026-11-23T20:00:00Z',now=datetime(2026,11,24,tzinfo=timezone.utc))
+
+ def test_finalization_requires_matching_pending_state(self):
+  active=self.identity('release-B','b'*64)
+  pending={'schema':'vwgm-release-finalization-state-v1','status':'pending','release':active,
+           'activated_at':'2026-11-22T20:00:00Z','adopted':True}
+  self.assertTrue(linux.require_pending_finalization(pending,active,'2026-11-22T20:00:00Z'))
+  for changed in (
+   pending|{'status':'complete'},
+   pending|{'release':self.identity('release-C','c'*64)},
+   pending|{'activated_at':'2026-11-22T20:00:01Z'},
+  ):
+   with self.assertRaises(ValueError):
+    linux.require_pending_finalization(changed,active,'2026-11-22T20:00:00Z')
+
+ def test_applied_plan_requires_every_exact_object_to_be_absent(self):
+  plan={'objects':[{'kind':'release','path':'/releases/old'},
+                   {'kind':'buildkit_cache','id':'cache123'}]}
+  linux.verify_finalization_result(plan,remaining_paths=set(),remaining_cache_ids=set())
+  with self.assertRaises(RuntimeError):
+   linux.verify_finalization_result(plan,remaining_paths={'/releases/old'},remaining_cache_ids=set())
+  with self.assertRaises(RuntimeError):
+   linux.verify_finalization_result(plan,remaining_paths=set(),remaining_cache_ids={'cache123'})
+
+
 
 class PresentationReleaseContract(unittest.TestCase):
  def test_only_presentation_changes_are_admitted(self):
@@ -309,7 +441,7 @@ class PresentationReleaseContract(unittest.TestCase):
    with patch.object(linux,'switch_presentation_consumers',switch):
     with self.assertRaisesRegex(RuntimeError,'kandidaat onbereikbaar'):
      linux.activate_presentation(root,old,new,Mock(),latch)
-   self.assertEqual(linux.core.current(root),old)
+   self.assertEqual(linux.core.current(root),old.resolve())
    self.assertEqual([call.args[1:3] for call in switch.call_args_list],[(old,new),(new,old)])
    self.assertEqual([call.args for call in latch.call_args_list],[(),(False,)])
 
