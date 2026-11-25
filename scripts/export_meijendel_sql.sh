@@ -62,6 +62,8 @@ python3 "$REPO_DIR/gis/scripts/import_external_ecology_sources.py" \
 
 "$MYSQLDUMP_BIN" --login-path="$MYSQL_LOGIN_PATH" \
   --no-tablespaces \
+  --ignore-table=Meijendel.sovon_bmp_territoriumstip \
+  --ignore-table=Meijendel.sovon_bmp_territoriumstip_bron \
   --complete-insert \
   --hex-blob \
   --single-transaction \

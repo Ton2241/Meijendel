@@ -7,6 +7,7 @@ MYSQL_DATABASE="${MEIJENDEL_MYSQL_DATABASE:-Meijendel}"
 MYSQL_HOST="${MYSQL_HOST:-127.0.0.1}"
 MYSQL_PORT="${MYSQL_PORT:-3306}"
 MYSQL_LOGIN_PATH="${MEIJENDEL_MYSQL_LOGIN_PATH:-meijendel_root}"
+LOCAL_TERRITORY_TABLES_SQL="'sovon_bmp_territoriumstip','sovon_bmp_territoriumstip_bron'"
 
 if [[ -d /usr/local/mysql/bin ]]; then
   PATH="/usr/local/mysql/bin:$PATH"
@@ -59,6 +60,9 @@ validate_dump_structure() {
   fi
   if LC_ALL=C grep -Eq '`pwa_[^`]*`' "$dump"; then
     die "SQL-dump bevat een historisch PWA-object; corrigeer de levende database in plaats van de publicatie-export te filteren."
+  fi
+  if LC_ALL=C grep -Eq '^(CREATE TABLE|INSERT INTO) `sovon_bmp_territoriumstip(_bron)?`' "$dump"; then
+    die "SQL-dump bevat lokale Avimap-territoriumstippen of bijbehorende bronnen."
   fi
   LC_ALL=C awk '
     /^CREATE TABLE `tellers`/ { in_tellers = 1; seen = 1 }
@@ -167,11 +171,23 @@ query() {
   "$mysql_bin" "${mysql_args[@]}" --batch --raw --skip-column-names -e "$1"
 }
 
+export_scope_filter() {
+  local schema="$1" column="$2"
+  if [[ "$schema" == "$MYSQL_DATABASE" ]]; then
+    printf ' AND %s NOT IN (%s)' "$column" "$LOCAL_TERRITORY_TABLES_SQL"
+  fi
+}
+
+export_trigger_definitions() {
+  local schema="$1"
+  query "SELECT CONCAT_WS('|',TRIGGER_NAME,EVENT_OBJECT_TABLE,ACTION_TIMING,EVENT_MANIPULATION,SHA2(ACTION_STATEMENT,256)) FROM information_schema.triggers WHERE trigger_schema='$schema'$(export_scope_filter "$schema" EVENT_OBJECT_TABLE) ORDER BY trigger_name"
+}
+
 write_row_counts() {
   local schema="$1" output="$2" sql_file
   [[ "$schema" =~ ^[A-Za-z0-9_]+$ ]] || die "ongeldige schemanaam: $schema"
   sql_file="${output}.sql"
-  query "SELECT CONCAT('SELECT ', QUOTE(table_name), ' AS table_name, COUNT(*) AS row_count FROM ', CHAR(96), '$schema', CHAR(96), '.', CHAR(96), REPLACE(table_name, CHAR(96), CONCAT(CHAR(96),CHAR(96))), CHAR(96)) FROM information_schema.tables WHERE table_schema='$schema' AND table_type='BASE TABLE' ORDER BY table_name" |
+  query "SELECT CONCAT('SELECT ', QUOTE(table_name), ' AS table_name, COUNT(*) AS row_count FROM ', CHAR(96), '$schema', CHAR(96), '.', CHAR(96), REPLACE(table_name, CHAR(96), CONCAT(CHAR(96),CHAR(96))), CHAR(96)) FROM information_schema.tables WHERE table_schema='$schema' AND table_type='BASE TABLE'$(export_scope_filter "$schema" table_name) ORDER BY table_name" |
     awk 'NR>1 {print "UNION ALL"} {print}' > "$sql_file"
   [[ -s "$sql_file" ]] || die "geen basistabellen gevonden in schema $schema."
   "$mysql_bin" "${mysql_args[@]}" --batch --raw < "$sql_file" | LC_ALL=C sort > "$output"
@@ -181,7 +197,7 @@ write_table_checksums() {
   local schema="$1" output="$2" sql_file
   [[ "$schema" =~ ^[A-Za-z0-9_]+$ ]] || die "ongeldige schemanaam: $schema"
   sql_file="${output}.sql"
-  query "SELECT CONCAT('CHECKSUM TABLE ', CHAR(96), '$schema', CHAR(96), '.', CHAR(96), REPLACE(table_name, CHAR(96), CONCAT(CHAR(96),CHAR(96))), CHAR(96), ';') FROM information_schema.tables WHERE table_schema='$schema' AND table_type='BASE TABLE' ORDER BY table_name" > "$sql_file"
+  query "SELECT CONCAT('CHECKSUM TABLE ', CHAR(96), '$schema', CHAR(96), '.', CHAR(96), REPLACE(table_name, CHAR(96), CONCAT(CHAR(96),CHAR(96))), CHAR(96), ';') FROM information_schema.tables WHERE table_schema='$schema' AND table_type='BASE TABLE'$(export_scope_filter "$schema" table_name) ORDER BY table_name" > "$sql_file"
   [[ -s "$sql_file" ]] || die "geen basistabellen gevonden voor inhoudschecksums in schema $schema."
   "$mysql_bin" "${mysql_args[@]}" --batch --raw < "$sql_file" |
     awk -F '\t' '$1 != "Table" {sub(/^[^.]*\./, "", $1); print $1 "\t" $2}' |
@@ -226,6 +242,7 @@ write_manifest() {
   local dump="$1" manifest="$2" candidate="$3" temp_dir live_counts candidate_counts live_checksums candidate_checksums
   [[ "$candidate" =~ ^codex_meijendel_export_check_[0-9]+$ ]] || die "onveilige kandidaatnaam: $candidate"
   validate_dump_structure "$dump"
+  [[ "$(query "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='$candidate' AND table_name IN ($LOCAL_TERRITORY_TABLES_SQL)")" == "0" ]] || die "proefimport bevat lokale Avimap-territoriumstippen."
   temp_dir="$(mktemp -d)"
   trap 'rm -rf "$temp_dir"' RETURN
   live_counts="$temp_dir/live.tsv"
@@ -243,14 +260,14 @@ write_manifest() {
   cmp -s "$temp_dir/live-maatregelen.tsv" "$temp_dir/candidate-maatregelen.tsv" || die "proefimport wijkt af in maatregel-/toegankelijkheidsleeslagen."
   validate_plot_scope "$MYSQL_DATABASE"
   validate_plot_scope "$candidate"
-  query "SELECT CONCAT_WS('|',TRIGGER_NAME,EVENT_OBJECT_TABLE,ACTION_TIMING,EVENT_MANIPULATION,SHA2(ACTION_STATEMENT,256)) FROM information_schema.triggers WHERE trigger_schema='$MYSQL_DATABASE' ORDER BY trigger_name" > "$temp_dir/live-triggers.tsv"
-  query "SELECT CONCAT_WS('|',TRIGGER_NAME,EVENT_OBJECT_TABLE,ACTION_TIMING,EVENT_MANIPULATION,SHA2(ACTION_STATEMENT,256)) FROM information_schema.triggers WHERE trigger_schema='$candidate' ORDER BY trigger_name" > "$temp_dir/candidate-triggers.tsv"
+  export_trigger_definitions "$MYSQL_DATABASE" > "$temp_dir/live-triggers.tsv"
+  export_trigger_definitions "$candidate" > "$temp_dir/candidate-triggers.tsv"
   cmp -s "$temp_dir/live-triggers.tsv" "$temp_dir/candidate-triggers.tsv" || die "proefimport wijkt af in daadwerkelijke schrijfbewaking."
   "$mysqlcheck_bin" "${mysql_args[@]}" --check "$candidate" > "$temp_dir/mysqlcheck.txt"
   awk '$NF != "OK" && $0 !~ /^[[:alnum:]_]+\.[[:alnum:]_]+$/ {bad=1} END {exit bad}' "$temp_dir/mysqlcheck.txt" || die "mysqlcheck van proefimport is niet volledig groen."
 
   local live_base candidate_base live_views candidate_views row_hash table_hash temp_manifest
-  live_base="$(query "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='$MYSQL_DATABASE' AND table_type='BASE TABLE'")"
+  live_base="$(query "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='$MYSQL_DATABASE' AND table_type='BASE TABLE'$(export_scope_filter "$MYSQL_DATABASE" table_name)")"
   candidate_base="$(query "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='$candidate' AND table_type='BASE TABLE'")"
   live_views="$(query "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='$MYSQL_DATABASE' AND table_type='VIEW'")"
   candidate_views="$(query "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='$candidate' AND table_type='VIEW'")"
@@ -287,11 +304,11 @@ validate_live() {
   validate_artifact "$dump" "$manifest"
   if grep -q '^trigger_definitions_sha256=' "$manifest"; then
     local trigger_hash
-    trigger_hash="$(query "SELECT CONCAT_WS('|',TRIGGER_NAME,EVENT_OBJECT_TABLE,ACTION_TIMING,EVENT_MANIPULATION,SHA2(ACTION_STATEMENT,256)) FROM information_schema.triggers WHERE trigger_schema='$MYSQL_DATABASE' ORDER BY trigger_name" | shasum -a 256 | awk '{print $1}')"
+    trigger_hash="$(export_trigger_definitions "$MYSQL_DATABASE" | shasum -a 256 | awk '{print $1}')"
     [[ "$trigger_hash" == "$(manifest_value trigger_definitions_sha256 "$manifest")" ]] || die "schrijfbewaking wijzigde sinds export."
   fi
   [[ "$(query 'SELECT VERSION()')" == "$(manifest_value mysql_version "$manifest")" ]] || die "MySQL-versie wijkt af van exportmanifest."
-  [[ "$(query "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='$MYSQL_DATABASE' AND table_type='BASE TABLE'")" == "$(manifest_value base_tables "$manifest")" ]] || die "aantal basistabellen wijkt af van exportmanifest."
+  [[ "$(query "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='$MYSQL_DATABASE' AND table_type='BASE TABLE'$(export_scope_filter "$MYSQL_DATABASE" table_name)")" == "$(manifest_value base_tables "$manifest")" ]] || die "aantal basistabellen wijkt af van exportmanifest."
   [[ "$(query "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='$MYSQL_DATABASE' AND table_type='VIEW'")" == "$(manifest_value views "$manifest")" ]] || die "aantal views wijkt af van exportmanifest."
   [[ "$(table_count "$MYSQL_DATABASE" dagbezoeken_bmp)" == "$(manifest_value dagbezoeken_bmp "$manifest")" ]] || die "dagbezoeken_bmp wijzigde sinds export."
   [[ "$(table_count "$MYSQL_DATABASE" dagwaarnemingen_bmp)" == "$(manifest_value dagwaarnemingen_bmp "$manifest")" ]] || die "dagwaarnemingen_bmp wijzigde sinds export."

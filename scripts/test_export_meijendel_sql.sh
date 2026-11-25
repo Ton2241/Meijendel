@@ -167,6 +167,8 @@ PATH="$TEST_DIR/bin:$PATH" \
 grep -Fqx -- '-- Dump completed on deterministic export' "$dump" || fail "deterministische eindmarkering ontbreekt."
 grep -Fqx -- '--skip-dump-date' "$MEIJENDEL_TEST_MYSQLDUMP_LOG" || fail "mysqldump-tijdstempel is niet uitgeschakeld."
 grep -Fqx -- '--hex-blob' "$MEIJENDEL_TEST_MYSQLDUMP_LOG" || fail "binaire databasevelden worden niet veilig als hex-literal geëxporteerd."
+grep -Fqx -- '--ignore-table=Meijendel.sovon_bmp_territoriumstip' "$MEIJENDEL_TEST_MYSQLDUMP_LOG" || fail "lokale territoriumpunten komen in de VPS-export."
+grep -Fqx -- '--ignore-table=Meijendel.sovon_bmp_territoriumstip_bron' "$MEIJENDEL_TEST_MYSQLDUMP_LOG" || fail "lokale stippenherkomst komt in de VPS-export."
 grep -Fqx -- '--centrale-querypoort' "$MEIJENDEL_TEST_TAXON_LOG" || fail "centrale querypoort is overgeslagen."
 grep -q 'candidate=codex_meijendel_export_check_' "$manifest" || fail "nieuw manifest werd niet geactiveerd."
 cache_file="$(awk -F= '$1 == "cache_file" {print $2}' "$manifest")"

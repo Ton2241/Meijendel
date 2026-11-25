@@ -247,6 +247,13 @@ def derived_key_sql(route: dict, alias: str = 'w') -> str:
 def central_source_condition(table: str, route: dict, alias='w') -> str:
     """Same semantic check in the acceptance gate and in BEFORE row triggers."""
     kind = route['kind']
+    if table == 'sovon_bmp_territoriumstip':
+        return (
+            "EXISTS(SELECT 1 FROM soorten s JOIN taxa t ON t.taxon_id=b.taxon_id "
+            "JOIN taxon_groepen g ON g.groep_id=t.groep_id "
+            f"WHERE s.euring_code={alias}.euring_code "
+            "AND s.taxon_bronkoppeling_id=b.koppeling_id AND g.groep_code='vogels')"
+        )
     if table == 'vlinders_dag_routejaar_soortcode':
         return (
             "b.bron_systeem='De Vlinderstichting' AND "
@@ -672,8 +679,21 @@ NDFF_ROUTE_LINK_SCHEMA = {
     'libellen_waarneming_routekoppeling': frozenset('waarneming_id reconstructieversie bezoek_sleutel telobject_id jaar koppelstatus geometriebewijs'.split()),
 }
 
+SOVON_TERRITORIUMSTIP_SCHEMA = {
+    'sovon_bmp_territoriumstip_bron': frozenset(
+        'bundel_sha256 project_id jaar bronpad bronbestanden bronregels basisgebiedversie_id'.split()
+    ),
+    'sovon_bmp_territoriumstip': frozenset(
+        'bundel_sha256 bron_rijnummer jaar plot_id euring_code taxon_bronkoppeling_id '
+        'aantal broedcode in_plot bronvelden geom bron_record_sha256'.split()
+    ),
+}
+
+
 def central_query_schema_contract(schema: dict[str, set[str]]) -> None:
     expected = dict(CENTRAL_QUERY_SCHEMA)
+    if set(schema) & set(SOVON_TERRITORIUMSTIP_SCHEMA):
+        expected.update(SOVON_TERRITORIUMSTIP_SCHEMA)
     existing_bmp_groups = set(schema) & set(BMP_NONBIRD_GROUP_TABLES)
     if not existing_bmp_groups:
         for table in BMP_NONBIRD_GROUP_TABLES:
@@ -1292,8 +1312,11 @@ def central_query_triggers_sql(plan: dict) -> str:
                 f'CREATE TRIGGER {trigger} BEFORE {event} ON {query_identifier(table)} FOR EACH ROW BEGIN\n'
                 +declarations+'\n'+event_body+'\nEND$$']
     # Registry edits must not make any pinned measurement lose its target or origin.
+    # Territory points pin the same guarded links as soorten, by foreign-keyed EURING.
+    # Keep the shared registry trigger portable to exports without the local point tables.
     references = ' OR '.join(f'EXISTS(SELECT 1 FROM {query_identifier(table)} WHERE taxon_bronkoppeling_id=OLD.koppeling_id)'
-        for table,r in routes.items() if r['kind'] in {'catalogue','derived','direct','external'})
+        for table,r in routes.items() if r['kind'] in {'catalogue','derived','direct','external'}
+        and table != 'sovon_bmp_territoriumstip')
     source_fields = ('soort_key','ndff_soort_id','soortgroep_raw','wetenschappelijke_naam','nederlandse_naam',
                      'id','latijnse_naam','soort_naam','euring_code','engelse_naam','duitse_naam','franse_naam','spaanse_naam',
                      'batch_id','soortgroep_code','soortnr','soortgroep_naam','bronvelden','taxon_id','srtnum',

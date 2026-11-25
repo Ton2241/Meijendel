@@ -359,3 +359,7 @@ gewone TRIM-periodes en beschrijvende GAM-banden worden onder hun eigen
 naam getoond. De lokale dashboardkopie en controlebestanden staan in de
 geregistreerde T7-proef trim-dashboard-2026-20261120. VPS-publicatie is
 een afzonderlijk besluit.
+
+## Lokale Avimap-territoriumstippen
+
+25 november 2026. De lokale database bevat 134.775 bronstippen uit 2007 en 2009–2026, met 19 bronmanifesten. De aantalsreeksen voor TRIM en de huidige website-, dashboard- en Shiny-uitvoer gebruiken de bestaande tabel `territoria`. De twee stiptabellen blijven lokaal. De exportvalidator vergelijkt de proefimport met de resterende exporttabellen en hun schrijfbeveiliging. Hij weigert een dump die de lokale stiptabellen bevat. Zie het [bronregister](MEIJENDEL_BRONREGISTER.md) voor de bronversies en behandeling van afgekeurde kaveljaren.
