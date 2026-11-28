@@ -359,3 +359,32 @@ gewone TRIM-periodes en beschrijvende GAM-banden worden onder hun eigen
 naam getoond. De lokale dashboardkopie en controlebestanden staan in de
 geregistreerde T7-proef trim-dashboard-2026-20261120. VPS-publicatie is
 een afzonderlijk besluit.
+
+## Verkennende toegankelijkheidsanalyse op 28 november 2026
+
+De afzonderlijke onderzoeksroute `R/analyse_toegankelijkheid_bmp.R` leest de
+levende database alleen en gebruikt bewust de perioden 1984–2025 en
+2009–2025. De scope is `meijendel_natura2000`: 53 actuele kavelgeometrieën,
+52 kavels met territoriumwaarden en alle 156 vogelcategorieën. De uitvoer
+en bronqueries staan in de geregistreerde T7-taak
+`toegankelijkheid-broedvogels-2026-11-28`. `manifest.json`,
+`bron_en_uitvoer_hashes.json` en `controlebewijs.json` binden de kaartstand,
+bronselecties, modeluitval, effecttabellen en controles aan elkaar.
+
+Deze uitvoer is verkennend en heeft geen automatische afnemer in website,
+dashboard of Shiny. De toekomstige integrale actualisering behandelt haar
+als afzonderlijke kandidaat met eindjaar 2025, niet als een vervanging van
+TRIM of een formele effectschatting. Voor presentatie volgt eerst een
+gezamenlijk beoordeelde bronversie en interpretatie; eventuele uitbreiding
+met 2026, vrijgave van de intervallen en publicatie blijven afzonderlijke
+besluiten. De volledige soortinventaris en alle niet-schatbare uitkomsten
+blijven verplicht behouden. Eén gezamenlijk bronproduct moet de drie
+presentatieafnemers bedienen. Er is geen zware export of cachebouw gestart.
+
+De verkeersanalyse wacht op ruwe routegebonden passagegegevens en een
+gevalideerde telpunt-route-kavelkoppeling. De 96 overgenomen maandwaarden
+uit 2022–2023 beschrijven drukke uren bij vier fietstelpunten en mogen niet
+als passageaantallen aan de releaseketen worden doorgegeven. De historische
+scenariomatrix geeft onbekende perioden expliciet weer en wijzigt geen
+toegankelijkheidsregistraties. Zie
+[het onderzoeksverslag](../Recreatie/ANALYSE_TOEGANKELIJKHEID_BMP.md).
