@@ -9,7 +9,7 @@ De lokale technische vervolgcontrole is afgerond. Websitekoppelingen zijn in een
 ### Jaarverslag Vogelwerkgroep Meijendel 2026
 
 - [ ] **Wintervogeltellingen.** Jans eerste concept is op 22 november 2026 ontvangen. Hij wil de decembertelling afwachten en vraagt het voorlopige stuk nog niet in te leveren. Ton controleert op **19 december 2026 om 09.00 uur** of de definitieve decemberaanvulling is ontvangen of wanneer die volgt. De definitieve bijdrage wordt vóór het jaareinde verwacht; op de controledatum is zij nog niet te laat. De herinnering staat in iCloud **Agenda**. Ton bepaalt de vervolgactie; geen automatisch rappel.
-- [ ] **Atlasbloktellingen.** Verwerk Andrés op 23 november 2026 ontvangen en door Ton aanvaarde bijdrage in het definitieve jaarverslag. Ton heeft toegezegd de tweede en derde zin om te wisselen. Deze verwerking hoort bij de afronding begin januari 2027; er staat geen ontvangstcontrole of rappel aan André meer open.
+- [ ] **Atlasbloktellingen.** Verwerk Andrés op 23 november 2026 ontvangen en door Ton aanvaarde bijdrage in het definitieve jaarverslag. Ton heeft toegezegd de tweede en derde zin om te wisselen. Deze verwerking hoort bij de afronding begin januari 2027; voor deze jaarverslagbijdrage staat geen ontvangstcontrole of rappel aan André meer open.
 - [ ] **Begin januari 2027.** Ton verwerkt de bijdragen, rondt de jaarverslagtekst af en stuurt die aan Amy.
 
 ### Rode-Lijstbericht 457 na de Sovon-publicatie
@@ -1017,7 +1017,7 @@ en leveringen. Werk bij een vervolgbericht de bestaande taak en herinnering
 bij. Verwijder afgeronde opvolging uit deze lijst. Ton beslist over verzending
 van rappels.
 
-Stand 24 november 2026. De opvolging loopt waar vermeld door in 2027 en staat
+Stand 28 november 2026. De opvolging loopt waar vermeld door in 2027 en staat
 in iCloud **Agenda**.
 
 | Persoon of organisatie | Laatste uitgaande mail | Open opvolging |
@@ -1026,6 +1026,7 @@ in iCloud **Agenda**.
 | RAVON / Rolf van Leeningen | 7 oktober | **7 december.** Rolf zoekt uit welke meetgegevens beschikbaar zijn. Controleer de stand en beoordeel het rappel. |
 | Staatsbosbeheer / Alex Zuijdervliet | 12 november | **10 december.** Controleer of de collega die in december naar de oorspronkelijke florakartering uit 2002–2008 kijkt, al heeft gereageerd. |
 | NIOZ / Eva Lansu | 23 november, 15.46 uur | **21 december 2026 om 09.00 uur.** Controleer antwoord of levering op de aanvullende mail over *Squeezed Sands*: modelgewichten/checkpoint van het volledige zevenbandsmodel, oorspronkelijke train-/validatie-/testsplits of exacte tegelverdeling en bevestiging welke modelversie, voorbewerking en checkpoint bij elkaar horen. Een export van de trainingsmap volstaat als dat eenvoudiger is. Verzonden vanuit voorzitter@vwg-m.nl; eerste verzoek 13 november. De iCloud-herinnering is verplaatst van 11 naar 21 december, vier weken na de vervolgmail. Ton bepaalt de vervolgactie; geen automatisch rappel. |
+| André Leegwater / nieuwe vogelatlas | 27 november, 23.12 uur | **25 december 2026 om 09.00 uur.** Controleer of André heeft geantwoord op Tons verzoek om Wims vraag over deelname, de indeling van kilometerhokken en eventuele overlap met kavels 10/13/76 op te helderen. De herinnering staat vier weken na de mail in iCloud **Agenda**, op Eerste Kerstdag. Dit staat los van Andrés al ontvangen jaarverslagbijdrage. Ton bepaalt de vervolgactie; geen automatisch rappel. |
 | Haags Gemeentearchief / Michael Mellema | 13 november; antwoord 24 november | **4 januari 2027 om 09.15 uur.** Controleer eerst nieuw bericht over de twintig aangevraagde inventarisnummers uit archief 0395-01. Michael meldt dat er nog geen inzagetermijn is, verwacht beschikbaarheid in 2026 niet meer en adviseert begin 2027 opnieuw contact. Ton beoordeelt daarna een kort vervolgbericht. De iCloud-herinnering vervangt 11 december; nog geen bezoek of levering bevestigd. |
 | Sovon / Lara Marx | 18 november | **1 december om 09.00 uur.** Ton controleert of de watervogelkavelgrenzen zijn aangepast overeenkomstig de gecorrigeerde BMP-grenzen en of de download van watervogeltellingen voor seizoen 2025/2026 beschikbaar is. Lara gaf de grenscorrecties op 18 november door aan de beheerder van de watervogeldatabase; uitvoering is nog niet bevestigd. De eerdere BMP-grenscontrole is afgerond. Deze opvolging staat in iCloud **Agenda** en vervangt de controle van 12 december. |
 
